@@ -1,4 +1,7 @@
 package com.example.unirideapi.model.enums;
 
-public class ERol {
+public enum ERol {
+    ADMIN,
+    CONDUCTOR,
+    USUARIO,
 }
