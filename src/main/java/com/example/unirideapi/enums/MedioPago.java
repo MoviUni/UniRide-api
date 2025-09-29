@@ -1,4 +1,4 @@
-package com.example.unirideapi.model.enums;
+package com.example.unirideapi.enums;
 
 public enum MedioPago {
     EFECTIVO,

@@ -40,10 +40,10 @@ public class Conductor {
     private LocalDateTime updatedAt;
 
     @OneToOne
-    @JoinColumn(name = "usuario_idUsuario", referencedColumnName = "idUsuario")
-    private Usuario usuario;
+    @JoinColumn(name = "usuario_idVehiculo", referencedColumnName = "idVehiculo")
+    private Vehiculo vehiculo;
 
     @OneToOne
-    @JoinColumn(name = "usuario_idVehiculo", referencedColumnName = "idVehiculo")
-    private Usuario vehiculo;
+    @JoinColumn(name = "idUsuario", referencedColumnName = "idUsuario")
+    private Usuario usuario;
 }

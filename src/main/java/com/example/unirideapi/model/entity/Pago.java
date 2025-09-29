@@ -1,7 +1,7 @@
 package com.example.unirideapi.model.entity;
 
-import com.example.unirideapi.model.enums.Estado;
-import com.example.unirideapi.model.enums.MedioPago;
+import com.example.unirideapi.enums.Estado;
+import com.example.unirideapi.enums.MedioPago;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -14,13 +14,10 @@ import java.time.LocalTime;
 public class Pago {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idRuta;
+    private Integer idPago;
 
     @Column(name = "monto", nullable = false)
-    private String monto;
-
-    @Column(name = "destino", nullable = false)
-    private String destino;
+    private Float monto;
 
     @Column(name = "fecha", nullable = false)
     private LocalDate fecha;
@@ -28,14 +25,8 @@ public class Pago {
     @Column(name = "hora", nullable = false)
     private LocalTime hora;
 
-    @Column(name = "tarifa", nullable = false)
-    private Long tarifa;
-
-    @Column(name = "asientosDisponibles", nullable = false)
-    private Integer asientosDisponibles;
-
-    @Column(name = "descripcionVehiculo", columnDefinition = "TEXT")
-    private String descripcionVehiculo;
+    @Column(name = "comision", nullable = false)
+    private Float comision;
 
     @Enumerated(EnumType.STRING)
     private MedioPago medioPago;

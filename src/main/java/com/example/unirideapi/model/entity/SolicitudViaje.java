@@ -1,6 +1,6 @@
 package com.example.unirideapi.model.entity;
 
-import com.example.unirideapi.model.enums.Estado;
+import com.example.unirideapi.enums.Estado;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Setter;
@@ -31,7 +31,7 @@ public class SolicitudViaje {
     private Estado estado;
 
     //FK
-    @OneToMany
+    @ManyToOne
     @JoinColumn(name = "idRuta", referencedColumnName = "idRuta",
             foreignKey = @ForeignKey(name = "Ruta_idRuta"))
     private Ruta ruta;

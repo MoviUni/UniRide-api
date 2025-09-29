@@ -37,14 +37,7 @@ public class Pasajero {
     private LocalDateTime updatedAt;
 
     //FK
-            ;
     @OneToOne
     @JoinColumn(name = "usuario_idUsuario", referencedColumnName = "idUsuario")
     private Usuario usuario;
-
-    //@OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL, orphanRemoval = true)
-    //private List<Calificacion> calificaciones;
-
-    //NO BORRAR, descomentar cuando esté implementado junto a Citas
-
 }

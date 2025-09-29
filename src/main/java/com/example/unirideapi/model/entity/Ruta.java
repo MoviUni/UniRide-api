@@ -1,6 +1,6 @@
 package com.example.unirideapi.model.entity;
 
-import com.example.unirideapi.model.enums.Estado;
+import com.example.unirideapi.enums.Estado;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -32,9 +32,6 @@ public class Ruta {
 
     @Column(name = "asientosDisponibles", nullable = false)
     private Integer asientosDisponibles;
-
-    @Column(name = "descripcionVehiculo", columnDefinition = "TEXT")
-    private String descripcionVehiculo;
 
     @Enumerated(EnumType.STRING)
     private Estado estado;

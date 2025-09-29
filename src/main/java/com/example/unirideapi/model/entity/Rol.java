@@ -1,6 +1,6 @@
 package com.example.unirideapi.model.entity;
 
-import com.example.unirideapi.model.enums.ERol;
+import com.example.unirideapi.enums.ERol;
 import jakarta.persistence.*;
 import lombok.Data;
 

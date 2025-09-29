@@ -21,9 +21,6 @@ public class Calificacion {
     @Column(name = "comentario", nullable = false)
     private String comentario;
 
-    @Column(name = "placa", nullable = false)
-    private String placa;
-
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
