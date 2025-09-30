@@ -1,4 +1,4 @@
-package com.example.unirideapi.enums;
+package com.example.unirideapi.model.enums;
 
 public enum Estado {
     PENDIENTE,

@@ -1,7 +1,6 @@
 package com.example.unirideapi.mapper;
 
-import com.example.unirideapi.dto.SolicitudViajeDTO;
-import com.example.unirideapi.model.entity.SolicitudViaje;
+import com.example.unirideapi.model.SolicitudViaje;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;

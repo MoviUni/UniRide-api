@@ -1,7 +1,7 @@
-package com.example.unirideapi.model.entity;
+package com.example.unirideapi.model;
 
-import com.example.unirideapi.enums.Estado;
-import com.example.unirideapi.enums.MedioPago;
+import com.example.unirideapi.model.enums.Estado;
+import com.example.unirideapi.model.enums.MedioPago;
 import jakarta.persistence.*;
 import lombok.Data;
 

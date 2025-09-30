@@ -1,4 +1,4 @@
-package com.example.unirideapi.model.entity;
+package com.example.unirideapi.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
