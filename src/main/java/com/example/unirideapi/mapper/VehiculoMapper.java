@@ -1,5 +1,7 @@
 package com.example.unirideapi.mapper;
 
+import com.example.unirideapi.dto.request.VehiculoRequestDTO;
+import com.example.unirideapi.dto.response.VehiculoResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -9,9 +11,9 @@ import org.springframework.stereotype.Component;
 public class VehiculoMapper {
     private final ModelMapper modelMapper;
 
-    public VehiculoDTO toDTO(VehiculoMapper vehiculo) {
-        return modelMapper.map(vehiculo, VehiculoDTO.class);
+    public VehiculoResponseDTO toDTO(VehiculoMapper vehiculo) {
+        return modelMapper.map(vehiculo, VehiculoResponseDTO.class);
     }
 
-    public VehiculoMapper toEntity(VehiculoDTO dto) { return modelMapper.map(dto, VehiculoMapper.class);}
+    public VehiculoMapper toEntity(VehiculoRequestDTO dto) { return modelMapper.map(dto, VehiculoMapper.class);}
 }

@@ -1,6 +1,8 @@
 package com.example.unirideapi.dto.response;
-import com.example.unirideapi.model.enums.ERol;
 
+import lombok.Builder;
+
+@Builder
 public record UsuarioResponseDTO(
         Integer idUsuario,
         String email,
