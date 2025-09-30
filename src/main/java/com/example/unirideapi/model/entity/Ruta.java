@@ -15,22 +15,22 @@ public class Ruta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idRuta;
 
-    @Column(name = "origen", nullable = false)
+    @Column(nullable = false)
     private String origen;
 
-    @Column(name = "destino", nullable = false)
+    @Column(nullable = false)
     private String destino;
 
-    @Column(name = "fechaSalida", nullable = false)
+    @Column(nullable = false)
     private LocalDate fechaSalida;
 
-    @Column(name = "horaSalida", nullable = false)
+    @Column(nullable = false)
     private LocalTime horaSalida;
 
-    @Column(name = "tarifa", nullable = false)
+    @Column(nullable = false)
     private Long tarifa;
 
-    @Column(name = "asientosDisponibles", nullable = false)
+    @Column(nullable = false)
     private Integer asientosDisponibles;
 
     @Enumerated(EnumType.STRING)
