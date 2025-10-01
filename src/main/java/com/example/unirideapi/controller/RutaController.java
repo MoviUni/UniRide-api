@@ -33,9 +33,15 @@ public class RutaController {
         return ResponseEntity.ok(rutaService.searchById(rutaId));
     }
 
-    @GetMapping("/{rutaId}")
+    @GetMapping("/{origen}")
     public ResponseEntity<List<RutaResponseDTO>> searchByOrigen(String origen)
     {
-        return ResponseEntity.ok(rutaService.searchById(rutaId));
+        return ResponseEntity.ok(rutaService.searchByOrigen(origen));
+    }
+
+    @GetMapping("/{destino}")
+    public ResponseEntity<List<RutaResponseDTO>> searchByDestino(String destino)
+    {
+        return ResponseEntity.ok(rutaService.searchByDestino(destino));
     }
 }
