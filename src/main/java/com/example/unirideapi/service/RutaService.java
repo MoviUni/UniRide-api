@@ -9,7 +9,7 @@ import java.util.List;
 public interface RutaService {
     RutaResponseDTO create(RutaRequestDTO rutaRequestDTO);
     RutaResponseDTO searchById(Long id);
-    public List<RutaResponseDTO> searchByOrigen(String origen);
-    public List<RutaResponseDTO> searchByDestino(String destino);
-    public List<RutaResponseDTO> findAll();
+    List<RutaResponseDTO> searchByOrigen(String origen);
+    List<RutaResponseDTO> searchByDestino(String destino);
+    List<RutaResponseDTO> findAll();
 }
