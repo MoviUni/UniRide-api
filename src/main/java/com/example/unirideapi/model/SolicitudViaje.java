@@ -2,20 +2,23 @@ package com.example.unirideapi.model;
 
 import com.example.unirideapi.model.enums.EstadoSolicitud;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+@Getter
 @Setter
 @Data
 @Entity
 @Table(name = "SolicitudViaje")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class SolicitudViaje {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer idSolicitudViaje;
 
     @Column(name = "fecha", nullable = false)
