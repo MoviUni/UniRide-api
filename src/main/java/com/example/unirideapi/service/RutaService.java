@@ -11,5 +11,7 @@ public interface RutaService {
     RutaResponseDTO searchById(Long id);
     List<RutaResponseDTO> searchByOrigen(String origen);
     List<RutaResponseDTO> searchByDestino(String destino);
+    List<RutaResponseDTO> searchByHora(String hora);
+    List<RutaResponseDTO> searchBy(String destino, String origen, String hora, String fecha);
     List<RutaResponseDTO> findAll();
 }

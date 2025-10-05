@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/rutas")
@@ -28,20 +29,32 @@ public class RutaController {
     }
 
     @GetMapping("/{rutaId}")
-    public ResponseEntity<RutaResponseDTO> searchById(Long rutaId)
+    public ResponseEntity<RutaResponseDTO> searchById(@PathVariable Long rutaId)
     {
         return ResponseEntity.ok(rutaService.searchById(rutaId));
     }
 
-    @GetMapping("/{origen}")
-    public ResponseEntity<List<RutaResponseDTO>> searchByOrigen(String origen)
+    @GetMapping("/origen")
+    public ResponseEntity<List<RutaResponseDTO>> searchByOrigen(@RequestParam String origen)
     {
         return ResponseEntity.ok(rutaService.searchByOrigen(origen));
     }
 
-    @GetMapping("/{destino}")
-    public ResponseEntity<List<RutaResponseDTO>> searchByDestino(String destino)
+    @GetMapping("/destino")
+    public ResponseEntity<List<RutaResponseDTO>> searchByDestino(@RequestParam String destino)
     {
         return ResponseEntity.ok(rutaService.searchByDestino(destino));
+    }
+
+    @GetMapping("/hora")
+    public ResponseEntity<List<RutaResponseDTO>> searchByHora(@RequestParam String hora)
+    {
+        return ResponseEntity.ok(rutaService.searchByHora(hora));
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<RutaResponseDTO>> searchByDestino(@RequestParam Map<String, String> params)
+    {
+        return ResponseEntity.ok(rutaService.searchBy(params.get("destino"), params.get("origen"), params.get("hora"), params.get("fecha")));
     }
 }

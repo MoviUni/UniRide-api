@@ -10,6 +10,7 @@ import com.example.unirideapi.service.RutaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,18 @@ public class RutaServiceImpl implements RutaService {
     @Override
     public List<RutaResponseDTO> searchByDestino(String destino) {
         return rutaRepository.searchByDestino(destino).stream()
+                .map(rutaMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List<RutaResponseDTO> searchByHora(String hora) {
+        return rutaRepository.searchByHora(LocalTime.parse(hora)).stream()
+                .map(rutaMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List<RutaResponseDTO> searchBy(String destino, String origen, String hora, String fecha) {
+        return rutaRepository.searchBy(destino, origen, hora, fecha).stream()
                 .map(rutaMapper::toDTO)
                 .collect(Collectors.toList());
     }

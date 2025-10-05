@@ -13,7 +13,17 @@ public class RutaMapper {
     private final ModelMapper modelMapper;
 
     public RutaResponseDTO toDTO(Ruta ruta) {
-        return modelMapper.map(ruta, RutaResponseDTO.class);
+        return new RutaResponseDTO(
+                ruta.getIdRuta(),
+                ruta.getOrigen(),
+                ruta.getDestino(),
+                ruta.getFechaSalida(),
+                ruta.getHoraSalida(),
+                ruta.getTarifa(),
+                ruta.getAsientosDisponibles(),
+                ruta.getEstadoRuta(),
+                ruta.getConductor().getIdConductor()
+        );
     }
 
     public Ruta toEntity(RutaRequestDTO dto) {return modelMapper.map(dto, Ruta.class);}
