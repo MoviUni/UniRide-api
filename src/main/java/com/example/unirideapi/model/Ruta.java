@@ -1,6 +1,6 @@
 package com.example.unirideapi.model;
 
-import com.example.unirideapi.model.enums.Estado;
+import com.example.unirideapi.model.enums.EstadoRuta;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -34,7 +34,7 @@ public class Ruta {
     private Integer asientosDisponibles;
 
     @Enumerated(EnumType.STRING)
-    private Estado estado;
+    private EstadoRuta estadoRuta;
 
     //FK
     @ManyToOne
