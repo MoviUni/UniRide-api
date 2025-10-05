@@ -1,6 +1,6 @@
 package com.example.unirideapi.model;
 
-import com.example.unirideapi.model.enums.Estado;
+import com.example.unirideapi.model.enums.EstadoPago;
 import com.example.unirideapi.model.enums.MedioPago;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -32,7 +32,7 @@ public class Pago {
     private MedioPago medioPago;
 
     @Enumerated(EnumType.STRING)
-    private Estado estado;
+    private EstadoPago estadoPago;
 
     //FK
     @ManyToOne

@@ -1,6 +1,6 @@
 package com.example.unirideapi.dto.response;
 
-import com.example.unirideapi.model.enums.Estado;
+import com.example.unirideapi.model.enums.EstadoPago;
 import com.example.unirideapi.model.enums.MedioPago;
 import lombok.Builder;
 
@@ -15,7 +15,7 @@ public record PagoResponseDTO(
         LocalTime hora,
         Float comision,
         MedioPago medioPago,
-        Estado estado,
+        EstadoPago estadoPago,
         Integer solicitudViajeId
 ) {
 }
