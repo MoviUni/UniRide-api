@@ -10,7 +10,7 @@ public record CalificacionResponseDTO(
         Integer puntaje,
         String comentario,
         LocalDateTime updatedAt,
-        Integer conductorId,
-        Integer pasajeroId
+        Integer conductor,
+        Integer pasajero
 ) {
 }
