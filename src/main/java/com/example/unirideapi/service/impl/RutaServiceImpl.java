@@ -1,4 +1,178 @@
 package com.example.unirideapi.service.impl;
 
-public class RutaServiceImpl {
+import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
+import com.example.unirideapi.dto.response.RutaResponseDTO;
+import com.example.unirideapi.mapper.RutaMapper;
+import com.example.unirideapi.model.Ruta;
+import com.example.unirideapi.repository.RutaRepository;
+import com.example.unirideapi.service.RutaService;
+import lombok.RequiredArgsConstructor;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.springframework.stereotype.Service;
+
+import javax.swing.text.Document;
+import java.io.ByteArrayOutputStream;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class RutaServiceImpl implements RutaService {
+
+    private final RutaRepository rutaRepository;
+    private final RutaMapper rutaMapper;
+
+    @Override
+    public int obtenerTotalViajes(Integer idConductor) {
+        return rutaRepository.countRutaByConductor_IdConductor(idConductor);
+    }
+
+    private static final String[] DIAS = {
+            "lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"
+    };
+
+    @Override
+    public Map<String, Integer> obtenerFrecuenciaViajesPorPasajero(Integer idConductor) {
+        List<Object[]> resultados = rutaRepository.contarViajesPorDiaSemana(idConductor);
+
+        Map<String, Integer> frecuencia = new LinkedHashMap<>();
+
+        // Inicializacion en 0
+        for (String dia : DIAS) {
+            frecuencia.put(dia, 0);
+        }
+
+        for (Object[] fila : resultados) {
+            int diaNum = ((Number) fila[0]).intValue();
+            int cantidad = ((Number) fila[1]).intValue();
+            frecuencia.put(DIAS[diaNum - 1], cantidad);
+        }
+        return frecuencia;
+    }
+
+//    @Override
+//    public List<RutaResponseDTO> obtenerRutasMasFrecuentes(Integer conductorId) {
+//        List<Ruta> rutas = rutaRepository.findRutaByConductor_IdConductor(conductorId);
+//        return rutas.stream()
+//                .map(rutaMapper::toDTO)
+//                .collect(Collectors.toList());
+//    }
+
+//    @Override
+//    public List<RutaFrecuenteResponseDTO> obtenerRutasMasFrecuentes(Integer conductorId) {
+//        List<Ruta> rutas = rutaRepository.findRutaByConductor_IdConductor(conductorId);
+//        return rutas.stream()
+//                .map(r -> RutaFrecuenteResponseDTO.builder()
+//                        .origen(r.getOrigen())
+//                        .destino(r.getDestino())
+//                        .fechaSalida(r.getFechaSalida())
+//                        .horaSalida(r.getHoraSalida())
+//                        .tarifa(r.getTarifa())
+//                        .build()
+//                ).collect(Collectors.toList());
+//    }
+
+    @Override
+    public List<RutaFrecuenteResponseDTO> obtenerRutasMasFrecuentes(Integer conductorId) {
+        List<Object[]> resultados = rutaRepository.findRutasMasFrecuentes(conductorId);
+
+        return resultados.stream()
+                .map(rutaMapper::toRutaFrecuenteDTO) // 👈 usa tu mapper especial
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public byte[] exportarHistorialPdf(Integer conductorId) {
+        List<Object[]> historial = rutaRepository.exportarPDF(conductorId);
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             PDDocument document = new PDDocument()) {
+
+            // Crear página
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+
+            // Fuentes
+            PDType1Font fontTitle = PDType1Font.HELVETICA_BOLD;
+            PDType1Font fontText = PDType1Font.HELVETICA;
+
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+                float margin = 50;
+                float yStart = page.getMediaBox().getHeight() - margin;
+
+                // Título
+                contentStream.beginText();
+                contentStream.setFont(fontTitle, 18);
+                contentStream.newLineAtOffset(page.getMediaBox().getWidth() / 2 - 100, yStart);
+                contentStream.showText("Historial de Viajes");
+                contentStream.endText();
+
+                // Subtítulo (Conductor ID)
+                yStart -= 40;
+                contentStream.beginText();
+                contentStream.setFont(fontText, 12);
+                contentStream.newLineAtOffset(margin, yStart);
+                contentStream.showText("Conductor ID: " + conductorId);
+                contentStream.endText();
+
+                // Encabezados de tabla
+                yStart -= 30;
+                float tableY = yStart;
+                float rowHeight = 20;
+                float tableWidth = page.getMediaBox().getWidth() - 2 * margin;
+                float[] colWidths = {100, 100, 100, 100, 80};
+                String[] headers = {"Origen", "Destino", "Fecha", "Hora", "Tarifa"};
+
+                float nextX = margin;
+
+                contentStream.setFont(fontTitle, 10);
+                for (int i = 0; i < headers.length; i++) {
+                    contentStream.beginText();
+                    contentStream.newLineAtOffset(nextX + 2, tableY);
+                    contentStream.showText(headers[i]);
+                    contentStream.endText();
+                    nextX += colWidths[i];
+                }
+
+                // Filas
+                contentStream.setFont(fontText, 10);
+                tableY -= rowHeight;
+
+                for (Object[] row : historial) {
+                    nextX = margin;
+                    String[] values = {
+                            row[0].toString(), // origen
+                            row[1].toString(), // destino
+                            row[2].toString(), // fecha
+                            row[3].toString(), // hora
+                            row[4].toString()  // tarifa
+                    };
+
+                    for (int i = 0; i < values.length; i++) {
+                        contentStream.beginText();
+                        contentStream.newLineAtOffset(nextX + 2, tableY);
+                        contentStream.showText(values[i]);
+                        contentStream.endText();
+                        nextX += colWidths[i];
+                    }
+                    tableY -= rowHeight;
+                }
+            }
+
+            document.save(baos);
+            return baos.toByteArray();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error al generar el PDF del historial con PDFBox", e);
+        }
+
+
+    }
 }
