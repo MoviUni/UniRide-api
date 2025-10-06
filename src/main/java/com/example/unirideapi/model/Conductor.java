@@ -1,8 +1,7 @@
 package com.example.unirideapi.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +9,9 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "Conductor")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Conductor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

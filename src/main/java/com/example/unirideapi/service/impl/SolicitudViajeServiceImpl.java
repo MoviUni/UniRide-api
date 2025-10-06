@@ -1,19 +1,20 @@
 package com.example.unirideapi.service.impl;
 
-import com.example.unirideapi.dto.request.RutaRequestDTO;
 import com.example.unirideapi.dto.request.SolicitudViajeRequestDTO;
-import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
+import com.example.unirideapi.exception.BusinessRuleException;
 import com.example.unirideapi.exception.ResourceNotFoundException;
-import com.example.unirideapi.mapper.RutaMapper;
 import com.example.unirideapi.mapper.SolicitudViajeMapper;
 import com.example.unirideapi.model.Pasajero;
 import com.example.unirideapi.model.Ruta;
 import com.example.unirideapi.model.SolicitudViaje;
+import com.example.unirideapi.model.enums.EstadoRuta;
+import com.example.unirideapi.model.enums.EstadoSolicitud;
 import com.example.unirideapi.repository.PasajeroRepository;
 import com.example.unirideapi.repository.RutaRepository;
 import com.example.unirideapi.repository.SolicitudViajeRepository;
 import com.example.unirideapi.service.SolicitudViajeService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,42 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
                 .build();
 
         return toResponse(solicitudViajeRepository.save(solicitudViaje));
+    }
+
+    @Override
+    @Transactional
+    public SolicitudViajeResponseDTO updateEstadoSolicitud(Integer idSolicitud, EstadoSolicitud nuevoEstado) {
+        var solicitud = solicitudViajeRepository.findById((long)idSolicitud)
+                .orElseThrow(() -> new ResourceNotFoundException("Solicitud no encontrada"));
+
+        var ruta = rutaRepository.findById((long)solicitud.getRuta().getIdRuta())
+                .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrada"));
+
+        // Regla 1:Solo solicitudes en estado PENDIENTE pueden cambiar
+        if (solicitud.getEstadoSolicitud() != EstadoSolicitud.PENDIENTE) {
+            throw new BusinessRuleException("Solo se pueden aceptar o rechazar solicitudes pendientes");
+        }
+
+        //Regla 2:La ruta debe estar PROGRAMADA o CONFIRMADA
+        //if (ruta.getEstadoRuta() != EstadoRuta.PROGRAMADO && ruta.getEstadoRuta() != EstadoRuta.CONFIRMADO) {
+        //    throw new BusinessRuleException("No se pueden aceptar o rechazar solicitudes si la ruta no está programada o confirmada");
+        //}
+
+        // Regla 3:Verificar disponibilidad de asientos si se va a aceptar
+        if (nuevoEstado == EstadoSolicitud.ACEPTADO) {
+            if (ruta.getAsientosDisponibles() <= 0) {
+                throw new BusinessRuleException("No hay asientos disponibles para aceptar la solicitud");
+            }
+            // Restar un asiento disponible
+            ruta.setAsientosDisponibles(ruta.getAsientosDisponibles() - 1);
+            rutaRepository.save(ruta);
+        }
+
+        //Aplicar el nuevo estado
+        solicitud.setEstadoSolicitud(nuevoEstado);
+        solicitudViajeRepository.save(solicitud);
+
+        return solicitudViajeMapper.toDTO(solicitud);
     }
 
     private SolicitudViajeResponseDTO toResponse(SolicitudViaje solicitudViaje) {
