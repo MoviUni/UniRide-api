@@ -34,11 +34,15 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
 
     @Override
     public SolicitudViajeResponseDTO create(SolicitudViajeRequestDTO solicitudViajeRequestDTO){
-
+        // Regla de negocio 10
+        if (!solicitudViajeRepository.searchByUsuario(solicitudViajeRequestDTO.pasajeroId()).isEmpty()){
+            // Se encontró duplicado, entonces no se agrega
+            throw new BusinessRuleException("Un usuario no puede enviar más de una solicitud a una misma ruta");
+        }
         Pasajero pasajero = pasajeroRepository.findById((long)solicitudViajeRequestDTO.pasajeroId())
                 .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado")).getPasajero();
         Ruta ruta = rutaRepository.findById((long)solicitudViajeRequestDTO.rutaId())
-                .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrado"));
 
         var solicitudViaje = SolicitudViaje.builder()
                 .estadoSolicitud(solicitudViajeRequestDTO.estadoSolicitud())
