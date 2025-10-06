@@ -1,36 +1,35 @@
 package com.example.unirideapi.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
-@Data
 @Entity
-@Table(name = "Usuario")
+@Table(name="usuarios")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idUsuario;
-
-    @Column(nullable = false, unique = true)
+    private Long id;
     private String email;
-
     private String password;
 
-    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Pasajero pasajero;
+    @ManyToOne
+    @JoinColumn(
+            name="role_id",
+            nullable = false,
+            foreignKey = @ForeignKey(name="fk_user_role")
+    )
+    private Rol role;
 
-    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     private Conductor conductor;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idRol", referencedColumnName = "idRol",
-            foreignKey = @ForeignKey(name = "Rol_idRol"))
-    private Rol rol;
-
-
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private Pasajero pasajero;
 }

@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Setter
 @Data
 @Entity
@@ -33,17 +31,11 @@ public class Conductor {
     @Column(name = "descripcion_conductor", columnDefinition = "TEXT")
     private String descripcionConductor;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
     @OneToOne
     @JoinColumn(name = "usuario_idVehiculo", referencedColumnName = "idVehiculo")
     private Vehiculo vehiculo;
 
     @OneToOne
-    @JoinColumn(name = "idUsuario", referencedColumnName = "idUsuario")
+    @JoinColumn(name = "idUsuario", referencedColumnName = "idUsuario", nullable = false, unique = true)
     private Usuario usuario;
 }
