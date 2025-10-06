@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/solicitudes")
@@ -26,5 +27,9 @@ public class SolicitudViajeController {
     ) {
         var updated = solicitudViajeService.updateEstadoSolicitud(idSolicitud, request.estado());
         return ResponseEntity.ok(updated);
+    }
+    @GetMapping("/usuario/{id}")
+    public ResponseEntity<List<SolicitudViajeResponseDTO>> searchByUsuario(@RequestParam Integer id) {
+        return ResponseEntity.ok(solicitudViajeService.searchByUsuario(id));
     }
 }

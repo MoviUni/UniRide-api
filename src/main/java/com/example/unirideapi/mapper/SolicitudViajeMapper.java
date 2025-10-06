@@ -21,8 +21,8 @@ public class SolicitudViajeMapper {
                 solicitudViaje.getHora(),
                 solicitudViaje.getUpdatedAt(),
                 solicitudViaje.getEstadoSolicitud(),
-                solicitudViaje.getPasajero().getIdPasajero(),
-                solicitudViaje.getRuta().getIdRuta()
+                solicitudViaje.getRuta().getIdRuta(),
+                solicitudViaje.getPasajero().getIdPasajero()
         );
     }
 

@@ -25,6 +25,12 @@ public class RutaServiceImpl implements RutaService {
         Ruta ruta = rutaMapper.toEntity(rutaRequestDTO);
         return rutaMapper.toDTO( rutaRepository.save(ruta));
     }
+    @Override
+    public List<RutaResponseDTO> searchByDisponible(){
+        return rutaRepository.searchByDisponible().stream()
+                .map(rutaMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 
     @Override
     public RutaResponseDTO searchById(Long id) {

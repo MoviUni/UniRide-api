@@ -23,9 +23,9 @@ public class RutaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<RutaResponseDTO>> findAll()
+    public ResponseEntity<List<RutaResponseDTO>> searchDisponible()
     {
-        return ResponseEntity.ok(rutaService.findAll());
+        return ResponseEntity.ok(rutaService.searchByDisponible());
     }
 
     @GetMapping("/{rutaId}")

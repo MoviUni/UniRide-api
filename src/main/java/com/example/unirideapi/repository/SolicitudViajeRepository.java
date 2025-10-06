@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface SolicitudViajeRepository extends JpaRepository<SolicitudViaje, Long> {
     @Modifying
@@ -17,5 +19,9 @@ public interface SolicitudViajeRepository extends JpaRepository<SolicitudViaje, 
             "WHERE s.idSolicitudViaje = :idSolicitud")
     int actualizarEstadoSolicitud(@Param("idSolicitud") Integer idSolicitud,
                                   @Param("estado") EstadoSolicitud estado);
+
+    @Query("SELECT b FROM SolicitudViaje b WHERE b.pasajero.idPasajero = :idUsuario")
+    List<SolicitudViaje> searchByUsuario(@Param("idUsuario") Integer idUsuario);
+
 }
 

@@ -1,6 +1,8 @@
 package com.example.unirideapi.service.impl;
 
+import com.example.unirideapi.dto.request.SolicitudEstadoRequestDTO;
 import com.example.unirideapi.dto.request.SolicitudViajeRequestDTO;
+import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
 import com.example.unirideapi.exception.BusinessRuleException;
 import com.example.unirideapi.exception.ResourceNotFoundException;
@@ -19,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,13 +52,21 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
         return toResponse(solicitudViajeRepository.save(solicitudViaje));
     }
 
+
+    @Override
+    public List<SolicitudViajeResponseDTO> searchByUsuario(Integer idUsuario) {
+        return solicitudViajeRepository.searchByUsuario(idUsuario).stream()
+                .map(solicitudViajeMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
     @Override
     @Transactional
     public SolicitudViajeResponseDTO updateEstadoSolicitud(Integer idSolicitud, EstadoSolicitud nuevoEstado) {
-        var solicitud = solicitudViajeRepository.findById((long)idSolicitud)
+        var solicitud = solicitudViajeRepository.findById((long) idSolicitud)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitud no encontrada"));
 
-        var ruta = rutaRepository.findById((long)solicitud.getRuta().getIdRuta())
+        var ruta = rutaRepository.findById((long) solicitud.getRuta().getIdRuta())
                 .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrada"));
 
         // Regla 1:Solo solicitudes en estado PENDIENTE pueden cambiar

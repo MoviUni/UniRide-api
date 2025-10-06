@@ -13,6 +13,8 @@ import java.util.List;
 @Repository
 public interface RutaRepository extends JpaRepository<Ruta, Long> {
 
+    @Query("SELECT b FROM Ruta b WHERE b.estadoRuta != 'EN_PROGRESO'")
+    List<Ruta> searchByDisponible();
     @Query("SELECT b FROM Ruta b WHERE LOWER(b.origen) = LOWER(:origen)")
     List<Ruta> searchByOrigen (@Param("origen") String origen);
     @Query("SELECT b FROM Ruta b WHERE LOWER(b.destino) = LOWER(:destino)")
