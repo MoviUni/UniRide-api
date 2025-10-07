@@ -26,7 +26,8 @@ public class Conductor {
 
     private Integer edad;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "descripcion_conductor", columnDefinition = "TEXT")
+
     private String descripcionConductor;
 
     @Column(nullable = false, updatable = false)
