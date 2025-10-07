@@ -78,7 +78,7 @@ public class ConductorService {
                 .apellido(conductor.getApellido())
                 .descripcionConductor(conductor.getDescripcionConductor())
                 .disponibilidad(conductor.getDisponibilidad())
-                .userId(conductor.getUsuario().getId())
+                .userId(conductor.getUsuario().getIdUsuario())
                 .build();
     }
 }

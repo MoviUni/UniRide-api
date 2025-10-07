@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/pasajeros")
 @RequiredArgsConstructor
-public class ReaderController {
+public class PasajeroController {
     private final PasajeroService pasajeroService;
 
     @PostMapping

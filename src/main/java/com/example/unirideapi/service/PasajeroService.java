@@ -78,7 +78,7 @@ public class PasajeroService {
                 .apellido(pasajero.getApellido())
                 .dni(pasajero.getDni())
                 .descripcion(pasajero.getDescripcionPasajero())
-                .userId(pasajero.getUsuario().getId())
+                .userId(pasajero.getUsuario().getIdUsuario())
                 .build();
     }
 }

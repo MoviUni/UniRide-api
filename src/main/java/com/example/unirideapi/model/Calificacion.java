@@ -26,12 +26,10 @@ public class Calificacion {
 
     //FK
     @ManyToOne
-    @JoinColumn(name = "idConductor", referencedColumnName = "idConductor",
-            foreignKey = @ForeignKey(name = "Conductor_idConductor"))
+    @JoinColumn(name = "id_conductor", foreignKey = @ForeignKey(name = "Conductor_idConductor"))
     private Conductor conductor;
 
     @ManyToOne
-    @JoinColumn(name = "idPasajero", referencedColumnName = "idPasajero",
-            foreignKey = @ForeignKey(name = "Pasajero_idPasajero"))
+    @JoinColumn(name = "id_pasajero", foreignKey = @ForeignKey(name = "Pasajero_idPasajero"))
     private Pasajero pasajero;
 }

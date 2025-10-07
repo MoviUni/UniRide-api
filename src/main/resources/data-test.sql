@@ -1,28 +1,28 @@
 -- data-test.sql – PostgreSQL (UniRide)
 TRUNCATE TABLE
     calificacion,
-  pago,
-  solicitud_viaje,
-  ruta,
-  conductor,
-  pasajero,
-  vehiculo,
-  usuario,
-  rol
+    pago,
+    solicitud_viaje,
+    ruta,
+    conductor,
+    pasajero,
+    vehiculo,
+    usuario,
+    rol
 RESTART IDENTITY CASCADE;
 
 -- ROLES
 INSERT INTO rol (id_rol, name) VALUES
                                    (1, 'ADMIN'),
                                    (2, 'CONDUCTOR'),
-                                   (3, 'USUARIO');
+                                   (3, 'PASAJERO');
 
 -- USUARIOS
-INSERT INTO usuario (id_usuario, email, password, updated_at, id_rol) VALUES
-                                                                          (1, 'admin@uniride.test',     'admin123',     NULL, 1),
-                                                                          (2, 'conductor@uniride.test', 'driver123',    NULL, 2),  -- para Carlos
-                                                                          (3, 'pasajero@uniride.test',  'passenger123', NULL, 3),  -- para Favio (pasajero)
-                                                                          (4, 'conductora@uniride.test','driver456',    NULL, 2);  -- para Marta  (NUEVO)
+INSERT INTO usuario (id_usuario, email, password, id_rol) VALUES
+                                                              (1, 'admin@uniride.test',     'admin123', 1),
+                                                              (2, 'conductor@uniride.test', 'driver123', 2),
+                                                              (3, 'pasajero@uniride.test',  'passenger123', 3),
+                                                              (4, 'conductora@uniride.test','driver456', 2);
 
 -- VEHICULOS
 INSERT INTO vehiculo
@@ -33,21 +33,17 @@ VALUES
 
 -- PASAJERO (1–1 con usuario 3)
 INSERT INTO pasajero
-(id_pasajero, nombre, apellido, dni, edad, descripcion_pasajero,
- created_at,            updated_at, usuario_id_usuario)
+(id_pasajero, nombre, apellido, dni, edad, descripcion_pasajero, usuario_id_usuario)
 VALUES
-    (1, 'Favio', 'Arroyo', '77777777', 24, 'Prefiere asiento delantero',
-     '2025-09-30 10:00:00', NULL,       3);
+    (1, 'Favio', 'Arroyo', '77777777', 24, 'Prefiere asiento delantero', 3);
 
 -- CONDUCTOR 1 (usuario 2, vehículo 1)
 INSERT INTO conductor
 (id_conductor, nombre, apellido, dni, edad, disponibilidad,
- descripcion_conductor, created_at,            updated_at,
- usuario_id_vehiculo, id_usuario)
+ descripcion_conductor, usuario_id_vehiculo, id_usuario)
 VALUES
     (1, 'Carlos', 'Soto', '44444444', 30, 'Lunes-Viernes',
-     '5 años de experiencia', '2025-09-30 09:00:00', NULL,
-     1, 2);
+     '5 años de experiencia',1, 2);
 
 -- RUTAS del conductor 1
 INSERT INTO ruta

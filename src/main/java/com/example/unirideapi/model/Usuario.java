@@ -7,25 +7,31 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="usuarios")
+@Table(name = "usuarios")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class Usuario {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id_usuario")
+    private Long idUsuario;
+
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
+
+    @Column(name = "password", nullable = false)
     private String password;
 
     @ManyToOne
     @JoinColumn(
-            name="role_id",
+            name = "id_rol",
             nullable = false,
-            foreignKey = @ForeignKey(name="fk_user_role")
+            foreignKey = @ForeignKey(name = "fk_user_role")
     )
-    private Rol role;
+    private Rol rol;
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     private Conductor conductor;

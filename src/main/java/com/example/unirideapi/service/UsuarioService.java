@@ -23,9 +23,9 @@ public class UsuarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
         return new PerfilUsuarioResponseDTO(
-                user.getId(),
+                user.getIdUsuario(),
                 user.getEmail(),
-                user.getRole().getName().name()
+                user.getRol().getName().name()
         );
     }
 

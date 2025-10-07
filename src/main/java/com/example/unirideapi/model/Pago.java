@@ -36,8 +36,7 @@ public class Pago {
 
     //FK
     @ManyToOne
-    @JoinColumn(name = "idSolicitudViaje", referencedColumnName = "idSolicitudViaje",
-            foreignKey = @ForeignKey(name = "SolicitudViaje_idSolicitudViaje"))
+    @JoinColumn(name = "id_solicitud_viaje", foreignKey = @ForeignKey(name = "SolicitudViaje_idSolicitudViaje"))
     private SolicitudViaje solicitudViaje;
 
 }

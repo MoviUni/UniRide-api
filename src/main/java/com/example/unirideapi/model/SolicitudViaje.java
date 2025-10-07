@@ -32,12 +32,10 @@ public class SolicitudViaje {
 
     //FK
     @ManyToOne
-    @JoinColumn(name = "idRuta", referencedColumnName = "idRuta",
-            foreignKey = @ForeignKey(name = "Ruta_idRuta"))
+    @JoinColumn(name = "id_ruta", foreignKey = @ForeignKey(name = "Ruta_idRuta"))
     private Ruta ruta;
 
     @ManyToOne
-    @JoinColumn(name = "idPasajero", referencedColumnName = "idPasajero",
-            foreignKey = @ForeignKey(name = "Pasajero_idPasajero"))
+    @JoinColumn(name = "id_pasajero", foreignKey = @ForeignKey(name = "Pasajero_idPasajero"))
     private Pasajero pasajero;
 }

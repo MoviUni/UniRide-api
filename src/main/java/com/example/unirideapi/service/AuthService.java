@@ -31,20 +31,17 @@ public class AuthService {
 
     @Transactional
     public UsuarioRegistroResponseDTO register(UsuarioRegistroRequestDTO dto) {
-        // Regla: no permitir emails duplicados
         if (usuarioRepository.existsByEmail(dto.email())) {
             throw new BusinessRuleException("El email ya está registrado");
         }
 
-        // Buscar rol por enum
         var role = rolRepository.findByName(dto.roleType().getName())
                 .orElseThrow(() -> new ResourceNotFoundException("Rol no encontrado"));
 
-        // Crear usuario base
         var user = Usuario.builder()
                 .email(dto.email())
                 .password(passwordEncoder.encode(dto.password()))
-                .role(role)
+                .rol(role)
                 .build();
 
         var savedUser = usuarioRepository.save(user);
@@ -52,7 +49,6 @@ public class AuthService {
         Long profileId = null;
         String profileType = null;
 
-        // Crear perfil según el rol
         if (role.getName() == ERol.CONDUCTOR) {
             var conductor = Conductor.builder()
                     .nombre(dto.nombre())
@@ -60,7 +56,7 @@ public class AuthService {
                     .edad(dto.edad())
                     .descripcionConductor(dto.descripcionConductor())
                     .disponibilidad(dto.disponibilidad())
-                    .usuario(user)
+                    .usuario(savedUser)
                     .build();
 
             var savedConductor = conductorRepository.save(conductor);
@@ -70,32 +66,30 @@ public class AuthService {
         } else if (role.getName() == ERol.PASAJERO) {
             var pasajero = Pasajero.builder()
                     .nombre(dto.nombre())
-                    .apellido(dto.apellido().trim())
+                    .apellido(dto.apellido())
                     .dni(dto.dni())
                     .edad(dto.edad())
                     .descripcionPasajero(dto.descripcionPasajero())
-                    .usuario(user)
+                    .usuario(savedUser)
                     .build();
+
             var savedPasajero = pasajeroRepository.save(pasajero);
             profileId = savedPasajero.getIdPasajero();
             profileType = ERol.PASAJERO.name();
 
         } else if (role.getName() == ERol.ADMIN) {
-            // Un admin no requiere perfil adicional
             profileType = ERol.ADMIN.name();
         }
 
-        // Respuesta
         return UsuarioRegistroResponseDTO.builder()
-                .usuarioId(savedUser.getId())
+                .usuarioId(savedUser.getIdUsuario())
                 .email(savedUser.getEmail())
-                .Rol(role.getName().name()) // ✅ correcto
+                .Rol(role.getName().name())
                 .perfilId(profileId)
                 .tipoPerfil(profileType)
                 .nombre(dto.nombre())
                 .apellido(dto.apellido())
                 .build();
-
     }
 
     @Transactional(readOnly = true)
@@ -103,20 +97,17 @@ public class AuthService {
         var user = usuarioRepository.findByEmail(dto.email())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
-        // Validar credenciales
         if (!passwordEncoder.matches(dto.password(), user.getPassword())) {
             throw new BusinessRuleException("Credenciales inválidas");
         }
 
-        // TODO: aquí generar JWT real; por ahora token simulado
         String fakeToken = "demo-token";
 
         return LoginResponseDTO.builder()
-                .userId(user.getId())
+                .userId(user.getIdUsuario())
                 .email(user.getEmail())
-                .role(user.getRole().getName())
+                .role(user.getRol().getName())
                 .token(fakeToken)
                 .build();
-
     }
 }

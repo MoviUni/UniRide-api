@@ -1,14 +1,14 @@
 package com.example.unirideapi.model;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Data
 @Entity
 @Table(name = "Conductor")
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Conductor {
     @Id
@@ -34,10 +34,10 @@ public class Conductor {
     private String descripcionConductor;
 
     @OneToOne
-    @JoinColumn(name = "usuario_idVehiculo", referencedColumnName = "idVehiculo")
+    @JoinColumn(name = "usuario_id_vehiculo")
     private Vehiculo vehiculo;
 
     @OneToOne
-    @JoinColumn(name = "idUsuario", referencedColumnName = "idUsuario", nullable = false, unique = true)
+    @JoinColumn(name = "id_usuario", nullable = false, unique = true)
     private Usuario usuario;
 }

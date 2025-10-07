@@ -1,6 +1,5 @@
 package com.example.unirideapi.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -45,7 +44,6 @@ public class Pasajero {
 
     // FK hacia Usuario: un Pasajero está ligado a un Usuario (cuenta).
     @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "usuario_id", referencedColumnName = "idUsuario", nullable = false, unique = true)
-    //@JsonIgnoreProperties({"pasajero", "hibernateLazyInitializer", "handler"})
+    @JoinColumn(name = "usuario_id_usuario", nullable = false, unique = true)
     private Usuario usuario;
 }
