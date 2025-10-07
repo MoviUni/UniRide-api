@@ -1,6 +1,7 @@
 package com.example.unirideapi.mapper;
 
 import com.example.unirideapi.dto.request.RutaRequestDTO;
+import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.model.Ruta;
 import lombok.RequiredArgsConstructor;
@@ -12,19 +13,29 @@ import org.springframework.stereotype.Component;
 public class RutaMapper {
     private final ModelMapper modelMapper;
 
-    public RutaResponseDTO toDTO(Ruta ruta) {
+    public RutaResponseDTO toDTO(Ruta entity) {
         return new RutaResponseDTO(
-                ruta.getIdRuta(),
-                ruta.getOrigen(),
-                ruta.getDestino(),
-                ruta.getFechaSalida(),
-                ruta.getHoraSalida(),
-                ruta.getTarifa(),
-                ruta.getAsientosDisponibles(),
-                ruta.getEstadoRuta(),
-                ruta.getConductor().getIdConductor()
+                entity.getIdRuta(),
+                entity.getOrigen(),
+                entity.getDestino(),
+                entity.getFechaSalida(),
+                entity.getHoraSalida(),
+                entity.getTarifa(),
+                entity.getAsientosDisponibles(),
+                entity.getEstadoRuta(),
+                entity.getConductor() != null ? entity.getConductor().getIdConductor() : null
         );
     }
 
     public Ruta toEntity(RutaRequestDTO dto) {return modelMapper.map(dto, Ruta.class);}
+
+    public RutaFrecuenteResponseDTO toRutaFrecuenteDTO(Object[] obj) {
+        return RutaFrecuenteResponseDTO.builder()
+                .origen((String) obj[0])
+                .destino((String) obj[1])
+                .horaSalida(((java.sql.Time) obj[2]).toLocalTime())
+                .tarifa(((Number) obj[3]).longValue())
+                .frecuencia(((Number) obj[4]).longValue())
+                .build();
+    }
 }

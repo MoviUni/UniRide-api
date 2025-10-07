@@ -14,15 +14,15 @@ import org.springframework.stereotype.Component;
 public class SolicitudViajeMapper {
     private final ModelMapper modelMapper;
 
-    public SolicitudViajeResponseDTO toDTO(SolicitudViaje solicitudViaje) {
+    public SolicitudViajeResponseDTO toDTO(SolicitudViaje entity) {
         return new SolicitudViajeResponseDTO(
-                solicitudViaje.getIdSolicitudViaje(),
-                solicitudViaje.getFecha(),
-                solicitudViaje.getHora(),
-                solicitudViaje.getUpdatedAt(),
-                solicitudViaje.getEstadoSolicitud(),
-                solicitudViaje.getRuta().getIdRuta(),
-                solicitudViaje.getPasajero().getIdPasajero()
+                entity.getIdSolicitudViaje(),
+                entity.getFecha(),
+                entity.getHora(),
+                entity.getUpdatedAt(),
+                entity.getEstadoSolicitud(),
+                entity.getRuta().getIdRuta(),
+                entity.getPasajero().getIdPasajero()
         );
     }
 
