@@ -12,8 +12,16 @@ import org.springframework.stereotype.Component;
 public class SolicitudViajeMapper {
     private final ModelMapper modelMapper;
 
-    public SolicitudViajeResponseDTO toDTO(SolicitudViaje solicitudViaje) {
-        return modelMapper.map(solicitudViaje, SolicitudViajeResponseDTO.class);
+    public SolicitudViajeResponseDTO toDTO(SolicitudViaje entity) {
+        return new SolicitudViajeResponseDTO(
+                entity.getIdSolicitudViaje(),
+                entity.getFecha(),
+                entity.getHora(),
+                entity.getUpdatedAt(),
+                entity.getEstadoSolicitud(),
+                entity.getRuta().getIdRuta(),
+                entity.getPasajero().getIdPasajero()
+        );
     }
 
     public SolicitudViaje toEntity(SolicitudViajeRequestDTO dto) {return modelMapper.map(dto, SolicitudViaje.class);}

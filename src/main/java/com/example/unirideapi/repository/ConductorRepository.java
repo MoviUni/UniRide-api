@@ -15,3 +15,4 @@ public interface ConductorRepository extends JpaRepository<Conductor, Integer> {
     // Método para verificar si existe un conductor con el mismo nombre y apellido, excepto el usuario actual
     boolean existsByNombreAndApellidoAndUsuario_idUsuarioNot(String nombre, String apellido, Integer idUsuario);
 }
+
