@@ -22,6 +22,7 @@ INSERT INTO usuario (id_usuario, email, password, updated_at, id_rol) VALUES
                                                                           (1, 'admin@uniride.test',     'admin123',     NULL, 1),
                                                                           (2, 'conductor@uniride.test', 'driver123',    NULL, 2),  -- para Carlos
                                                                           (3, 'pasajero@uniride.test',  'passenger123', NULL, 3),  -- para Favio (pasajero)
+                                                                          (5, 'ale@uniride.test','1234',    NULL, 3),
                                                                           (4, 'conductora@uniride.test','driver456',    NULL, 2);  -- para Marta  (NUEVO)
 
 -- VEHICULOS
@@ -37,7 +38,9 @@ INSERT INTO pasajero
  created_at,            updated_at, usuario_id_usuario)
 VALUES
     (1, 'Favio', 'Arroyo', '77777777', 24, 'Prefiere asiento delantero',
-     '2025-09-30 10:00:00', NULL,       3);
+     '2025-09-30 10:00:00', NULL,       3),
+    (2, 'Ale', 'Hesse', '74776777', 24, 'No ensucia el carro',
+     '2025-09-30 10:00:00', NULL,       5);
 
 -- CONDUCTOR 1 (usuario 2, vehículo 1)
 INSERT INTO conductor
@@ -54,9 +57,9 @@ INSERT INTO ruta
 (id_ruta, origen, destino, fecha_salida, hora_salida,
  tarifa,  asientos_disponibles, estado_ruta, id_conductor)
 VALUES
-    (1, 'Barranco',  'Miraflores', '2025-10-05', '08:30:00',
+    (1, 'Barranco',  'UPC Monterrico', '2025-10-05', '08:30:00',
      8.50, 3, 'PENDIENTE', 1),
-    (2, 'Surco',     'San Isidro', '2025-10-05', '18:00:00',
+    (2, 'Surco',     'UPC San Miguel', '2025-10-05', '18:00:00',
      10.00, 2, 'PENDIENTE', 1);
 
 -- SOLICITUDES (ruta 1/2, pasajero 1)
@@ -96,5 +99,5 @@ INSERT INTO ruta
 (id_ruta, origen, destino, fecha_salida, hora_salida,
  tarifa, asientos_disponibles, estado_ruta, id_conductor)
 VALUES
-    (3, 'La Molina', 'Centro de Lima', '2025-10-06', '07:15:00',
+    (3, 'La Molina', 'UPC Monterrico', '2025-10-06', '07:15:00',
      12.00, 4, 'PENDIENTE', 2);
