@@ -44,7 +44,7 @@ INSERT INTO conductor
 (id_conductor, nombre, apellido, dni, edad,
 
  descripcion_conductor, created_at,            updated_at,
- usuario_id_vehiculo, id_usuario)
+ id_vehiculo, id_usuario)
 VALUES
     (1, 'Carlos', 'Soto', '44444444', 30,
      '5 años de experiencia', '2025-09-30 09:00:00', NULL,

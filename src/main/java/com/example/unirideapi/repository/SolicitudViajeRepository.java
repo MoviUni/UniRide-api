@@ -20,6 +20,10 @@ public interface SolicitudViajeRepository extends JpaRepository<SolicitudViaje, 
     int actualizarEstadoSolicitud(@Param("idSolicitud") Integer idSolicitud,
                                   @Param("estado") EstadoSolicitud estado);
 
+    //Mod4: obtener las solicitudes por el id de la ruta.
+    @Query("SELECT s FROM SolicitudViaje s WHERE s.ruta.idRuta = :idRuta ORDER BY s.fecha DESC, s.hora DESC")
+    List<SolicitudViaje> findByRutaId(@Param("idRuta") Integer idRuta);
+
     @Query("SELECT b FROM SolicitudViaje b WHERE b.pasajero.idPasajero = :idUsuario")
     List<SolicitudViaje> searchByUsuario(@Param("idUsuario") Integer idUsuario);
 

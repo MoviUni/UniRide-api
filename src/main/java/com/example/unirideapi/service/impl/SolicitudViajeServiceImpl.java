@@ -61,12 +61,23 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
     }
 
     @Override
-    @Transactional
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public List<SolicitudViajeResponseDTO> findSolicitudesByRutaId(Integer idRuta) {
+        var ruta = rutaRepository.findById((long)idRuta)
+                .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrada"));
+
+        return solicitudViajeRepository.findByRutaId(ruta.getIdRuta())
+                .stream()
+                .map(solicitudViajeMapper::toDTO)
+                .toList();
+    }
+    @Override
+    @org.springframework.transaction.annotation.Transactional
     public SolicitudViajeResponseDTO updateEstadoSolicitud(Integer idSolicitud, EstadoSolicitud nuevoEstado) {
-        var solicitud = solicitudViajeRepository.findById((long) idSolicitud)
+        var solicitud = solicitudViajeRepository.findById((long)idSolicitud)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitud no encontrada"));
 
-        var ruta = rutaRepository.findById((long) solicitud.getRuta().getIdRuta())
+        var ruta = rutaRepository.findById((long)solicitud.getRuta().getIdRuta())
                 .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrada"));
 
         // Regla 1:Solo solicitudes en estado PENDIENTE pueden cambiar
@@ -75,9 +86,9 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
         }
 
         //Regla 2:La ruta debe estar PROGRAMADA o CONFIRMADA
-        //if (ruta.getEstadoRuta() != EstadoRuta.PROGRAMADO && ruta.getEstadoRuta() != EstadoRuta.CONFIRMADO) {
-        //    throw new BusinessRuleException("No se pueden aceptar o rechazar solicitudes si la ruta no está programada o confirmada");
-        //}
+        if (ruta.getEstadoRuta() != EstadoRuta.PROGRAMADO && ruta.getEstadoRuta() != EstadoRuta.CONFIRMADO) {
+            throw new BusinessRuleException("No se pueden aceptar o rechazar solicitudes si la ruta no está programada o confirmada");
+        }
 
         // Regla 3:Verificar disponibilidad de asientos si se va a aceptar
         if (nuevoEstado == EstadoSolicitud.ACEPTADO) {
@@ -95,6 +106,8 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
 
         return solicitudViajeMapper.toDTO(solicitud);
     }
+
+
 
     private SolicitudViajeResponseDTO toResponse(SolicitudViaje solicitudViaje) {
         return SolicitudViajeResponseDTO.builder()

@@ -8,11 +8,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
-import com.example.unirideapi.service.impl.SolicitudViajeImpl;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,10 +21,6 @@ public class SolicitudViajeController {
     public ResponseEntity<SolicitudViajeResponseDTO> create(@Valid @RequestBody SolicitudViajeRequestDTO solicitudViajeRequestDTO) {
         return ResponseEntity.ok(solicitudViajeService.create(solicitudViajeRequestDTO));
     }
-    @PatchMapping("/{idSolicitud}/estado")
-    public ResponseEntity<SolicitudViajeResponseDTO> actualizarEstadoSolicitud(
-
-    private final SolicitudViajeImpl solicitudViajeService;
 
     @GetMapping("/ruta/{idRuta}")
     public ResponseEntity<List<SolicitudViajeResponseDTO>> getSolicitudesByRuta(@PathVariable Integer idRuta) {

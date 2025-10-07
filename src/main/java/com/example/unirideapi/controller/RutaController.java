@@ -1,5 +1,6 @@
 package com.example.unirideapi.controller;
 
+import com.example.unirideapi.dto.request.RutaEstadoRequestDTO;
 import com.example.unirideapi.dto.request.RutaRequestDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.service.RutaService;
@@ -65,9 +66,9 @@ public class RutaController {
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<List<RutaResponseDTO>> searchByDestino(@RequestParam Map<String, String> params)
-    {
+    public ResponseEntity<List<RutaResponseDTO>> searchByDestino(@RequestParam Map<String, String> params) {
         return ResponseEntity.ok(rutaService.searchBy(params.get("destino"), params.get("origen"), params.get("hora"), params.get("fecha")));
+    }
     @GetMapping("/conductor/{conductorId}/total")
     public ResponseEntity<?>obtenerTotalViajes(@PathVariable Integer conductorId) {
         int totalRutas = rutaService.obtenerTotalViajes(conductorId);
@@ -104,6 +105,7 @@ public class RutaController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=historial_conductor_" + conductorId + ".pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdfBytes);
+    }
     @PatchMapping("/{idRuta}/estado")
     public ResponseEntity<RutaResponseDTO> updateEstadoRuta(
             @PathVariable Integer idRuta,

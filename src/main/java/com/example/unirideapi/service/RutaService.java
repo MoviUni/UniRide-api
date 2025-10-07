@@ -28,8 +28,6 @@ public interface RutaService {
 
     RutaResponseDTO updateEstadoRuta(Integer idRuta, EstadoRuta nuevoEstado);
 
-
-public interface RutaService {
     RutaResponseDTO create(RutaRequestDTO rutaRequestDTO);
     RutaResponseDTO searchById(Long id);
     List<RutaResponseDTO> searchByOrigen(String origen);
