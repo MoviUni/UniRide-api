@@ -8,6 +8,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
+import com.example.unirideapi.service.impl.SolicitudViajeImpl;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -22,6 +28,16 @@ public class SolicitudViajeController {
     }
     @PatchMapping("/{idSolicitud}/estado")
     public ResponseEntity<SolicitudViajeResponseDTO> actualizarEstadoSolicitud(
+
+    private final SolicitudViajeImpl solicitudViajeService;
+
+    @GetMapping("/ruta/{idRuta}")
+    public ResponseEntity<List<SolicitudViajeResponseDTO>> getSolicitudesByRuta(@PathVariable Integer idRuta) {
+        return ResponseEntity.ok(solicitudViajeService.findSolicitudesByRutaId(idRuta));
+    }
+
+    @PatchMapping("/{idSolicitud}/estado")
+    public ResponseEntity<SolicitudViajeResponseDTO> updateEstadoSolicitud(
             @PathVariable Integer idSolicitud,
             @RequestBody SolicitudEstadoRequestDTO request
     ) {
@@ -32,4 +48,6 @@ public class SolicitudViajeController {
     public ResponseEntity<List<SolicitudViajeResponseDTO>> searchByUsuario(@RequestParam Integer id) {
         return ResponseEntity.ok(solicitudViajeService.searchByUsuario(id));
     }
+
 }
+

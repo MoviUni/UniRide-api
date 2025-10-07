@@ -1,8 +1,8 @@
 package com.example.unirideapi.model.enums;
 
 public enum EstadoRuta {
-    PENDIENTE,
+    PROGRAMADO,
     EN_PROGRESO,
-    COMPLETADO,
+    CONFIRMADO,
     CANCELADO
 }

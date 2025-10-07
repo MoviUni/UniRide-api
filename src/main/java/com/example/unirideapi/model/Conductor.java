@@ -17,35 +17,44 @@ public class Conductor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idConductor;
 
-    @Column(name = "nombre")
+    @Column(nullable = false)
     private String nombre;
 
-    @Column(name = "apellido")
+    @Column(nullable = false)
     private String apellido;
 
-    @Column(name = "dni", nullable = false)
+    @Column(nullable = false, unique = true)
     private String dni;
 
-    @Column(name = "edad")
     private Integer edad;
 
-    @Column(name = "disponibilidad")
-    private String disponibilidad;
-
     @Column(name = "descripcion_conductor", columnDefinition = "TEXT")
+
     private String descripcionConductor;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    // (FK en conductor)
     @OneToOne
-    @JoinColumn(name = "usuario_idVehiculo", referencedColumnName = "idVehiculo")
+    @JoinColumn(name = "idVehiculo", referencedColumnName = "idVehiculo")
     private Vehiculo vehiculo;
 
+    // (FK en conductor)
     @OneToOne
     @JoinColumn(name = "idUsuario", referencedColumnName = "idUsuario")
     private Usuario usuario;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
