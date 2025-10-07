@@ -12,8 +12,17 @@ import org.springframework.stereotype.Component;
 public class RutaMapper {
     private final ModelMapper modelMapper;
 
-    public RutaResponseDTO toDTO(Ruta ruta) {
-        return modelMapper.map(ruta, RutaResponseDTO.class);
+    public RutaResponseDTO toDTO(Ruta entity) {
+        return new RutaResponseDTO(
+                entity.getIdRuta(),
+                entity.getOrigen(),
+                entity.getDestino(),
+                entity.getFechaSalida(),
+                entity.getHoraSalida(),
+                entity.getTarifa(),
+                entity.getAsientosDisponibles(),
+                entity.getEstado()
+        );
     }
 
     public Ruta toEntity(RutaRequestDTO dto) {return modelMapper.map(dto, Ruta.class);}

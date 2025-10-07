@@ -4,10 +4,11 @@ import lombok.Builder;
 
 @Builder
 public record VehiculoResponseDTO(
-        Integer idVehiculo,
         String placa,
+        Boolean soat,
         String modelo,
         String marca,
+        String color,
         Integer capacidad,
         String descripcionVehiculo
 ) {

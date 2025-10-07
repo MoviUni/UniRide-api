@@ -8,7 +8,6 @@ public record ConductorRequestDTO(
         String dni,
         Integer edad,
         String descripciononductor,
-        String disponibilidad,
         Integer userId,
         Integer vehiculoId
 ) { }

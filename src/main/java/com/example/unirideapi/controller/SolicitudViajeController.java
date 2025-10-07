@@ -22,7 +22,7 @@ public class SolicitudViajeController {
     }
 
     @PatchMapping("/{idSolicitud}/estado")
-    public ResponseEntity<SolicitudViajeResponseDTO> actualizarEstadoSolicitud(
+    public ResponseEntity<SolicitudViajeResponseDTO> updateEstadoSolicitud(
             @PathVariable Integer idSolicitud,
             @RequestBody SolicitudEstadoRequestDTO request
     ) {

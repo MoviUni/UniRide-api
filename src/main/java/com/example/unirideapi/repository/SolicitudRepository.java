@@ -22,7 +22,7 @@ public interface SolicitudRepository extends JpaRepository<SolicitudViaje, Integ
     @Transactional
     @Query("UPDATE SolicitudViaje s SET s.estado = :estado, s.updatedAt = CURRENT_TIMESTAMP " +
             "WHERE s.idSolicitudViaje = :idSolicitud")
-    int actualizarEstadoSolicitud(@Param("idSolicitud") Integer idSolicitud,
+    int updateEstadoSolicitud(@Param("idSolicitud") Integer idSolicitud,
                                   @Param("estado") Estado estado);
 }
 

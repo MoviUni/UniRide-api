@@ -7,6 +7,9 @@ public record VehiculoRequestDTO(
         Boolean soat,
         String modelo,
         String marca,
+        String color,
         Integer capacidad,
-        String descripcionVehiculo
+        String descripcionVehiculo,
+        Integer idConductor
 ) { }
+

@@ -15,7 +15,6 @@ public record RutaResponseDTO(
         LocalTime horaSalida,
         Long tarifa,
         Integer asientosDisponibles,
-        Estado estado,
-        Integer conductorId
+        Estado estado
 ) {
 }

@@ -1,34 +1,43 @@
 package com.example.unirideapi.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 import java.time.LocalDateTime;
 
-@Data
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "Vehiculo")
 public class Vehiculo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idVehiculo;
 
-    @Column(name = "placa", nullable = false)
+    @NotBlank(message = "La placa es obligatoria")
+    @Column(nullable = false, unique = true)
     private String placa;
 
-    @Column(name = "soat", nullable = false)
-    private boolean soat;
-
-    @Column(name = "modelo", nullable = false)
+    private String color;
     private String modelo;
-
-    @Column(name = "marca", nullable = false)
     private String marca;
+    @NotNull(message = "El campo SOAT no puede ser nulo")
+    private Boolean soat;
 
-    @Column(name = "capacidad", nullable = false)
+    @Min(value = 1, message = "La capacidad debe ser mayor a 0")
+    @Column(nullable = false)
     private Integer capacidad;
 
-    @Column(name = "descripcionVehiculo", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String descripcionVehiculo;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idConductor", referencedColumnName = "idConductor",
+            foreignKey = @ForeignKey(name = "FK_Vehiculo_Conductor"))
+    private Conductor conductor;
 
 }
