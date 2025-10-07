@@ -2,6 +2,7 @@ package com.example.unirideapi.model;
 
 import com.example.unirideapi.model.enums.EstadoRuta;
 import jakarta.persistence.*;
+
 import lombok.Data;
 
 import java.time.LocalDate;

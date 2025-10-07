@@ -1,7 +1,9 @@
 package com.example.unirideapi.mapper;
 
 import com.example.unirideapi.dto.request.SolicitudViajeRequestDTO;
+import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
+import com.example.unirideapi.model.Ruta;
 import com.example.unirideapi.model.SolicitudViaje;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -24,5 +26,7 @@ public class SolicitudViajeMapper {
         );
     }
 
-    public SolicitudViaje toEntity(SolicitudViajeRequestDTO dto) {return modelMapper.map(dto, SolicitudViaje.class);}
+    public SolicitudViaje toEntity(SolicitudViajeRequestDTO dto) {
+        return modelMapper.map(dto, SolicitudViaje.class);
+    }
 }

@@ -4,6 +4,7 @@ import com.example.unirideapi.model.enums.EstadoSolicitud;
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Builder
@@ -11,6 +12,7 @@ public record SolicitudViajeRequestDTO(
         LocalDate fecha,
         LocalTime hora,
         EstadoSolicitud estadoSolicitud,
+        LocalDate updatedAt,
         Integer rutaId,
         Integer pasajeroId
 ) {

@@ -1,5 +1,9 @@
 package com.example.unirideapi.service;
 
+import com.example.unirideapi.dto.request.RutaRequestDTO;
+import com.example.unirideapi.dto.response.RutaResponseDTO;
+
+import java.util.List;
 import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
@@ -24,4 +28,14 @@ public interface RutaService {
 
     RutaResponseDTO updateEstadoRuta(Integer idRuta, EstadoRuta nuevoEstado);
 
+
+public interface RutaService {
+    RutaResponseDTO create(RutaRequestDTO rutaRequestDTO);
+    RutaResponseDTO searchById(Long id);
+    List<RutaResponseDTO> searchByOrigen(String origen);
+    List<RutaResponseDTO> searchByDestino(String destino);
+    List<RutaResponseDTO> searchByHora(String hora);
+    List<RutaResponseDTO> searchByDisponible();
+    List<RutaResponseDTO> searchBy(String destino, String origen, String hora, String fecha);
+    List<RutaResponseDTO> findAll();
 }
