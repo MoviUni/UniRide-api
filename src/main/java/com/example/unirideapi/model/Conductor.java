@@ -34,10 +34,12 @@ public class Conductor {
 
     private LocalDateTime updatedAt;
 
-    // Relación con Vehículo
-    @OneToOne(mappedBy = "conductor", fetch = FetchType.LAZY)
+    // (FK en conductor)
+    @OneToOne
+    @JoinColumn(name = "idVehiculo", referencedColumnName = "idVehiculo")
     private Vehiculo vehiculo;
 
+    // (FK en conductor)
     @OneToOne
     @JoinColumn(name = "idUsuario", referencedColumnName = "idUsuario")
     private Usuario usuario;
@@ -52,6 +54,4 @@ public class Conductor {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-
-
 }

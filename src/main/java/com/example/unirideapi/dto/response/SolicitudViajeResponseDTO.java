@@ -1,6 +1,6 @@
 package com.example.unirideapi.dto.response;
 
-import com.example.unirideapi.model.enums.Estado;
+import com.example.unirideapi.model.enums.EstadoSolicitud;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -12,9 +12,8 @@ public record SolicitudViajeResponseDTO(
         Integer idSolicitudViaje,
         LocalDate fecha,
         LocalTime hora,
-        Estado estado,
-        String nombrePasajero,
-        String apellidoPasajero,
-        String descripcionPasajero
-) {}
-
+        LocalDateTime updatedAt,
+        EstadoSolicitud estadoSolicitud,
+        Integer rutaId,
+        Integer pasajeroId
+) { }

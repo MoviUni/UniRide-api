@@ -21,7 +21,8 @@ public class RutaMapper {
                 entity.getHoraSalida(),
                 entity.getTarifa(),
                 entity.getAsientosDisponibles(),
-                entity.getEstado()
+                entity.getEstadoRuta(),
+                entity.getConductor() != null ? entity.getConductor().getIdConductor() : null
         );
     }
 

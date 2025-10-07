@@ -1,7 +1,7 @@
 package com.example.unirideapi.repository;
 
 import com.example.unirideapi.model.SolicitudViaje;
-import com.example.unirideapi.model.enums.Estado;
+import com.example.unirideapi.model.enums.EstadoSolicitud;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,9 +20,9 @@ public interface SolicitudRepository extends JpaRepository<SolicitudViaje, Integ
 
     @Modifying
     @Transactional
-    @Query("UPDATE SolicitudViaje s SET s.estado = :estado, s.updatedAt = CURRENT_TIMESTAMP " +
+    @Query("UPDATE SolicitudViaje s SET s.estadoSolicitud = :estado, s.updatedAt = CURRENT_TIMESTAMP " +
             "WHERE s.idSolicitudViaje = :idSolicitud")
     int updateEstadoSolicitud(@Param("idSolicitud") Integer idSolicitud,
-                                  @Param("estado") Estado estado);
+                                  @Param("estado") EstadoSolicitud estado);
 }
 

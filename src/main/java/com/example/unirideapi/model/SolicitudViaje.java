@@ -1,6 +1,6 @@
 package com.example.unirideapi.model;
 
-import com.example.unirideapi.model.enums.Estado;
+import com.example.unirideapi.model.enums.EstadoSolicitud;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Setter;
@@ -28,7 +28,7 @@ public class SolicitudViaje {
     private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
-    private Estado estado;
+    private EstadoSolicitud estadoSolicitud;
 
     //FK
     @ManyToOne

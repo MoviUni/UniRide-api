@@ -17,10 +17,10 @@ public class SolicitudViajeMapper {
                 entity.getIdSolicitudViaje(),
                 entity.getFecha(),
                 entity.getHora(),
-                entity.getEstado(),
-                entity.getPasajero().getNombre(),
-                entity.getPasajero().getApellido(),
-                entity.getPasajero().getDescripcionPasajero()
+                entity.getUpdatedAt(),
+                entity.getEstadoSolicitud(),
+                entity.getRuta().getIdRuta(),
+                entity.getPasajero().getIdPasajero()
         );
     }
 
