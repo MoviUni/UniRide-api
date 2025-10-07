@@ -3,7 +3,7 @@ package com.example.unirideapi.model;
 import com.example.unirideapi.model.enums.EstadoPago;
 import com.example.unirideapi.model.enums.MedioPago;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,9 +11,14 @@ import java.time.LocalTime;
 @Data
 @Entity
 @Table(name = "Pago")
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Pago {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer idPago;
 
     @Column(name = "monto", nullable = false)

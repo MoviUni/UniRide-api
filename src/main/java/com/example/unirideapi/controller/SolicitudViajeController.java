@@ -2,6 +2,7 @@ package com.example.unirideapi.controller;
 
 import com.example.unirideapi.dto.request.SolicitudEstadoRequestDTO;
 import com.example.unirideapi.dto.request.SolicitudViajeRequestDTO;
+import com.example.unirideapi.dto.response.SolicitudEstadoResponseDTO;
 import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
 import com.example.unirideapi.service.SolicitudViajeService;
 import jakarta.validation.Valid;
@@ -45,7 +46,7 @@ public class SolicitudViajeController {
         return ResponseEntity.ok(updated);
     }
     @GetMapping("/usuario/{id}")
-    public ResponseEntity<List<SolicitudViajeResponseDTO>> searchByUsuario(@RequestParam Integer id) {
+    public ResponseEntity<List<SolicitudEstadoResponseDTO>> searchByUsuario(@RequestParam Integer id) {
         return ResponseEntity.ok(solicitudViajeService.searchByUsuario(id));
     }
 

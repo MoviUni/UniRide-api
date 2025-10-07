@@ -9,11 +9,11 @@ import java.time.LocalTime;
 
 @Builder
 public record SolicitudViajeRequestDTO(
+        EstadoSolicitud estadoSolicitud,
         LocalDate fecha,
         LocalTime hora,
-        EstadoSolicitud estadoSolicitud,
-        LocalDate updatedAt,
         Integer rutaId,
-        Integer pasajeroId
+        Integer pasajeroId,
+        LocalDate updatedAt
 ) {
 }
