@@ -1,6 +1,7 @@
 package com.example.unirideapi.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Setter;
 
@@ -8,10 +9,11 @@ import lombok.Setter;
 @Data
 @Entity
 @Table(name = "Conductor")
+@Builder
 public class Conductor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idConductor;
+    private Long idConductor;
 
     @Column(name = "nombre")
     private String nombre;

@@ -4,10 +4,11 @@ import lombok.Builder;
 
 @Builder
 public record ConductorResponseDTO(
-        Integer idConductor,
+        Long idConductor,
         String nombre,
         String apellido,
         Integer edad,
         String descripcionConductor,
-        String disponibilidad
+        String disponibilidad,
+        Long userId
 ) {}

@@ -27,6 +27,11 @@ public record UsuarioRegistroRequestDTO(
         @NotBlank(message = "El apellido es obligatorio")
         String apellido,
 
+        @NotBlank(message = "El dni es obligatorio")
+        String dni,
+
+        @NotBlank(message = "La edad es obligatoria")
+        Integer edad,
         //Datos pasajero
         String descripcionPasajero,
 

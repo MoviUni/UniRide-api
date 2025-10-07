@@ -8,11 +8,11 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface RolRepository extends JpaRepository<Rol,Long> {
+public interface RolRepository extends JpaRepository<Rol, Long> {
 
     //Buscar un rol por su nombre (enum Erol)
-    Optional<Rol> findByRol(ERol name);
+    Optional<Rol> findByName(ERol name);
 
     //Verificar si existe un rol por su nombre
-    boolean existsByRol(ERol name);
+    boolean existsByName(ERol name);
 }

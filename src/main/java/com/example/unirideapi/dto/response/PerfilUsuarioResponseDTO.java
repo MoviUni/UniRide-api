@@ -3,8 +3,8 @@ package com.example.unirideapi.dto.response;
 import lombok.Builder;
 
 @Builder
-public record UsuarioResponseDTO(
-        Integer idUsuario,
+public record PerfilUsuarioResponseDTO(
+        Long idUsuario,
         String email,
         String rol
 ) {}

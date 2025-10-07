@@ -25,7 +25,7 @@ public record ConductorRequestDTO(
         String disponibilidad,
 
         @NotNull(message = "El id de usuario es obligatorio")
-        Integer userId,
+        Long userId,
 
         Integer vehiculoId
 ) { }
