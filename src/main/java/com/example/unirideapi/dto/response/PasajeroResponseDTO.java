@@ -10,5 +10,4 @@ public record PasajeroResponseDTO(
         String dni,
         String descripcion,
         Integer edad
-) {
-}
+) {}

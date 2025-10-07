@@ -8,6 +8,6 @@ public record ConductorResponseDTO(
         String nombre,
         String apellido,
         Integer edad,
-        String descripcionConductor
-) {
-}
+        String descripcionConductor,
+        String disponibilidad
+) {}

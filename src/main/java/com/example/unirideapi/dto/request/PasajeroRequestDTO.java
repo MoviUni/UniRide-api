@@ -10,5 +10,4 @@ public record PasajeroRequestDTO(
         Integer edad,
         String descripcionPasajero,
         Long userId
-) {
-}
+) {}
