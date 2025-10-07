@@ -27,9 +27,6 @@ public class Conductor {
     @Column(name = "edad")
     private Integer edad;
 
-    @Column(name = "disponibilidad")
-    private String disponibilidad;
-
     @Column(name = "descripcion_conductor", columnDefinition = "TEXT")
     private String descripcionConductor;
 
