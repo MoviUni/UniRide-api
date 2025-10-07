@@ -41,11 +41,12 @@ VALUES
 
 -- CONDUCTOR 1 (usuario 2, vehículo 1)
 INSERT INTO conductor
-(id_conductor, nombre, apellido, dni, edad, disponibilidad,
+(id_conductor, nombre, apellido, dni, edad,
+
  descripcion_conductor, created_at,            updated_at,
  usuario_id_vehiculo, id_usuario)
 VALUES
-    (1, 'Carlos', 'Soto', '44444444', 30, 'Lunes-Viernes',
+    (1, 'Carlos', 'Soto', '44444444', 30,
      '5 años de experiencia', '2025-09-30 09:00:00', NULL,
      1, 2);
 
@@ -55,17 +56,17 @@ INSERT INTO ruta
  tarifa,  asientos_disponibles, estado_ruta, id_conductor)
 VALUES
     (1, 'Barranco',  'Miraflores', '2025-10-05', '08:30:00',
-     8.50, 3, 'PENDIENTE', 1),
+     8.50, 3, 'PROGRAMADO', 1),
     (2, 'Surco',     'San Isidro', '2025-10-05', '18:00:00',
-     10.00, 2, 'PENDIENTE', 1);
+     10.00, 2, 'PROGRAMADO', 1);
 
 -- SOLICITUDES (ruta 1/2, pasajero 1)
 INSERT INTO solicitud_viaje
 (id_solicitud_viaje, fecha,       hora,       updated_at,            estado_solicitud,
  id_ruta, id_pasajero)
 VALUES
-    (1, '2025-10-05', '08:00:00', '2025-10-05 08:05:00', 'ACEPTADO',  1, 1),
-    (2, '2025-10-05', '17:40:00', '2025-10-05 17:45:00', 'RECHAZADO', 2, 1);
+    (1, '2025-10-05', '08:00:00', '2025-10-05 08:05:00', 'PENDIENTE',  1, 1),
+    (2, '2025-10-05', '17:40:00', '2025-10-05 17:45:00', 'PENDIENTE', 2, 1);
 
 -- PAGOS de esas solicitudes
 INSERT INTO pago
@@ -83,11 +84,11 @@ VALUES
 
 -- CONDUCTOR 2 (usuario 4, vehículo 2)  <-- clave: usuario distinto para no violar UNIQUE
 INSERT INTO conductor
-(id_conductor, nombre, apellido, dni, edad, disponibilidad,
+(id_conductor, nombre, apellido, dni, edad,
  descripcion_conductor, created_at,            updated_at,
- usuario_id_vehiculo, id_usuario)
+ id_vehiculo, id_usuario)
 VALUES
-    (2, 'Marta', 'Quispe', '55555555', 28, 'Fines de semana',
+    (2, 'Marta', 'Quispe', '55555555', 28,
      'Conduce con prudencia', '2025-09-30 10:30:00', NULL,
      2, 4);
 
@@ -97,4 +98,4 @@ INSERT INTO ruta
  tarifa, asientos_disponibles, estado_ruta, id_conductor)
 VALUES
     (3, 'La Molina', 'Centro de Lima', '2025-10-06', '07:15:00',
-     12.00, 4, 'PENDIENTE', 2);
+     12.00, 4, 'PROGRAMADO', 2);

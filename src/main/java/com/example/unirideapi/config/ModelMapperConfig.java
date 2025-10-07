@@ -7,8 +7,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ModelMapperConfig {
     @Bean
-    public ModelMapper modelMapper() {
-        //para utilizar el modelMapper debe agregarse la dependencia en el archivo pom.xml
+    public ModelMapper modelMapper()  {
         return new ModelMapper();
     }
 }

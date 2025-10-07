@@ -16,6 +16,4 @@ public record SolicitudViajeResponseDTO(
         EstadoSolicitud estadoSolicitud,
         Integer rutaId,
         Integer pasajeroId
-) {
-
-}
+) { }
