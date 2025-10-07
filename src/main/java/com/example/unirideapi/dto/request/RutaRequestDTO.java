@@ -1,6 +1,6 @@
 package com.example.unirideapi.dto.request;
 
-import com.example.unirideapi.model.enums.Estado;
+import com.example.unirideapi.model.enums.EstadoRuta;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -14,7 +14,7 @@ public record RutaRequestDTO(
         LocalTime horaSalida,
         Float tarifa,
         Integer asientosDisponibles,
-        Estado estado,
+        EstadoRuta estadoRuta,
         Integer conductorId
 ) {
 }

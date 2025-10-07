@@ -57,5 +57,12 @@ public class RutaController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=historial_conductor_" + conductorId + ".pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdfBytes);
+    @PatchMapping("/{idRuta}/estado")
+    public ResponseEntity<RutaResponseDTO> updateEstadoRuta(
+            @PathVariable Integer idRuta,
+            @RequestBody RutaEstadoRequestDTO request
+    ) {
+        var updated = rutaService.updateEstadoRuta(idRuta, request.estado());
+        return ResponseEntity.ok(updated);
     }
 }

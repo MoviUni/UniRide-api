@@ -2,6 +2,9 @@ package com.example.unirideapi.service;
 
 import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
+import com.example.unirideapi.dto.response.RutaResponseDTO;
+import com.example.unirideapi.model.enums.EstadoRuta;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -19,5 +22,6 @@ public interface RutaService {
     //Exportar historial de viajes PDF
     byte[] exportarHistorialPdf(Integer conductorId);
 
+    RutaResponseDTO updateEstadoRuta(Integer idRuta, EstadoRuta nuevoEstado);
 
 }

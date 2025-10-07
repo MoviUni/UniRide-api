@@ -1,12 +1,12 @@
 package com.example.unirideapi.dto.request;
 
-import com.example.unirideapi.model.enums.Estado;
+import com.example.unirideapi.model.enums.EstadoPago;
 import lombok.Builder;
 
 @Builder
 public record PagoRequestDTO(
         Float monto,
-        Estado estado,
+        EstadoPago estadoPago,
         Integer solicitudViajeId
 ) {
 

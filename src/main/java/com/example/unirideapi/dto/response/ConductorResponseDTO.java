@@ -1,6 +1,7 @@
 package com.example.unirideapi.dto.response;
 
 import lombok.Builder;
+import lombok.Data;
 
 @Builder
 public record ConductorResponseDTO(

@@ -1,5 +1,6 @@
 package com.example.unirideapi.dto.request;
 import lombok.Builder;
+import lombok.Data;
 
 @Builder
 public record ConductorRequestDTO(
@@ -7,8 +8,7 @@ public record ConductorRequestDTO(
         String apellido,
         String dni,
         Integer edad,
-        String descripciononductor,
-        String disponibilidad,
+        String descripcionConductor,
         Integer userId,
         Integer vehiculoId
 ) { }
