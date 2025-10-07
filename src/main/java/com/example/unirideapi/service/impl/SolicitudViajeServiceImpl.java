@@ -3,6 +3,7 @@ package com.example.unirideapi.service.impl;
 import com.example.unirideapi.dto.request.SolicitudEstadoRequestDTO;
 import com.example.unirideapi.dto.request.SolicitudViajeRequestDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
+import com.example.unirideapi.dto.response.SolicitudEstadoResponseDTO;
 import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
 import com.example.unirideapi.exception.BusinessRuleException;
 import com.example.unirideapi.exception.ResourceNotFoundException;
@@ -36,7 +37,7 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
     public SolicitudViajeResponseDTO create(SolicitudViajeRequestDTO solicitudViajeRequestDTO){
 
         Pasajero pasajero = pasajeroRepository.findById((long)solicitudViajeRequestDTO.pasajeroId())
-                .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado")).getPasajero();
+                .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado"));
         Ruta ruta = rutaRepository.findById((long)solicitudViajeRequestDTO.rutaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado"));
 
@@ -54,9 +55,9 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
 
 
     @Override
-    public List<SolicitudViajeResponseDTO> searchByUsuario(Integer idUsuario) {
+    public List<SolicitudEstadoResponseDTO> searchByUsuario(Integer idUsuario) {
         return solicitudViajeRepository.searchByUsuario(idUsuario).stream()
-                .map(solicitudViajeMapper::toDTO)
+                .map(this::toEstadoResponse)
                 .collect(Collectors.toList());
     }
 
@@ -107,7 +108,14 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
         return solicitudViajeMapper.toDTO(solicitud);
     }
 
-
+    private SolicitudEstadoResponseDTO toEstadoResponse(SolicitudViaje solicitudViaje) {
+        return SolicitudEstadoResponseDTO.builder()
+                .idSolicitudViaje(solicitudViaje.getIdSolicitudViaje())
+                .estadoSolicitud(solicitudViaje.getEstadoSolicitud())
+                .pasajeroId(solicitudViaje.getPasajero().getIdPasajero())
+                .rutaId(solicitudViaje.getRuta().getIdRuta())
+                .build();
+    }
 
     private SolicitudViajeResponseDTO toResponse(SolicitudViaje solicitudViaje) {
         return SolicitudViajeResponseDTO.builder()
