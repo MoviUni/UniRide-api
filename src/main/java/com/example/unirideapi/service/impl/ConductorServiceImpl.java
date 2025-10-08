@@ -69,6 +69,20 @@ public class ConductorServiceImpl implements ConductorService {
         if (existeOtro) {
             throw new BadRequestException("Ya existe un conductor con el mismo DNI");
         }
+        if (updateConductorRequestDTO.dni() != null &&
+                conductorRepository.existsByDniAndIdConductorNot(updateConductorRequestDTO.dni(), id)) {
+            throw new BadRequestException("Ya existe un conductor con el mismo DNI");
+        }
+
+        if (updateConductorRequestDTO.userId() != null &&
+                conductorRepository.existsByUsuario_IdUsuarioAndIdConductorNot(updateConductorRequestDTO.userId(), id)) {
+            throw new BadRequestException("Ese usuario ya está asignado a otro conductor");
+        }
+
+        if (updateConductorRequestDTO.vehiculoId() != null &&
+                conductorRepository.existsByVehiculo_IdVehiculoAndIdConductorNot(updateConductorRequestDTO.vehiculoId(), id)) {
+            throw new BadRequestException("Ese vehículo ya está asignado a otro conductor");
+        }
 
         // Actualizar campos básicos
         conductorFromDb.setNombre(updateConductorRequestDTO.nombre());

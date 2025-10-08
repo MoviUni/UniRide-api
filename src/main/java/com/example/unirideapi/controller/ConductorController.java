@@ -1,4 +1,4 @@
-package com.example.unirideapi.config;
+package com.example.unirideapi.controller;
 
 import com.example.unirideapi.dto.request.ConductorRequestDTO;
 import com.example.unirideapi.dto.response.ConductorResponseDTO;

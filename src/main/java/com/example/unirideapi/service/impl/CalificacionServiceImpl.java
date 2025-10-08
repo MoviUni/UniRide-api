@@ -69,6 +69,7 @@ public class CalificacionServiceImpl implements CalificacionService {
         if (calificacionRequestDTO.comentario() != null) {
             calificacionFromDb.setComentario(calificacionRequestDTO.comentario());
         }
+
         calificacionFromDb.setUpdatedAt(LocalDateTime.now());
         calificacionFromDb = calificacionRepository.save(calificacionFromDb);
         return calificacionMapper.toDto(calificacionFromDb);
