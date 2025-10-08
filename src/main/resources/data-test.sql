@@ -19,11 +19,11 @@ INSERT INTO rol (name) VALUES
                            ('PASAJERO');
 
 -- ========== USUARIOS ==========
-INSERT INTO usuario (email, password, updated_at, id_rol) VALUES
-                                                              ('admin@uniride.test',     'admin123',     NULL, (SELECT id_rol FROM rol WHERE name = 'ADMIN')),
-                                                              ('conductor@uniride.test', 'driver123',    NULL, (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
-                                                              ('pasajero@uniride.test',  'passenger123', NULL, (SELECT id_rol FROM rol WHERE name = 'PASAJERO')),
-                                                              ('conductora@uniride.test','driver456',    NULL, (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR'));
+INSERT INTO usuario (email, password, id_rol) VALUES
+                                                              ('admin@uniride.test',     'admin123',     (SELECT id_rol FROM rol WHERE name = 'ADMIN')),
+                                                              ('conductor@uniride.test', 'driver123',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
+                                                              ('pasajero@uniride.test',  'passenger123', (SELECT id_rol FROM rol WHERE name = 'PASAJERO')),
+                                                              ('conductora@uniride.test','driver456',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR'));
 
 
 -- CONDUCTOR 1 (usuario 2, vehículo 1)

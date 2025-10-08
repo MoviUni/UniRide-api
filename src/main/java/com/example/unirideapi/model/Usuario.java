@@ -24,9 +24,6 @@ public class Usuario {
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Conductor conductor;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idRol", referencedColumnName = "idRol",
             foreignKey = @ForeignKey(name = "Rol_idRol"))
