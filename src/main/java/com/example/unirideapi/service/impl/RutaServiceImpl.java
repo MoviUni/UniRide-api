@@ -19,23 +19,12 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.springframework.stereotype.Service;
 
-import javax.swing.text.Document;
 import java.io.ByteArrayOutputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.List;
-import java.util.stream.Collectors;
-import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.exception.BusinessRuleException;
-import com.example.unirideapi.exception.ResourceNotFoundException;
-import com.example.unirideapi.mapper.RutaMapper;
 import com.example.unirideapi.model.enums.EstadoRuta;
-import com.example.unirideapi.repository.RutaRepository;
-import com.example.unirideapi.service.RutaService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
@@ -103,7 +92,7 @@ public class RutaServiceImpl implements RutaService {
     }
 
     private static final String[] DIAS = {
-            "lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"
+            "domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"
     };
 
     @Override
@@ -120,32 +109,10 @@ public class RutaServiceImpl implements RutaService {
         for (Object[] fila : resultados) {
             int diaNum = ((Number) fila[0]).intValue();
             int cantidad = ((Number) fila[1]).intValue();
-            frecuencia.put(DIAS[diaNum - 1], cantidad);
+            frecuencia.put(DIAS[diaNum], cantidad);
         }
         return frecuencia;
     }
-
-//    @Override
-//    public List<RutaResponseDTO> obtenerRutasMasFrecuentes(Integer conductorId) {
-//        List<Ruta> rutas = rutaRepository.findRutaByConductor_IdConductor(conductorId);
-//        return rutas.stream()
-//                .map(rutaMapper::toDTO)
-//                .collect(Collectors.toList());
-//    }
-
-//    @Override
-//    public List<RutaFrecuenteResponseDTO> obtenerRutasMasFrecuentes(Integer conductorId) {
-//        List<Ruta> rutas = rutaRepository.findRutaByConductor_IdConductor(conductorId);
-//        return rutas.stream()
-//                .map(r -> RutaFrecuenteResponseDTO.builder()
-//                        .origen(r.getOrigen())
-//                        .destino(r.getDestino())
-//                        .fechaSalida(r.getFechaSalida())
-//                        .horaSalida(r.getHoraSalida())
-//                        .tarifa(r.getTarifa())
-//                        .build()
-//                ).collect(Collectors.toList());
-//    }
 
     @Override
     public List<RutaFrecuenteResponseDTO> obtenerRutasMasFrecuentes(Integer conductorId) {
@@ -269,5 +236,7 @@ public class RutaServiceImpl implements RutaService {
 
         return rutaMapper.toDTO(ruta);
     }
+
+
 
 }
