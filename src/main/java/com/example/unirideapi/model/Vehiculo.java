@@ -35,7 +35,9 @@ public class Vehiculo {
     @Column(columnDefinition = "TEXT")
     private String descripcionVehiculo;
 
-    @OneToOne(mappedBy = "vehiculo", fetch = FetchType.LAZY)
+    // FK hacia Conductor
+    @OneToOne
+    @JoinColumn(name = "idConductor", referencedColumnName = "idConductor")
     private Conductor conductor;
 
 }
