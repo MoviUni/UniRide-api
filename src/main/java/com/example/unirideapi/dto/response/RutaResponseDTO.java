@@ -17,5 +17,4 @@ public record RutaResponseDTO(
         Integer asientosDisponibles,
         EstadoRuta estadoRuta,
         Integer idConductor
-) {
-}
+) {}

@@ -67,6 +67,27 @@ public interface RutaRepository extends JpaRepository<Ruta, Long> {
     @Transactional
     @Query("UPDATE Ruta r SET r.estadoRuta = :estado WHERE r.idRuta = :idRuta")
     int updateEstadoRuta(@Param("idRuta") Integer idRuta, @Param("estado") EstadoRuta estado);
+
+
+
+    // Historial de viajes realizados por un conductor
+    @Query(value = "SELECT r.origen, r.destino, r.fecha_salida, r.hora_salida, r.tarifa " +
+            "FROM ruta r " +
+            "WHERE r.id_conductor = :usuarioId " +
+            "ORDER BY r.fecha_salida DESC, r.hora_salida DESC",
+            nativeQuery = true)
+    List<Object[]> findHistorialByConductor(@Param("usuarioId") Integer usuarioId);
+
+    // Historial de viajes en los que el pasajero participó
+    @Query(value = "SELECT r.origen, r.destino, r.fecha_salida, r.hora_salida, r.tarifa " +
+            "FROM ruta r " +
+            "JOIN pasajero p ON p.id_ruta = r.id_ruta " +
+            "WHERE p.id_usuario = :usuarioId " +
+            "ORDER BY r.fecha_salida DESC, r.hora_salida DESC",
+            nativeQuery = true)
+    List<Object[]> findHistorialByPasajero(@Param("usuarioId") Integer usuarioId);
+
+
 }
 
 

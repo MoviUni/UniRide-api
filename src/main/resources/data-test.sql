@@ -19,16 +19,30 @@ INSERT INTO rol (name) VALUES
                            ('PASAJERO');
 
 -- ========== USUARIOS ==========
-INSERT INTO usuario (email, password, updated_at, id_rol) VALUES
-                                                              ('admin@uniride.test',     'admin123',     NULL, (SELECT id_rol FROM rol WHERE name = 'ADMIN')),
-                                                              ('conductor@uniride.test', 'driver123',    NULL, (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
-                                                              ('pasajero@uniride.test',  'passenger123', NULL, (SELECT id_rol FROM rol WHERE name = 'PASAJERO')),
-                                                              ('conductora@uniride.test','driver456',    NULL, (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR'));
+INSERT INTO usuario (email, password, id_rol) VALUES
+                                                              ('admin@uniride.test',     'admin123',     (SELECT id_rol FROM rol WHERE name = 'ADMIN')),
+                                                              ('conductor@uniride.test', 'driver123',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
+                                                              ('pasajero@uniride.test',  'passenger123', (SELECT id_rol FROM rol WHERE name = 'PASAJERO')),
+                                                              ('conductora@uniride.test','driver456',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR'));
 
--- ========== VEHÍCULOS ==========
-INSERT INTO vehiculo (placa, soat, modelo, marca, capacidad, descripcion_vehiculo) VALUES
-                                                                                       ('ABC-123', TRUE, 'Yaris',  'Toyota',  4, 'Sedán compacto, aire acondicionado'),
-                                                                                       ('XYZ-987', TRUE, 'Accent', 'Hyundai', 4, 'Buen maletero, mantenimiento al día');
+
+-- CONDUCTOR 1 (usuario 2, vehículo 1)
+INSERT INTO conductor (
+id_conductor,nombre,apellido,dni,edad,descripcion_conductor,created_at,updated_at,id_usuario
+)
+VALUES (
+    1,    'Carlos',    'Soto',    '44444444',    30,
+    '5 años de experiencia conduciendo autos de servicio.',    '2025-09-30 09:00:00',    '2025-09-30 09:00:00',    2),
+    (2, 'Marta','Quispe','55555555',28,'Conduce con prudencia',
+     '2025-09-30 10:30:00', NULL, 4);
+
+-- VEHICULOS
+INSERT INTO vehiculo
+(id_vehiculo, placa, soat, modelo, marca, capacidad, descripcion_vehiculo, id_conductor)
+VALUES
+    (1, 'ABC-123', TRUE, 'Yaris',  'Toyota',  4, 'Sedán compacto, aire acondicionado', 1),
+    (2, 'XYZ-987', TRUE, 'Accent', 'Hyundai', 4, 'Buen maletero, mantenimiento al día', 2);
+
 
 -- ========== PASAJERO ==========
 -- 1–1 con usuario 'pasajero@uniride.test'
@@ -41,29 +55,6 @@ INSERT INTO pasajero (
              (SELECT id_usuario FROM usuario WHERE email = 'pasajero@uniride.test')
          );
 
--- ========== CONDUCTOR 1 ==========
--- usuario 'conductor@uniride.test', vehículo 'ABC-123'
-INSERT INTO conductor (
-    nombre, apellido, dni, edad, descripcion_conductor,
-    created_at, updated_at, id_vehiculo, id_usuario
-) VALUES (
-             'Carlos', 'Soto', '44444444', 30, 'Lunes a viernes, 5 años de experiencia',
-             '2025-09-30 09:00:00', NULL,
-             (SELECT id_vehiculo FROM vehiculo WHERE placa = 'ABC-123'),
-             (SELECT id_usuario FROM usuario WHERE email = 'conductor@uniride.test')
-         );
-
--- ========== RUTAS conductor 1 ==========
-INSERT INTO ruta (
-    origen, destino, fecha_salida, hora_salida,
-    tarifa, asientos_disponibles, estado_ruta, id_conductor
-) VALUES
-      ('Barranco', 'Miraflores', '2025-10-05', '08:30:00',
-       8, 3, 'PROGRAMADO',
-       (SELECT id_conductor FROM conductor WHERE dni = '44444444')),
-      ('Surco', 'San Isidro', '2025-10-05', '18:00:00',
-       10, 2, 'PROGRAMADO',
-       (SELECT id_conductor FROM conductor WHERE dni = '44444444'));
 
 -- ========== SOLICITUDES ==========
 -- Usa la secuencia explícitamente (columna NO es identity)
@@ -99,28 +90,13 @@ INSERT INTO pago (
     (SELECT id_solicitud_viaje FROM solicitud_viaje ORDER BY id_solicitud_viaje DESC LIMIT 1)
   );
 
--- ========== CALIFICACIONES ==========
-INSERT INTO calificacion (
-    puntaje, comentario, updated_at, id_conductor, id_pasajero
-) VALUES
-      (5, 'Viaje cómodo y puntual',              '2025-10-05 09:15:00',
-       (SELECT id_conductor FROM conductor WHERE dni = '44444444'),
-       (SELECT id_pasajero  FROM pasajero  WHERE dni = '77777777')),
-      (4, 'Todo bien, podría mejorar la música', '2025-10-05 19:30:00',
-       (SELECT id_conductor FROM conductor WHERE dni = '44444444'),
-       (SELECT id_pasajero  FROM pasajero  WHERE dni = '77777777'));
+-- CALIFICACIONES
+INSERT INTO calificacion
+(id_calificacion, puntaje, comentario,                     updated_at,            id_conductor, id_pasajero)
+VALUES
+    (1, 5, 'Viaje cómodo y puntual',                          '2025-10-05 09:15:00', 1, 1),
+    (2, 4, 'Todo bien, podría mejorar la música',             '2025-10-05 19:30:00', 1, 1);
 
--- ========== CONDUCTOR 2 ==========
--- usuario 'conductora@uniride.test', vehículo 'XYZ-987'
-INSERT INTO conductor (
-    nombre, apellido, dni, edad, descripcion_conductor,
-    created_at, updated_at, id_vehiculo, id_usuario
-) VALUES (
-             'Marta', 'Quispe', '55555555', 28, 'Conduce con prudencia',
-             '2025-09-30 10:30:00', NULL,
-             (SELECT id_vehiculo FROM vehiculo WHERE placa = 'XYZ-987'),
-             (SELECT id_usuario  FROM usuario  WHERE email = 'conductora@uniride.test')
-         );
 
 -- Ruta extra del conductor 2
 INSERT INTO ruta (

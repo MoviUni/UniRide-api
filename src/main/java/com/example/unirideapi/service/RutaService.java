@@ -36,4 +36,6 @@ public interface RutaService {
     List<RutaResponseDTO> searchByDisponible();
     List<RutaResponseDTO> searchBy(String destino, String origen, String hora, String fecha);
     List<RutaResponseDTO> findAll();
+    List<RutaResponseDTO> obtenerHistorialViajes(Integer idUsuario, String rol);
+
 }

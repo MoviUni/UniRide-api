@@ -36,7 +36,7 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
     @Override
     public SolicitudViajeResponseDTO create(SolicitudViajeRequestDTO solicitudViajeRequestDTO){
 
-        Pasajero pasajero = pasajeroRepository.findById((long)solicitudViajeRequestDTO.pasajeroId())
+        Pasajero pasajero = pasajeroRepository.findById(solicitudViajeRequestDTO.pasajeroId())
                 .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado"));
         Ruta ruta = rutaRepository.findById((long)solicitudViajeRequestDTO.rutaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado"));
