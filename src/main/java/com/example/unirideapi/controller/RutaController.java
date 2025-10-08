@@ -114,4 +114,12 @@ public class RutaController {
         var updated = rutaService.updateEstadoRuta(idRuta, request.estado());
         return ResponseEntity.ok(updated);
     }
+
+    @GetMapping("/historial/{rol}/{idUsuario}")
+    public ResponseEntity<List<RutaResponseDTO>> obtenerHistorial(
+            @PathVariable String rol,
+            @PathVariable Integer idUsuario) {
+        return ResponseEntity.ok(rutaService.obtenerHistorialViajes(idUsuario, rol));
+    }
+
 }

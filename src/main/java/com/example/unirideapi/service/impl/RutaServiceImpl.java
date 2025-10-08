@@ -11,6 +11,7 @@ import com.example.unirideapi.service.RutaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -269,5 +270,30 @@ public class RutaServiceImpl implements RutaService {
 
         return rutaMapper.toDTO(ruta);
     }
+
+    @Override // ERROR : Method does not override method from its superclas
+    public List<RutaResponseDTO> obtenerHistorialViajes(Integer idUsuario, String rol) {
+        List<Object[]> resultados;
+
+        if ("CONDUCTOR".equalsIgnoreCase(rol)) {
+            resultados = rutaRepository.findHistorialByConductor(idUsuario);
+        } else if ("PASAJERO".equalsIgnoreCase(rol)) {
+            resultados = rutaRepository.findHistorialByPasajero(idUsuario);
+        } else {
+            throw new IllegalArgumentException("Rol no válido: " + rol);
+        }
+
+        // Convertimos a DTO
+        return resultados.stream()
+                .map(row -> RutaResponseDTO.builder()
+                        .origen(row[0].toString())
+                        .destino(row[1].toString())
+                        .fechaSalida(LocalDate.parse(row[2].toString()))
+                        .horaSalida(LocalTime.parse(row[3].toString()))
+                        .tarifa(Long.parseLong(row[4].toString())) // ERROR : Required Long, Provided Double
+                        .build())
+                .collect(Collectors.toList());
+    }
+
 
 }
