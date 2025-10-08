@@ -4,5 +4,4 @@ public enum ERol {
     ADMIN,
     CONDUCTOR,
     PASAJERO,
-    USUARIO
 }

@@ -1,4 +1,4 @@
--- data-test.sql – PostgreSQL (UniRide)  ✅ CORREGIDO
+-- data-test.sql – PostgreSQL (UniRide) ✅ CORREGIDO
 TRUNCATE TABLE
     calificacion,
   pago,
@@ -12,16 +12,17 @@ TRUNCATE TABLE
 RESTART IDENTITY CASCADE;
 
 -- ========== ROLES ==========
+-- OJO: asegúrate que tu enum/DDL solo tenga estos 3 valores
 INSERT INTO rol (name) VALUES
                            ('ADMIN'),
                            ('CONDUCTOR'),
-                           ('USUARIO');
+                           ('PASAJERO');
 
 -- ========== USUARIOS ==========
 INSERT INTO usuario (email, password, updated_at, id_rol) VALUES
                                                               ('admin@uniride.test',     'admin123',     NULL, (SELECT id_rol FROM rol WHERE name = 'ADMIN')),
                                                               ('conductor@uniride.test', 'driver123',    NULL, (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
-                                                              ('pasajero@uniride.test',  'passenger123', NULL, (SELECT id_rol FROM rol WHERE name = 'USUARIO')),
+                                                              ('pasajero@uniride.test',  'passenger123', NULL, (SELECT id_rol FROM rol WHERE name = 'PASAJERO')),
                                                               ('conductora@uniride.test','driver456',    NULL, (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR'));
 
 -- ========== VEHÍCULOS ==========
