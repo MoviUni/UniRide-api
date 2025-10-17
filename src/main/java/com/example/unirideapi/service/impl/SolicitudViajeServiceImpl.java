@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +36,13 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
 
     @Override
     public SolicitudViajeResponseDTO create(SolicitudViajeRequestDTO solicitudViajeRequestDTO){
+        // Regla de negocio 10
+        for (SolicitudViaje sol : solicitudViajeRepository.searchByUsuario(solicitudViajeRequestDTO.pasajeroId())){
+            if (Objects.equals(sol.getRuta().getIdRuta(), solicitudViajeRequestDTO.rutaId())){
+                // Se encontró duplicado, entonces no se agrega
+                throw new BusinessRuleException("Un usuario no puede enviar más de una solicitud a una misma ruta");
+            }
+        }
 
         Pasajero pasajero = pasajeroRepository.findById(solicitudViajeRequestDTO.pasajeroId())
                 .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado"));
