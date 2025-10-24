@@ -44,7 +44,7 @@ public class SolicitudViajeIntegrationTest {
 
     @Test
     @DisplayName("Debe crear una solicitud de viaje exitosamente con datos válidos")
-    void createSolicitudViaje_ValidData_ReturnsCreated() throws Exception {
+    void createSolicitudViaje_ValidData_ReturnsOk() throws Exception {
         // Given
         SolicitudViajeRequestDTO request = new SolicitudViajeRequestDTO(
                 EstadoSolicitud.PENDIENTE,
