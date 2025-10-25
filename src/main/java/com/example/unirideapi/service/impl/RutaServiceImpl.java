@@ -1,14 +1,12 @@
 package com.example.unirideapi.service.impl;
 
 import com.example.unirideapi.dto.request.RutaRequestDTO;
-import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
 import com.example.unirideapi.exception.ResourceNotFoundException;
 import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.mapper.RutaMapper;
 import com.example.unirideapi.model.Conductor;
 import com.example.unirideapi.model.Ruta;
-import com.example.unirideapi.model.SolicitudViaje;
 import com.example.unirideapi.repository.ConductorRepository;
 import com.example.unirideapi.repository.RutaRepository;
 import com.example.unirideapi.service.RutaService;
@@ -24,23 +22,15 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.springframework.stereotype.Service;import org.springframework.stereotype.Service;
 
-import javax.swing.text.Document;
 import java.io.ByteArrayOutputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.List;
-import java.util.stream.Collectors;
-import com.example.unirideapi.dto.response.RutaResponseDTO;
+
 import com.example.unirideapi.exception.BusinessRuleException;
-import com.example.unirideapi.exception.ResourceNotFoundException;
-import com.example.unirideapi.mapper.RutaMapper;
+
 import com.example.unirideapi.model.enums.EstadoRuta;
-import com.example.unirideapi.repository.RutaRepository;
-import com.example.unirideapi.service.RutaService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;

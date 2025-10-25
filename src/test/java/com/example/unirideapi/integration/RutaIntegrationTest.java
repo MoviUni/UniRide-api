@@ -2,9 +2,7 @@ package com.example.unirideapi.integration;
 
 
 import com.example.unirideapi.dto.request.RutaRequestDTO;
-import com.example.unirideapi.dto.request.SolicitudViajeRequestDTO;
 import com.example.unirideapi.model.enums.EstadoRuta;
-import com.example.unirideapi.model.enums.EstadoSolicitud;
 import com.example.unirideapi.repository.RutaRepository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
