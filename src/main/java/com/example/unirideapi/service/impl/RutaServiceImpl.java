@@ -1,11 +1,15 @@
 package com.example.unirideapi.service.impl;
 
 import com.example.unirideapi.dto.request.RutaRequestDTO;
+import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
 import com.example.unirideapi.exception.ResourceNotFoundException;
 import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.mapper.RutaMapper;
+import com.example.unirideapi.model.Conductor;
 import com.example.unirideapi.model.Ruta;
+import com.example.unirideapi.model.SolicitudViaje;
+import com.example.unirideapi.repository.ConductorRepository;
 import com.example.unirideapi.repository.RutaRepository;
 import com.example.unirideapi.service.RutaService;
 import lombok.RequiredArgsConstructor;
@@ -46,12 +50,25 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class RutaServiceImpl implements RutaService {
     private final RutaRepository rutaRepository;
+    private final ConductorRepository conductorRepository;
     private  final RutaMapper rutaMapper;
 
     @Override
     public RutaResponseDTO create(RutaRequestDTO rutaRequestDTO) {
-        Ruta ruta = rutaMapper.toEntity(rutaRequestDTO);
-        return rutaMapper.toDTO( rutaRepository.save(ruta));
+        //Ruta ruta = rutaMapper.toEntity(rutaRequestDTO);
+        Conductor conductor = conductorRepository.findById(rutaRequestDTO.conductorId())
+                .orElseThrow(() -> new ResourceNotFoundException("Conductor no encontrado"));
+        Ruta ruta = Ruta.builder()
+                .estadoRuta(rutaRequestDTO.estadoRuta())
+                .asientosDisponibles(rutaRequestDTO.asientosDisponibles())
+                .origen(rutaRequestDTO.origen())
+                .destino(rutaRequestDTO.destino())
+                .fechaSalida(rutaRequestDTO.fechaSalida())
+                .horaSalida(rutaRequestDTO.horaSalida())
+                .tarifa(rutaRequestDTO.tarifa().longValue())
+                .conductor(conductor)
+                .build();
+        return toResponse(rutaRepository.save(ruta));
     }
     @Override
     public List<RutaResponseDTO> searchByDisponible(){
@@ -93,8 +110,10 @@ public class RutaServiceImpl implements RutaService {
     }
     @Override
     public List<RutaResponseDTO> searchBy(String destino, String origen, String hora, String fecha) {
-        return rutaRepository.searchBy(destino, origen, hora, fecha).stream()
-                .map(rutaMapper::toDTO)
+        LocalDate fh = LocalDate.parse(fecha);
+        LocalTime tm = LocalTime.parse(hora);
+        return rutaRepository.searchBy(destino, origen, tm, fh).stream()
+                .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
@@ -295,5 +314,17 @@ public class RutaServiceImpl implements RutaService {
                 .collect(Collectors.toList());
     }
 
-
+    private RutaResponseDTO toResponse(Ruta ruta) {
+        return RutaResponseDTO.builder()
+                .idConductor(ruta.getConductor().getIdConductor())
+                .asientosDisponibles(ruta.getAsientosDisponibles())
+                .idRuta(ruta.getIdRuta())
+                .estadoRuta(ruta.getEstadoRuta())
+                .origen(ruta.getOrigen())
+                .destino(ruta.getDestino())
+                .fechaSalida(ruta.getFechaSalida())
+                .horaSalida(ruta.getHoraSalida())
+                .tarifa(ruta.getTarifa())
+                .build();
+    }
 }

@@ -66,7 +66,7 @@ public class RutaController {
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<List<RutaResponseDTO>> searchByDestino(@RequestParam Map<String, String> params) {
+    public ResponseEntity<List<RutaResponseDTO>> searchBy(@RequestParam Map<String, String> params) {
         return ResponseEntity.ok(rutaService.searchBy(params.get("destino"), params.get("origen"), params.get("hora"), params.get("fecha")));
     }
     @GetMapping("/conductor/{conductorId}/total")

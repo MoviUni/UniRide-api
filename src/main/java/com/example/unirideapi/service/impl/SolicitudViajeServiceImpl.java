@@ -47,7 +47,7 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
         Pasajero pasajero = pasajeroRepository.findById(solicitudViajeRequestDTO.pasajeroId())
                 .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado"));
         Ruta ruta = rutaRepository.findById((long)solicitudViajeRequestDTO.rutaId())
-                .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrada"));
 
         var solicitudViaje = SolicitudViaje.builder()
                 .estadoSolicitud(solicitudViajeRequestDTO.estadoSolicitud())
