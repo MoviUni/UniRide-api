@@ -8,11 +8,11 @@ import com.example.unirideapi.dto.response.UsuarioPerfilResponseDTO;
 public interface UsuarioService {
 
     /** Registro de PASAJERO (crea Usuario + Pasajero asociado). */
-    UsuarioPerfilResponseDTO registroPasajero(UsuarioRegistroRequestDTO usuarioRegistroRequestDTO);
+    UsuarioPerfilResponseDTO registroPasajero(UsuarioRegistroRequestDTO registroRequestDTO);
 
     /** Registro de CONDUCTOR (crea Usuario + Conductor asociado).
      *  Si luego necesitas vincular vehículo, hazlo en el ServiceImpl (parámetro extra opcional). */
-    UsuarioPerfilResponseDTO registroConductor(UsuarioRegistroRequestDTO usuarioRegistroRequestDTO);
+    UsuarioPerfilResponseDTO registroConductor(UsuarioRegistroRequestDTO registroRequestDTO);
 
     /** Autenticación por email/password. */
     AuthResponseDTO login(LoginRequestDTO loginRequestDTO);
@@ -23,7 +23,6 @@ public interface UsuarioService {
     /** Obtiene el perfil por ID de usuario. */
     UsuarioPerfilResponseDTO getUsuarioPerfilById(Integer idUsuario);
 
-    /** Login o registro con Google (alta rápida si no existe). */
-    AuthResponseDTO loginOrRegisterGoogle(UsuarioRegistroRequestDTO usuarioRegistroRequestDTO);
+
 }
 

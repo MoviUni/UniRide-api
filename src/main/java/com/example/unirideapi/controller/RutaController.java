@@ -7,6 +7,7 @@ import com.example.unirideapi.service.RutaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
@@ -26,6 +27,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/rutas")
+@PreAuthorize("hasAnyRole('CONDUCTOR', 'ADMIN')")
 @RequiredArgsConstructor
 public class RutaController {
     private final RutaService rutaService;
