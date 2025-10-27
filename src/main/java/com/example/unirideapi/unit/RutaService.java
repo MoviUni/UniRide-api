@@ -1,16 +1,12 @@
-package com.example.unirideapi.service;
+package com.example.unirideapi.unit;
 
 import com.example.unirideapi.dto.request.RutaRequestDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
 
 import java.util.List;
 import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
-import com.example.unirideapi.dto.response.RutaResponseDTO;
-import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.model.enums.EstadoRuta;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Map;
 
 public interface RutaService {

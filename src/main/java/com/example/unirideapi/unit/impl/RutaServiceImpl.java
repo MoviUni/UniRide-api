@@ -1,4 +1,4 @@
-package com.example.unirideapi.service.impl;
+package com.example.unirideapi.unit.impl;
 
 import com.example.unirideapi.dto.request.RutaRequestDTO;
 import com.example.unirideapi.exception.ResourceNotFoundException;
@@ -7,7 +7,7 @@ import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.mapper.RutaMapper;
 import com.example.unirideapi.model.Ruta;
 import com.example.unirideapi.repository.RutaRepository;
-import com.example.unirideapi.service.RutaService;
+import com.example.unirideapi.unit.RutaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -128,7 +128,7 @@ public class RutaServiceImpl implements RutaService {
         }
 
         return resultados.stream()
-                .map(rutaMapper::toRutaFrecuenteDTO) // 👈 usa tu mapper especial
+                .map(rutaMapper::toRutaFrecuenteDTO)
                 .collect(Collectors.toList());
     }
 
@@ -140,89 +140,92 @@ public class RutaServiceImpl implements RutaService {
         if (historial.isEmpty()) {
             throw new BusinessRuleException("No tienes viajes para exportar");
         }
+        try {
 
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             PDDocument document = new PDDocument()) {
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                 PDDocument document = new PDDocument()) {
 
-            // Crear página
-            PDPage page = new PDPage(PDRectangle.A4);
-            document.addPage(page);
+                // Crear página
+                PDPage page = new PDPage(PDRectangle.A4);
+                document.addPage(page);
 
-            // Fuentes
-            PDType1Font fontTitle = PDType1Font.HELVETICA_BOLD;
-            PDType1Font fontText = PDType1Font.HELVETICA;
+                // Fuentes
+                PDType1Font fontTitle = PDType1Font.HELVETICA_BOLD;
+                PDType1Font fontText = PDType1Font.HELVETICA;
 
-            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
-                float margin = 50;
-                float yStart = page.getMediaBox().getHeight() - margin;
+                try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+                    float margin = 50;
+                    float yStart = page.getMediaBox().getHeight() - margin;
 
-                // Título
-                contentStream.beginText();
-                contentStream.setFont(fontTitle, 18);
-                contentStream.newLineAtOffset(page.getMediaBox().getWidth() / 2 - 100, yStart);
-                contentStream.showText("Historial de Viajes");
-                contentStream.endText();
-
-                // Subtítulo (Conductor ID)
-                yStart -= 40;
-                contentStream.beginText();
-                contentStream.setFont(fontText, 12);
-                contentStream.newLineAtOffset(margin, yStart);
-                contentStream.showText("Conductor ID: " + conductorId);
-                contentStream.endText();
-
-                // Encabezados de tabla
-                yStart -= 30;
-                float tableY = yStart;
-                float rowHeight = 20;
-                float tableWidth = page.getMediaBox().getWidth() - 2 * margin;
-                float[] colWidths = {100, 100, 100, 100, 80};
-                String[] headers = {"Origen", "Destino", "Fecha", "Hora", "Tarifa"};
-
-                float nextX = margin;
-
-                contentStream.setFont(fontTitle, 10);
-                for (int i = 0; i < headers.length; i++) {
+                    // Título
                     contentStream.beginText();
-                    contentStream.newLineAtOffset(nextX + 2, tableY);
-                    contentStream.showText(headers[i]);
+                    contentStream.setFont(fontTitle, 18);
+                    contentStream.newLineAtOffset(page.getMediaBox().getWidth() / 2 - 100, yStart);
+                    contentStream.showText("Historial de Viajes");
                     contentStream.endText();
-                    nextX += colWidths[i];
-                }
 
-                // Filas
-                contentStream.setFont(fontText, 10);
-                tableY -= rowHeight;
+                    // Subtítulo (Conductor ID)
+                    yStart -= 40;
+                    contentStream.beginText();
+                    contentStream.setFont(fontText, 12);
+                    contentStream.newLineAtOffset(margin, yStart);
+                    contentStream.showText("Conductor ID: " + conductorId);
+                    contentStream.endText();
 
-                for (Object[] row : historial) {
-                    nextX = margin;
-                    String[] values = {
-                            row[0].toString(), // origen
-                            row[1].toString(), // destino
-                            row[2].toString(), // fecha
-                            row[3].toString(), // hora
-                            row[4].toString()  // tarifa
-                    };
+                    // Encabezados de tabla
+                    yStart -= 30;
+                    float tableY = yStart;
+                    float rowHeight = 20;
+                    float tableWidth = page.getMediaBox().getWidth() - 2 * margin;
+                    float[] colWidths = {100, 100, 100, 100, 80};
+                    String[] headers = {"Origen", "Destino", "Fecha", "Hora", "Tarifa"};
 
-                    for (int i = 0; i < values.length; i++) {
+                    float nextX = margin;
+
+                    contentStream.setFont(fontTitle, 10);
+                    for (int i = 0; i < headers.length; i++) {
                         contentStream.beginText();
                         contentStream.newLineAtOffset(nextX + 2, tableY);
-                        contentStream.showText(values[i]);
+                        contentStream.showText(headers[i]);
                         contentStream.endText();
                         nextX += colWidths[i];
                     }
+
+                    // Filas
+                    contentStream.setFont(fontText, 10);
                     tableY -= rowHeight;
+
+                    for (Object[] row : historial) {
+                        nextX = margin;
+                        String[] values = {
+                                row[0].toString(), // origen
+                                row[1].toString(), // destino
+                                row[2].toString(), // fecha
+                                row[3].toString(), // hora
+                                row[4].toString()  // tarifa
+                        };
+
+                        for (int i = 0; i < values.length; i++) {
+                            contentStream.beginText();
+                            contentStream.newLineAtOffset(nextX + 2, tableY);
+                            contentStream.showText(values[i]);
+                            contentStream.endText();
+                            nextX += colWidths[i];
+                        }
+                        tableY -= rowHeight;
+                    }
                 }
+
+                document.save(baos);
+                return baos.toByteArray();
+
             }
-
-            document.save(baos);
-            return baos.toByteArray();
-
         } catch (Exception e) {
             throw new BusinessRuleException("Hubo un error al exportar tu reporte");
         }
     }
-  
+
+
     @Transactional
     @Override
     public RutaResponseDTO updateEstadoRuta(Integer idRuta, EstadoRuta nuevoEstado) {

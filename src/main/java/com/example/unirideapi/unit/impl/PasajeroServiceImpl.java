@@ -1,4 +1,4 @@
-package com.example.unirideapi.service.impl;
+package com.example.unirideapi.unit.impl;
 
 import com.example.unirideapi.dto.request.PasajeroRequestDTO;
 import com.example.unirideapi.dto.response.PasajeroResponseDTO;
@@ -7,7 +7,7 @@ import com.example.unirideapi.exception.ResourceNotFoundException;
 import com.example.unirideapi.mapper.PasajeroMapper;
 import com.example.unirideapi.model.Pasajero;
 import com.example.unirideapi.repository.PasajeroRepository;
-import com.example.unirideapi.service.PasajeroService;
+import com.example.unirideapi.unit.PasajeroService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

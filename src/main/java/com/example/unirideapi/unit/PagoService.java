@@ -1,4 +1,4 @@
-package com.example.unirideapi.service;
+package com.example.unirideapi.unit;
 
 import com.example.unirideapi.dto.request.PagoRequestDTO;
 import com.example.unirideapi.dto.response.PagoResponseDTO;
