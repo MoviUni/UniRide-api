@@ -48,12 +48,4 @@ public class AuthController {
         return ResponseEntity.ok(auth);
     }
 
-    /** Login o Registro rápido con Google */
-    @PostMapping("/google")
-    public ResponseEntity<AuthResponseDTO> loginOrRegisterWithGoogle(
-            @Valid @RequestBody UsuarioRegistroRequestDTO dto) {
-
-        AuthResponseDTO auth = usuarioService.loginOrRegisterGoogle(dto);
-        return ResponseEntity.ok(auth);
-    }
 }
