@@ -135,21 +135,19 @@ public class RutaServiceImpl implements RutaService {
 
     @Override
     public byte[] exportarHistorialPdf(Integer conductorId) {
-        List<Object[]> historial = rutaRepository.exportarPDF(conductorId);
-
-        if (historial.isEmpty()) {
-            throw new BusinessRuleException("No tienes viajes para exportar");
-        }
         try {
+            List<Object[]> historial = rutaRepository.exportarPDF(conductorId);
+
+            if (historial.isEmpty()) {
+                throw new BusinessRuleException("No tienes viajes para exportar");
+            }
 
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
                  PDDocument document = new PDDocument()) {
 
-                // Crear página
                 PDPage page = new PDPage(PDRectangle.A4);
                 document.addPage(page);
 
-                // Fuentes
                 PDType1Font fontTitle = PDType1Font.HELVETICA_BOLD;
                 PDType1Font fontText = PDType1Font.HELVETICA;
 
@@ -164,7 +162,7 @@ public class RutaServiceImpl implements RutaService {
                     contentStream.showText("Historial de Viajes");
                     contentStream.endText();
 
-                    // Subtítulo (Conductor ID)
+                    // Subtítulo
                     yStart -= 40;
                     contentStream.beginText();
                     contentStream.setFont(fontText, 12);
@@ -172,7 +170,7 @@ public class RutaServiceImpl implements RutaService {
                     contentStream.showText("Conductor ID: " + conductorId);
                     contentStream.endText();
 
-                    // Encabezados de tabla
+                    // Encabezados
                     yStart -= 30;
                     float tableY = yStart;
                     float rowHeight = 20;
@@ -198,11 +196,11 @@ public class RutaServiceImpl implements RutaService {
                     for (Object[] row : historial) {
                         nextX = margin;
                         String[] values = {
-                                row[0].toString(), // origen
-                                row[1].toString(), // destino
-                                row[2].toString(), // fecha
-                                row[3].toString(), // hora
-                                row[4].toString()  // tarifa
+                                row[0].toString(),
+                                row[1].toString(),
+                                row[2].toString(),
+                                row[3].toString(),
+                                row[4].toString()
                         };
 
                         for (int i = 0; i < values.length; i++) {
@@ -218,12 +216,16 @@ public class RutaServiceImpl implements RutaService {
 
                 document.save(baos);
                 return baos.toByteArray();
-
             }
+
+        } catch (BusinessRuleException e) {
+            // re-lanzamos si ya es del tipo esperado
+            throw e;
         } catch (Exception e) {
             throw new BusinessRuleException("Hubo un error al exportar tu reporte");
         }
     }
+
 
 
     @Transactional
