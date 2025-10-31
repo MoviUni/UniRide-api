@@ -27,5 +27,8 @@ public interface SolicitudViajeRepository extends JpaRepository<SolicitudViaje, 
     @Query("SELECT b FROM SolicitudViaje b WHERE b.pasajero.idPasajero = :idUsuario")
     List<SolicitudViaje> searchByUsuario(@Param("idUsuario") Integer idUsuario);
 
+    @Query("SELECT b FROM SolicitudViaje b WHERE b.pasajero.idPasajero = :idPasajero AND b.ruta.idRuta = :idRuta")
+    Boolean existDuplicate(@Param("idRuta") Integer idRuta, @Param("idPasajero") Integer idPasajero);
+
 }
 

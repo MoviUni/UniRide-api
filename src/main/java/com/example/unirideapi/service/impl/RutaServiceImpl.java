@@ -11,6 +11,7 @@ import com.example.unirideapi.repository.ConductorRepository;
 import com.example.unirideapi.repository.RutaRepository;
 import com.example.unirideapi.service.RutaService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -38,6 +39,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RutaServiceImpl implements RutaService {
     private final RutaRepository rutaRepository;
     private final ConductorRepository conductorRepository;
@@ -47,7 +49,7 @@ public class RutaServiceImpl implements RutaService {
     public RutaResponseDTO create(RutaRequestDTO rutaRequestDTO) {
         //Ruta ruta = rutaMapper.toEntity(rutaRequestDTO);
         Conductor conductor = conductorRepository.findById(rutaRequestDTO.conductorId())
-                .orElseThrow(() -> new ResourceNotFoundException("Conductor no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Conductor no encontrado %s", rutaRequestDTO.conductorId())));
         Ruta ruta = Ruta.builder()
                 .estadoRuta(rutaRequestDTO.estadoRuta())
                 .asientosDisponibles(rutaRequestDTO.asientosDisponibles())
