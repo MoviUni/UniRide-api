@@ -1,3 +1,5 @@
+// ELIMINAR ESTE DTO, NO CUMPLE CON LOS REQUISITOS PARA CARGAR LOS DATOS CORRECTAMENTE
+
 package com.example.unirideapi.dto.request;
 
 import jakarta.validation.constraints.Email;

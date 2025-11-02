@@ -6,9 +6,11 @@ import lombok.Builder;
 public record PasajeroRequestDTO(
         String nombre,
         String apellido,
+        String email,  //NEW
+        String password, //NEW
         String dni,
         Integer edad,
-        String descripcionPasajero,
-        Long userId
+        String descripcionPasajero
+        //Long userId
 ) {
 }

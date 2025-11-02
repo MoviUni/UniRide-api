@@ -1,6 +1,8 @@
 package com.example.unirideapi.service.impl;
 
+import com.example.unirideapi.dto.request.ConductorRequestDTO;
 import com.example.unirideapi.dto.request.LoginRequestDTO;
+import com.example.unirideapi.dto.request.PasajeroRequestDTO;
 import com.example.unirideapi.dto.request.UsuarioRegistroRequestDTO;
 import com.example.unirideapi.dto.response.AuthResponseDTO;
 import com.example.unirideapi.dto.response.UsuarioPerfilResponseDTO;
@@ -25,10 +27,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class UsuarioServiceImpl implements UsuarioService {
-
     private final UsuarioRepository usuarioRepository;
     private final ConductorRepository conductorRepository;
     private final PasajeroRepository pasajeroRepository;
@@ -41,18 +44,99 @@ public class UsuarioServiceImpl implements UsuarioService {
     // --------------------------------------------------
     // Registro de PASAJERO
     // --------------------------------------------------
+//    @Override
+//    public UsuarioPerfilResponseDTO registroPasajero(UsuarioRegistroRequestDTO registroRequestDTO) {
+//        return registerUsuarioWithRol(registroRequestDTO, ERol.PASAJERO);
+//    }
     @Override
-    public UsuarioPerfilResponseDTO registroPasajero(UsuarioRegistroRequestDTO registroRequestDTO) {
-        return registerUsuarioWithRol(registroRequestDTO, ERol.PASAJERO);
+    public UsuarioPerfilResponseDTO registroPasajero(PasajeroRequestDTO dto) {
+        Rol rol = rolRepository.findByName(ERol.PASAJERO)
+                .orElseThrow(() -> new RoleNotFoundException("Rol no encontrado"));
+
+        // 🔍 Validar duplicados
+        if (pasajeroRepository.existsByDni(dto.dni())) {
+            throw new IllegalArgumentException("Ya existe un pasajero con el DNI: " + dto.dni());
+        }
+
+        if (usuarioRepository.existsByEmail(dto.email())) {
+            throw new IllegalArgumentException("Ya existe un usuario con el email: " + dto.email());
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setEmail(dto.email());
+        usuario.setPassword(passwordEncoder.encode(dto.password()));
+        usuario.setRol(rol);
+
+        Pasajero pasajero = new Pasajero();
+        pasajero.setNombre(dto.nombre());
+        pasajero.setApellido(dto.apellido());
+        pasajero.setDni(dto.dni());
+        pasajero.setEdad(dto.edad());
+        pasajero.setDescripcionPasajero(dto.descripcionPasajero());
+        pasajero.setUsuario(usuario);
+
+        LocalDateTime now = LocalDateTime.now();
+        pasajero.setCreatedAt(now);
+        pasajero.setUpdatedAt(now);
+
+        // Relación bidireccional
+        usuario.setPasajero(pasajero);
+
+        Usuario saved = usuarioRepository.save(usuario);
+        return usuarioMapper.toUsuarioPerfilResponseDTO(saved);
     }
+
+
 
     // --------------------------------------------------
     // Registro de CONDUCTOR
     // --------------------------------------------------
+//    @Override
+//    public UsuarioPerfilResponseDTO registroConductor(UsuarioRegistroRequestDTO registroRequestDTO) {
+//        return registerUsuarioWithRol(registroRequestDTO, ERol.CONDUCTOR);
+//    }
+
+
     @Override
-    public UsuarioPerfilResponseDTO registroConductor(UsuarioRegistroRequestDTO registroRequestDTO) {
-        return registerUsuarioWithRol(registroRequestDTO, ERol.CONDUCTOR);
+    public UsuarioPerfilResponseDTO registroConductor(ConductorRequestDTO dto) {
+        Rol rol = rolRepository.findByName(ERol.CONDUCTOR)
+                .orElseThrow(() -> new RoleNotFoundException("Rol no encontrado"));
+
+        // 🔍 Validar duplicados
+        if (conductorRepository.existsByDni(dto.dni())) {
+            throw new IllegalArgumentException("Ya existe un conductor con el DNI: " + dto.dni());
+        }
+
+        if (usuarioRepository.existsByEmail(dto.email())) {
+            throw new IllegalArgumentException("Ya existe un usuario con el email: " + dto.email());
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setEmail(dto.email());
+        usuario.setPassword(passwordEncoder.encode(dto.password()));
+        usuario.setRol(rol);
+
+        Conductor conductor = new Conductor();
+        conductor.setNombre(dto.nombre());
+        conductor.setApellido(dto.apellido());
+        conductor.setDni(dto.dni());
+        conductor.setEdad(dto.edad());
+        conductor.setDescripcionConductor(dto.descripcionConductor());
+        conductor.setUsuario(usuario);
+
+        LocalDateTime now = LocalDateTime.now();
+        conductor.setCreatedAt(now);
+        conductor.setUpdatedAt(now);
+
+
+        // Relación bidireccional
+        usuario.setConductor(conductor);
+
+        Usuario saved = usuarioRepository.save(usuario);
+        return usuarioMapper.toUsuarioPerfilResponseDTO(saved);
     }
+
+
 
     // --------------------------------------------------
     // Login
@@ -145,7 +229,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         // Encriptar la contraseña del usuario ANTES de guardar
         // (ya no mutamos el DTO porque es record)
         usuario.setPassword(
-                passwordEncoder.encode(usuario.getPassword())
+                //passwordEncoder.encode(usuario.getPassword())
+                passwordEncoder.encode(registroRequestDTO.password())
         );
 
         // Asociar rol

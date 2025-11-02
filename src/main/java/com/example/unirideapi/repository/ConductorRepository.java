@@ -9,6 +9,7 @@ public interface ConductorRepository extends JpaRepository<Conductor, Integer> {
 
     List<Conductor> findByDni(String dni);
     List<Conductor> findByIdConductor(Integer idConductor);
+    boolean existsByDni(String dni);
 
     boolean existsByNombreAndApellido(String nombre, String apellido);
 
