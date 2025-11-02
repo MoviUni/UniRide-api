@@ -2,7 +2,7 @@ package com.example.unirideapi.controller;
 
 import com.example.unirideapi.dto.request.ConductorRequestDTO;
 import com.example.unirideapi.dto.response.ConductorResponseDTO;
-import com.example.unirideapi.service.ConductorService;
+import com.example.unirideapi.unit.ConductorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,12 +10,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('CONDUCTOR', 'ADMIN')")
 @RequestMapping("/conductor")
 public class ConductorController {
     private final ConductorService conductorService;

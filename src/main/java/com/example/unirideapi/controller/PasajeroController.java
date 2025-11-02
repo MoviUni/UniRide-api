@@ -2,7 +2,7 @@ package com.example.unirideapi.controller;
 
 import com.example.unirideapi.dto.request.PasajeroRequestDTO;
 import com.example.unirideapi.dto.response.PasajeroResponseDTO;
-import com.example.unirideapi.service.PasajeroService;
+import com.example.unirideapi.unit.PasajeroService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,12 +10,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('PASAJERO', 'ADMIN')")
 @RequestMapping("/pasajero")
 public class PasajeroController {
     private final PasajeroService pasajeroService;

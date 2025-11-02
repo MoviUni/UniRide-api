@@ -1,14 +1,12 @@
 package com.example.unirideapi.controller;
 
 import com.example.unirideapi.dto.request.PagoRequestDTO;
-import com.example.unirideapi.dto.request.SolicitudViajeRequestDTO;
 import com.example.unirideapi.dto.response.PagoResponseDTO;
-import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
-import com.example.unirideapi.repository.PagoRepository;
-import com.example.unirideapi.service.PagoService;
+import com.example.unirideapi.unit.PagoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/pagos")
+@PreAuthorize("hasAnyRole('CONDUCTOR', 'PASAJERO', 'ADMIN')")
 @RequiredArgsConstructor
 public class PagoController {
     private final PagoService pagoService;

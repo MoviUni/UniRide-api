@@ -1,17 +1,13 @@
-package com.example.unirideapi.service.impl;
+package com.example.unirideapi.unit.impl;
 
 import com.example.unirideapi.dto.request.PagoRequestDTO;
 import com.example.unirideapi.dto.response.PagoResponseDTO;
-import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
-import com.example.unirideapi.exception.BusinessRuleException;
 import com.example.unirideapi.exception.ResourceNotFoundException;
 import com.example.unirideapi.model.Pago;
-import com.example.unirideapi.model.Pasajero;
-import com.example.unirideapi.model.Ruta;
 import com.example.unirideapi.model.SolicitudViaje;
 import com.example.unirideapi.repository.PagoRepository;
 import com.example.unirideapi.repository.SolicitudViajeRepository;
-import com.example.unirideapi.service.PagoService;
+import com.example.unirideapi.unit.PagoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

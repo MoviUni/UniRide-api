@@ -1,4 +1,4 @@
-package com.example.unirideapi.service.impl;
+package com.example.unirideapi.unit.impl;
 
 import com.example.unirideapi.dto.request.VehiculoRequestDTO;
 import com.example.unirideapi.dto.response.VehiculoResponseDTO;
@@ -7,7 +7,7 @@ import com.example.unirideapi.exception.ResourceNotFoundException;
 import com.example.unirideapi.model.Conductor;
 import com.example.unirideapi.model.Vehiculo;
 import com.example.unirideapi.repository.ConductorRepository;
-import com.example.unirideapi.service.VehiculoService;
+import com.example.unirideapi.unit.VehiculoService;
 import com.example.unirideapi.mapper.VehiculoMapper;
 import com.example.unirideapi.repository.VehiculoRepository;
 import lombok.RequiredArgsConstructor;
