@@ -273,7 +273,7 @@ public class SolicitudViajeServiceTest {
     @Test
     @DisplayName("Debe cancelar una solicitud de manera exitosa.")
     void patchSolicitudViaje_CambiarEstado_Success(){
-
+        // Arrange
         SolicitudViaje savedSolicitud = createMockSolicitud(4, EstadoSolicitud.PENDIENTE,
                 LocalTime.parse("08:30:17"), LocalDate.parse("2025-09-23"),LocalDateTime.parse("2025-09-23T08:30:17"),
                 mockRuta, mockPasajero);
@@ -311,6 +311,7 @@ public class SolicitudViajeServiceTest {
     @Test
     @DisplayName("Debe mostrar un arreglo con todos los estados de las solicitudes del pasajero")
     void getSolicitudViaje_ConSolicitudes_Success() {
+        // Arrange
         SolicitudViajeRequestDTO request = new SolicitudViajeRequestDTO(
                 EstadoSolicitud.PENDIENTE,
                 LocalDate.parse("2025-09-23"),
@@ -325,8 +326,6 @@ public class SolicitudViajeServiceTest {
         SolicitudViaje savedSolicitud = createMockSolicitud(4, EstadoSolicitud.PENDIENTE,
                 LocalTime.parse("08:30:17"), LocalDate.parse("2025-09-23"),LocalDateTime.parse("2025-09-23T08:30:17"),
                 mockRuta, mockPasajero);
-        // WHEN
-
         when(solicitudViajeRepository.save(any(SolicitudViaje.class))).thenReturn(savedSolicitud);
 
         when(pasajeroRepository.findById(1)).thenReturn(Optional.of(mockPasajero));
