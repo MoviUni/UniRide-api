@@ -1,26 +1,20 @@
 package com.example.unirideapi.unit;
 
-
-import com.example.unirideapi.dto.request.ConductorRequestDTO;
-import com.example.unirideapi.dto.request.RutaRequestDTO;
+import com.example.unirideapi.dto.request.SolicitudEstadoRequestDTO;
 import com.example.unirideapi.dto.request.SolicitudViajeRequestDTO;
-import com.example.unirideapi.dto.response.ConductorResponseDTO;
-import com.example.unirideapi.dto.response.RutaResponseDTO;
+
+import com.example.unirideapi.dto.response.SolicitudEstadoResponseDTO;
 import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
 import com.example.unirideapi.exception.BusinessRuleException;
-import com.example.unirideapi.mapper.ConductorMapper;
+
 import com.example.unirideapi.model.*;
 import com.example.unirideapi.model.enums.ERol;
 import com.example.unirideapi.model.enums.EstadoSolicitud;
 import com.example.unirideapi.repository.PasajeroRepository;
 import com.example.unirideapi.repository.SolicitudViajeRepository;
-import com.example.unirideapi.service.impl.ConductorServiceImpl;
-import com.example.unirideapi.service.impl.RutaServiceImpl;
+
 import com.example.unirideapi.service.impl.SolicitudViajeServiceImpl;
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,27 +23,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.example.unirideapi.exception.ResourceNotFoundException;
 
 import com.example.unirideapi.model.enums.EstadoRuta;
 
-import com.example.unirideapi.repository.ConductorRepository;
 import com.example.unirideapi.repository.RutaRepository;
-import com.example.unirideapi.service.RutaService;
-
-import org.springframework.http.MediaType;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -285,17 +270,83 @@ public class SolicitudViajeServiceTest {
 
         verify(solicitudViajeRepository, never()).save(any(SolicitudViaje.class));
     }
+    @Test
+    @DisplayName("Debe cancelar una solicitud de manera exitosa.")
+    void patchSolicitudViaje_CambiarEstado_Success(){
 
+        SolicitudViaje savedSolicitud = createMockSolicitud(4, EstadoSolicitud.PENDIENTE,
+                LocalTime.parse("08:30:17"), LocalDate.parse("2025-09-23"),LocalDateTime.parse("2025-09-23T08:30:17"),
+                mockRuta, mockPasajero);
+
+        SolicitudViaje patchedSolicitud = createMockSolicitud(4, EstadoSolicitud.CANCELADO,
+                LocalTime.parse("08:30:17"), LocalDate.parse("2025-09-23"),LocalDateTime.parse("2025-09-23T08:30:17"),
+                mockRuta, mockPasajero);
+
+        Integer state = 0;
+        when(solicitudViajeRepository.actualizarEstadoSolicitud(savedSolicitud.getIdSolicitudViaje(), EstadoSolicitud.CANCELADO)).thenReturn(1);
+
+        // Assert
+        assertThat(solicitudViajeRepository.findById(Long.valueOf(patchedSolicitud.getIdSolicitudViaje())).get().getEstadoSolicitud()).isEqualTo(EstadoSolicitud.CANCELADO);
+
+    }
+
+    @Test
+    @DisplayName("No debe tener exito cancelando la solicitud.")
+    void patchSolicitudViaje_CambiarEstado_Conflict(){
+
+    }
     @Test
     @DisplayName("Debe mostrar un arreglo vacío de las solicitudes del pasajero (no tiene solicitudes)")
     void getSolicitudViaje_SinSolicitudes_Success() {
+
+        // Act
+        List<SolicitudEstadoResponseDTO> responses = solicitudViajeService.searchByUsuario(mockPasajero.getIdPasajero());
+
+        // Assert
+        assertThat(responses).isNotNull();
+        assertThat(responses.size()).isEqualTo(0);
 
     }
 
     @Test
     @DisplayName("Debe mostrar un arreglo con todos los estados de las solicitudes del pasajero")
     void getSolicitudViaje_ConSolicitudes_Success() {
+        SolicitudViajeRequestDTO request = new SolicitudViajeRequestDTO(
+                EstadoSolicitud.PENDIENTE,
+                LocalDate.parse("2025-09-23"),
+                LocalTime.parse("08:30:17"),
+                1,
+                1,
+                LocalDate.parse("2025-09-23")
 
+        );
+
+        // Se crea una mockSolicitud
+        SolicitudViaje savedSolicitud = createMockSolicitud(4, EstadoSolicitud.PENDIENTE,
+                LocalTime.parse("08:30:17"), LocalDate.parse("2025-09-23"),LocalDateTime.parse("2025-09-23T08:30:17"),
+                mockRuta, mockPasajero);
+        // WHEN
+
+        when(solicitudViajeRepository.save(any(SolicitudViaje.class))).thenReturn(savedSolicitud);
+
+        when(pasajeroRepository.findById(1)).thenReturn(Optional.of(mockPasajero));
+
+        when(rutaRepository.findById(Long.parseLong("1"))).thenReturn(Optional.of(mockRuta));
+
+        when(solicitudViajeRepository.searchByUsuario(mockPasajero.getIdPasajero())).thenReturn(Arrays.asList(savedSolicitud));
+        // Act
+        // guardar solicitud
+        SolicitudViajeResponseDTO response = solicitudViajeService.create(request);
+
+
+        // buscar estados de las solicitudes (deberia aparecer la solicitud que acabo de crear)
+        List<SolicitudEstadoResponseDTO> responses = solicitudViajeService.searchByUsuario(savedSolicitud.getPasajero().getIdPasajero());
+
+        // Assert
+        assertThat(response).isNotNull();
+        assertThat(responses).isNotNull();
+        assertThat(responses.size()).isGreaterThan(0);
     }
+
 
 }

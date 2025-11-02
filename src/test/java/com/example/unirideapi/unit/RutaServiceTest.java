@@ -1,19 +1,8 @@
 package com.example.unirideapi.unit;
-
-
-import com.example.unirideapi.dto.request.ConductorRequestDTO;
-import com.example.unirideapi.dto.request.RutaRequestDTO;
-import com.example.unirideapi.dto.response.ConductorResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
-import com.example.unirideapi.mapper.ConductorMapper;
 import com.example.unirideapi.model.*;
 import com.example.unirideapi.model.enums.ERol;
-import com.example.unirideapi.service.impl.ConductorServiceImpl;
 import com.example.unirideapi.service.impl.RutaServiceImpl;
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,35 +10,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import com.example.unirideapi.exception.ResourceNotFoundException;
-
 import com.example.unirideapi.model.enums.EstadoRuta;
-
 import com.example.unirideapi.repository.ConductorRepository;
 import com.example.unirideapi.repository.RutaRepository;
-import com.example.unirideapi.service.RutaService;
-
-import org.springframework.http.MediaType;
-
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -110,9 +80,6 @@ public class RutaServiceTest {
     private Conductor createMockConductor(Integer id, String nombre,String apellido,String descripcion,
                                           LocalDateTime createdAt, Integer edad, String dni,
                                           Usuario usuario, Vehiculo vehiculo) {
-        //Usuario us = createMockUsuario(1,  ERol.CONDUCTOR,2, "admin@uniride.test", "driver123");
-        //Vehiculo vehiculo = createMockVehiculo(1, "Audi", "ABC-123", "Azul", "nuevo",
-        //        true, 4, "Es auto nuevo");
 
         Conductor conductor = new Conductor();
         conductor.setIdConductor(id);
@@ -189,7 +156,7 @@ public class RutaServiceTest {
     }
 
     @Test
-    @DisplayName("Debe mostrar un arreglo vacío dado un filtro inválido")
+    @DisplayName("Debe mostrar un arreglo vacío dado un filtro no válido")
     void getRuta_InvalidFilter_Success() {
         // Arrange
         Ruta ruta = createMockRuta(4,
