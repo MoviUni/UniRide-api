@@ -1,6 +1,8 @@
 package com.example.unirideapi.controller;
 
+import com.example.unirideapi.dto.request.ConductorRequestDTO;
 import com.example.unirideapi.dto.request.LoginRequestDTO;
+import com.example.unirideapi.dto.request.PasajeroRequestDTO;
 import com.example.unirideapi.dto.request.UsuarioRegistroRequestDTO;
 import com.example.unirideapi.dto.response.AuthResponseDTO;
 import com.example.unirideapi.dto.response.UsuarioPerfilResponseDTO;
@@ -26,7 +28,7 @@ public class AuthController {
     /** Registro de PASAJERO */
     @PostMapping("/registro/pasajero")
     public ResponseEntity<UsuarioPerfilResponseDTO> registroPasajero(
-            @Valid @RequestBody UsuarioRegistroRequestDTO dto) {
+            @Valid @RequestBody PasajeroRequestDTO dto) {
 
         UsuarioPerfilResponseDTO perfil = usuarioService.registroPasajero(dto);
         return new ResponseEntity<>(perfil, HttpStatus.CREATED);
@@ -35,25 +37,17 @@ public class AuthController {
     /** Registro de CONDUCTOR */
     @PostMapping("/registro/conductor")
     public ResponseEntity<UsuarioPerfilResponseDTO> registroConductor(
-            @Valid @RequestBody UsuarioRegistroRequestDTO dto) {
+            @Valid @RequestBody ConductorRequestDTO dto) {
 
         UsuarioPerfilResponseDTO perfil = usuarioService.registroConductor(dto);
         return new ResponseEntity<>(perfil, HttpStatus.CREATED);
     }
 
     /** Login con email/password */
-    @PostMapping("/login")
+    @GetMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
         AuthResponseDTO auth = usuarioService.login(dto);
         return ResponseEntity.ok(auth);
     }
 
-    /** Login o Registro rápido con Google */
-    @PostMapping("/google")
-    public ResponseEntity<AuthResponseDTO> loginOrRegisterWithGoogle(
-            @Valid @RequestBody UsuarioRegistroRequestDTO dto) {
-
-        AuthResponseDTO auth = usuarioService.loginOrRegisterGoogle(dto);
-        return ResponseEntity.ok(auth);
-    }
 }

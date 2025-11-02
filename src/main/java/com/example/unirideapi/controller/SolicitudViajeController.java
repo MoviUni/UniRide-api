@@ -8,12 +8,14 @@ import com.example.unirideapi.service.SolicitudViajeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/solicitudes")
+@PreAuthorize("hasAnyRole('CONDUCTOR', 'PASAJERO', 'ADMIN')")
 @RequiredArgsConstructor
 public class SolicitudViajeController {
     private final SolicitudViajeService solicitudViajeService;

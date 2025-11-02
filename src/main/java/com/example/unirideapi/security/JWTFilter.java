@@ -37,7 +37,9 @@ public class JWTFilter extends GenericFilterBean {
             Authentication authentication = tokenProvider.getAuthentication(token);
 
             //TODO: Establecer la autenticación en el contexto de seguridad de Spring para la solicitud actual
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            if (authentication != null) {
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
 
         //TODO: Continuar con la cadena de filtros, permitiendo que la solicitud siga su curso

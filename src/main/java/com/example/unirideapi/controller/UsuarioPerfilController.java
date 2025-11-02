@@ -7,12 +7,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/usuario/perfil")
 @RequiredArgsConstructor
-//@PreAuthorize("hasAnyRole('CONDUCTOR','PASAJERO','ADMIN')") // ajusta roles si hace falta
+@PreAuthorize("hasAnyRole('CONDUCTOR', 'PASAJERO', 'ADMIN')") // ajusta roles si hace falta
 public class UsuarioPerfilController {
 
     private final UsuarioService usuarioService;
