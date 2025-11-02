@@ -7,6 +7,7 @@ import com.example.unirideapi.unit.RutaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +22,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/rutas")
+@PreAuthorize("hasAnyRole('CONDUCTOR', 'ADMIN')")
 @RequiredArgsConstructor
 public class RutaController {
     private final RutaService rutaService;
@@ -76,14 +78,6 @@ public class RutaController {
         Map<String, Integer> frecuencia = rutaService.obtenerFrecuenciaViajesPorPasajero(conductorId);
         return ResponseEntity.ok(frecuencia);
     }
-
-//    @GetMapping("/conductor/{conductorId}/RutaFrecuente")
-//    public ResponseEntity<List<RutaFrecuenteResponseDTO>> obtenerRutasMasFrecuentes(
-//            @PathVariable Integer conductorId) {
-//
-//        List<RutaFrecuenteResponseDTO> rutas = rutaService.obtenerRutasMasFrecuentes(conductorId);
-//        return ResponseEntity.ok(rutas);
-//    }
 
     @GetMapping("/conductor/{conductorId}/RutaFrecuente")
     public ResponseEntity<List<RutaFrecuenteResponseDTO>> obtenerRutasMasFrecuentes(

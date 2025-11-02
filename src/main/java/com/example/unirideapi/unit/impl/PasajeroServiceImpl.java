@@ -74,10 +74,10 @@ public class PasajeroServiceImpl implements PasajeroService {
             throw new BadRequestException("Ya existe un pasajero con el mismo DNI");
         }
 
-        if (updatePasajeroRequestDTO.userId() != null &&
-                pasajeroRepository.existsByUsuario_IdUsuarioAndIdPasajeroNot(updatePasajeroRequestDTO.userId().intValue(), id)) {
-            throw new BadRequestException("Ese usuario ya está asignado a otro pasajero");
-        }
+//        if (updatePasajeroRequestDTO.userId() != null &&
+//                pasajeroRepository.existsByUsuario_IdUsuarioAndIdPasajeroNot(updatePasajeroRequestDTO.userId().intValue(), id)) {
+//            throw new BadRequestException("Ese usuario ya está asignado a otro pasajero");
+//        }
 //
 //        if (updatePasajeroRequestDTO.vehiculoId() != null &&
 //                pasajeroRepository.existsByVehiculo_IdVehiculoAndIdPasajeroNot(updatePasajeroRequestDTO.vehiculoId(), id)) {

@@ -5,11 +5,13 @@ import com.example.unirideapi.dto.response.VehiculoResponseDTO;
 import com.example.unirideapi.unit.VehiculoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/vehiculos")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('CONDUCTOR','ADMIN')")
 public class VehiculoController {
     private final VehiculoService vehiculoService;
 
