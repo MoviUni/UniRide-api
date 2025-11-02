@@ -179,7 +179,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         Usuario usuarioActualizado = usuarioRepository.save(usuario);
 
-        return usuarioMapper.toUsuarioPerfilResponseDTO(usuarioActualizado);
+        return usuarioMapper.toUsuarioPerfilResponseDTO(usuario);
     }
 
     // --------------------------------------------------
