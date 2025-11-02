@@ -2,7 +2,7 @@ package com.example.unirideapi.controller;
 
 import com.example.unirideapi.dto.request.ConductorRequestDTO;
 import com.example.unirideapi.dto.response.ConductorResponseDTO;
-import com.example.unirideapi.service.ConductorService;
+import com.example.unirideapi.unit.ConductorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

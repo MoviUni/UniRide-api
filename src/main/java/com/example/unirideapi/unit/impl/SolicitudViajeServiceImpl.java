@@ -1,8 +1,6 @@
-package com.example.unirideapi.service.impl;
+package com.example.unirideapi.unit.impl;
 
-import com.example.unirideapi.dto.request.SolicitudEstadoRequestDTO;
 import com.example.unirideapi.dto.request.SolicitudViajeRequestDTO;
-import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.dto.response.SolicitudEstadoResponseDTO;
 import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
 import com.example.unirideapi.exception.BusinessRuleException;
@@ -16,13 +14,12 @@ import com.example.unirideapi.model.enums.EstadoSolicitud;
 import com.example.unirideapi.repository.PasajeroRepository;
 import com.example.unirideapi.repository.RutaRepository;
 import com.example.unirideapi.repository.SolicitudViajeRepository;
-import com.example.unirideapi.service.SolicitudViajeService;
-import jakarta.transaction.Transactional;
+import com.example.unirideapi.unit.SolicitudViajeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +32,13 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
 
     @Override
     public SolicitudViajeResponseDTO create(SolicitudViajeRequestDTO solicitudViajeRequestDTO){
+        // Regla de negocio 10
+        for (SolicitudViaje sol : solicitudViajeRepository.searchByUsuario(solicitudViajeRequestDTO.pasajeroId())){
+            if (Objects.equals(sol.getRuta().getIdRuta(), solicitudViajeRequestDTO.rutaId())){
+                // Se encontró duplicado, entonces no se agrega
+                throw new BusinessRuleException("Un usuario no puede enviar más de una solicitud a una misma ruta");
+            }
+        }
 
         Pasajero pasajero = pasajeroRepository.findById(solicitudViajeRequestDTO.pasajeroId())
                 .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado"));

@@ -1,4 +1,4 @@
-package com.example.unirideapi.service.impl;
+package com.example.unirideapi.unit.impl;
 
 import com.example.unirideapi.dto.request.ConductorRequestDTO;
 import com.example.unirideapi.dto.response.ConductorResponseDTO;
@@ -7,7 +7,7 @@ import com.example.unirideapi.exception.ResourceNotFoundException;
 import com.example.unirideapi.mapper.ConductorMapper;
 import com.example.unirideapi.model.Conductor;
 import com.example.unirideapi.repository.ConductorRepository;
-import com.example.unirideapi.service.ConductorService;
+import com.example.unirideapi.unit.ConductorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

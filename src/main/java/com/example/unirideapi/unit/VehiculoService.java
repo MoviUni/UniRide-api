@@ -1,4 +1,4 @@
-package com.example.unirideapi.service;
+package com.example.unirideapi.unit;
 
 import com.example.unirideapi.dto.request.VehiculoRequestDTO;
 import com.example.unirideapi.dto.response.VehiculoResponseDTO;
