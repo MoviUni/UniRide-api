@@ -16,5 +16,4 @@ public record RutaRequestDTO(
         Integer asientosDisponibles,
         EstadoRuta estadoRuta,
         Integer conductorId
-) {
-}
+) {}
