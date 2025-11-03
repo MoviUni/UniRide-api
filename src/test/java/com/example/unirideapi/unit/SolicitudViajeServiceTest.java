@@ -221,7 +221,7 @@ public class SolicitudViajeServiceTest {
         Pasajero pasajero = new Pasajero();
         when(pasajeroRepository.findById(1)).thenReturn(Optional.of(pasajero));
         Ruta ruta = new Ruta();
-        when(rutaRepository.findById(Long.parseLong("2"))).thenReturn(Optional.of(ruta));
+        when(rutaRepository.findById(2L)).thenReturn(Optional.of(ruta));
         // Act
         SolicitudViajeResponseDTO response = solicitudViajeService.create(request);
 
@@ -259,7 +259,7 @@ public class SolicitudViajeServiceTest {
         Pasajero pasajero1 = new Pasajero();
         when(pasajeroRepository.findById(1)).thenReturn(Optional.of(pasajero1));
         Ruta ruta2 = new Ruta();
-        when(rutaRepository.findById(Long.parseLong("1"))).thenReturn(Optional.of(ruta2));
+        when(rutaRepository.findById(1L)).thenReturn(Optional.of(ruta2));
 
         when(solicitudViajeRepository.existDuplicate(1, 1)).thenReturn(true);
 
@@ -330,7 +330,7 @@ public class SolicitudViajeServiceTest {
 
         when(pasajeroRepository.findById(1)).thenReturn(Optional.of(mockPasajero));
 
-        when(rutaRepository.findById(Long.parseLong("1"))).thenReturn(Optional.of(mockRuta));
+        when(rutaRepository.findById(1L)).thenReturn(Optional.of(mockRuta));
 
         when(solicitudViajeRepository.searchByUsuario(mockPasajero.getIdPasajero())).thenReturn(Arrays.asList(savedSolicitud));
         // Act

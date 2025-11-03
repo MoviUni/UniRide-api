@@ -260,7 +260,7 @@ public class RutaServiceImpl implements RutaService {
     @Transactional
     @Override
     public RutaResponseDTO updateEstadoRuta(Integer idRuta, EstadoRuta nuevoEstado) {
-        var ruta = rutaRepository.findById((long)idRuta)
+        var ruta = rutaRepository.findById(Long.valueOf(idRuta))
                 .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrada"));
 
         //Regla 1: Solo rutas PROGRAMADAS pueden cambiar a CONFIRMADO o CANCELADO

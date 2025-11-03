@@ -16,6 +16,7 @@ import com.example.unirideapi.repository.RutaRepository;
 import com.example.unirideapi.repository.SolicitudViajeRepository;
 import com.example.unirideapi.service.SolicitudViajeService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SolicitudViajeServiceImpl implements SolicitudViajeService {
     private final SolicitudViajeRepository solicitudViajeRepository;
     private final SolicitudViajeMapper solicitudViajeMapper;
@@ -33,8 +35,15 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
     @Override
     public SolicitudViajeResponseDTO create(SolicitudViajeRequestDTO solicitudViajeRequestDTO){
         // Regla de negocio 10
-        for (SolicitudViaje sol : solicitudViajeRepository.searchByUsuario(solicitudViajeRequestDTO.pasajeroId())){
-            if (Objects.equals(sol.getRuta().getIdRuta(), solicitudViajeRequestDTO.rutaId())){
+
+        List<SolicitudViaje> lista = solicitudViajeRepository.searchByUsuario(solicitudViajeRequestDTO.pasajeroId());
+
+        for (SolicitudViaje sol : lista){
+            Ruta rut = sol.getRuta();
+            if (rut == null) {
+                continue;
+            }
+            if (Objects.equals(rut.getIdRuta(), solicitudViajeRequestDTO.rutaId())){
                 // Se encontró duplicado, entonces no se agrega
                 throw new BusinessRuleException("Un usuario no puede enviar más de una solicitud a una misma ruta");
             }
@@ -42,16 +51,16 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
 
         Pasajero pasajero = pasajeroRepository.findById(solicitudViajeRequestDTO.pasajeroId())
                 .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado"));
-        Ruta ruta = rutaRepository.findById((long)solicitudViajeRequestDTO.rutaId())
+        Ruta ruta1 = rutaRepository.findById(Long.valueOf(solicitudViajeRequestDTO.rutaId()))
                 .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrada"));
 
-        var solicitudViaje = SolicitudViaje.builder()
+        SolicitudViaje solicitudViaje = SolicitudViaje.builder()
                 .estadoSolicitud(solicitudViajeRequestDTO.estadoSolicitud())
                 .fecha(solicitudViajeRequestDTO.fecha())
                 .hora(solicitudViajeRequestDTO.hora())
                 .pasajero(pasajero)
-                .ruta(ruta)
                 .updatedAt(solicitudViajeRequestDTO.updatedAt().atStartOfDay())
+                .ruta(ruta1)
                 .build();
 
         return toResponse(solicitudViajeRepository.save(solicitudViaje));
@@ -68,7 +77,7 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
     @Override
     @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public List<SolicitudViajeResponseDTO> findSolicitudesByRutaId(Integer idRuta) {
-        var ruta = rutaRepository.findById((long)idRuta)
+        var ruta = rutaRepository.findById(Long.valueOf(idRuta))
                 .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrada"));
 
         return solicitudViajeRepository.findByRutaId(ruta.getIdRuta())
@@ -82,7 +91,7 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
         var solicitud = solicitudViajeRepository.findById((long)idSolicitud)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitud no encontrada"));
 
-        var ruta = rutaRepository.findById((long)solicitud.getRuta().getIdRuta())
+        var ruta = rutaRepository.findById(Long.valueOf(solicitud.getRuta().getIdRuta()))
                 .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrada"));
 
         // Regla 1:Solo solicitudes en estado PENDIENTE pueden cambiar
