@@ -48,7 +48,16 @@ INSERT INTO pasajero (
              '2025-09-30 10:00:00', NULL,
              (SELECT id_usuario FROM usuario WHERE email = 'pasajero@uniride.test')
          );
-
+-- ========== RUTA EXTRA ==========
+INSERT INTO ruta (
+    origen, destino, fecha_salida, hora_salida, tarifa, asientos_disponibles, estado_ruta, id_conductor
+) VALUES
+    ('La Molina', 'Centro de Lima', '2025-10-06', '07:15:00', 12, 4, 'PROGRAMADO',
+     (SELECT id_conductor FROM conductor WHERE dni='55555555')
+    ),
+    ('Barranco', 'Miraflores', '2025-11-06', '07:00:00', 14, 4, 'PROGRAMADO',
+       (SELECT id_conductor FROM conductor WHERE dni='55555555')
+    );
 -- ========== SOLICITUDES ==========
 INSERT INTO solicitud_viaje (
     id_solicitud_viaje, fecha, hora, updated_at, estado_solicitud, id_ruta, id_pasajero
@@ -58,7 +67,7 @@ INSERT INTO solicitud_viaje (
       (SELECT id_pasajero FROM pasajero WHERE dni='77777777')
     ),
     (nextval('solicitud_viaje_seq'), '2025-10-05', '17:40:00', '2025-10-05 17:45:00', 'PENDIENTE',
-        (SELECT id_ruta FROM ruta WHERE origen='Surco' AND destino='San Isidro' LIMIT 1),
+        (SELECT id_ruta FROM ruta WHERE origen='La Molina' AND destino='Centro de Lima' LIMIT 1),
         (SELECT id_pasajero FROM pasajero WHERE dni='77777777')
     );
 
@@ -79,10 +88,4 @@ VALUES
     (5, 'Viaje cómodo y puntual', '2025-10-05 09:15:00', (SELECT id_conductor FROM conductor WHERE dni='44444444'), (SELECT id_pasajero FROM pasajero WHERE dni='77777777')),
     (4, 'Todo bien, podría mejorar la música', '2025-10-05 19:30:00', (SELECT id_conductor FROM conductor WHERE dni='44444444'), (SELECT id_pasajero FROM pasajero WHERE dni='77777777'));
 
--- ========== RUTA EXTRA ==========
-INSERT INTO ruta (
-    origen, destino, fecha_salida, hora_salida, tarifa, asientos_disponibles, estado_ruta, id_conductor
-) VALUES
-    ('La Molina', 'Centro de Lima', '2025-10-06', '07:15:00', 12, 4, 'PROGRAMADO',
-     (SELECT id_conductor FROM conductor WHERE dni='55555555')
-    );
+
