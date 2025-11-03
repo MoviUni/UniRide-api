@@ -4,7 +4,8 @@ import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import com.example.unirideapi.exception.BusinessRuleException;
 import com.example.unirideapi.mapper.RutaMapper;
 import com.example.unirideapi.repository.RutaRepository;
-import com.example.unirideapi.unit.impl.RutaServiceImpl;
+
+import com.example.unirideapi.service.impl.RutaServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

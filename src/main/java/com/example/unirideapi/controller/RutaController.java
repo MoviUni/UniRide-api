@@ -3,7 +3,7 @@ package com.example.unirideapi.controller;
 import com.example.unirideapi.dto.request.RutaEstadoRequestDTO;
 import com.example.unirideapi.dto.request.RutaRequestDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
-import com.example.unirideapi.unit.RutaService;
+import com.example.unirideapi.service.RutaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.example.unirideapi.unit.impl;
+package com.example.unirideapi.service.impl;
 
 import com.example.unirideapi.dto.request.PagoRequestDTO;
 import com.example.unirideapi.dto.response.PagoResponseDTO;
@@ -7,7 +7,7 @@ import com.example.unirideapi.model.Pago;
 import com.example.unirideapi.model.SolicitudViaje;
 import com.example.unirideapi.repository.PagoRepository;
 import com.example.unirideapi.repository.SolicitudViajeRepository;
-import com.example.unirideapi.unit.PagoService;
+import com.example.unirideapi.service.PagoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

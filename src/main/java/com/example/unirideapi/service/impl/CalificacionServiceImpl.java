@@ -1,4 +1,4 @@
-package com.example.unirideapi.unit.impl;
+package com.example.unirideapi.service.impl;
 
 import com.example.unirideapi.dto.request.CalificacionRequestDTO;
 import com.example.unirideapi.dto.response.CalificacionResponseDTO;
@@ -6,7 +6,7 @@ import com.example.unirideapi.exception.ResourceNotFoundException;
 import com.example.unirideapi.mapper.CalificacionMapper;
 import com.example.unirideapi.model.Calificacion;
 import com.example.unirideapi.repository.CalificacionRepository;
-import com.example.unirideapi.unit.CalificacionService;
+import com.example.unirideapi.service.CalificacionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

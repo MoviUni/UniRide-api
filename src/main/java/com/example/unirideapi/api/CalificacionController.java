@@ -2,7 +2,7 @@ package com.example.unirideapi.api;
 
 import com.example.unirideapi.dto.request.CalificacionRequestDTO;
 import com.example.unirideapi.dto.response.CalificacionResponseDTO;
-import com.example.unirideapi.unit.CalificacionService;
+import com.example.unirideapi.service.CalificacionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
