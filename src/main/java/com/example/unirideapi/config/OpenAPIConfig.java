@@ -1,8 +1,11 @@
 package com.example.unirideapi.config;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -39,6 +42,19 @@ public class OpenAPIConfig {
                 .contact(contact)
                 .description("UniRide API description");
 
-        return new OpenAPI().info(info).servers(List.of(devServer, prodServer));
+        //return new OpenAPI().info(info).servers(List.of(devServer, prodServer));
+
+        // OpenAPI con JWT
+        return new OpenAPI()
+                .info(info)
+                .servers(List.of(devServer, prodServer))
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth")) // JWT aplicado globalmente
+                .components(new Components()
+                        .addSecuritySchemes("bearerAuth",
+                                new SecurityScheme()
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")
+                        ));
     }
 }

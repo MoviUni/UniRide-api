@@ -12,9 +12,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
+@Tag(
+        name = "Calificaciones",
+        description = "Endpoints para crear, consultar, actualizar y eliminar calificaciones de pasajeros y conductores."
+)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/calificaciones")

@@ -54,11 +54,12 @@ public class WebSecurityConfig {
                                 "/auth/registro/conductor",
                                 "/conductores/recent",
                                 "/pasajeros/recent",
+                                "/webjars/**",
+                                //Permisos para swagger
                                 "/api/v1/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/webjars/**"
+                                "/swagger-ui/**"
                         ).permitAll()
 
                         // Todo lo demás sí requiere estar autenticado
