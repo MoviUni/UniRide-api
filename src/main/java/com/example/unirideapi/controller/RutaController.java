@@ -3,7 +3,13 @@ package com.example.unirideapi.controller;
 import com.example.unirideapi.dto.request.RutaEstadoRequestDTO;
 import com.example.unirideapi.dto.request.RutaRequestDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
-import com.example.unirideapi.unit.RutaService;
+import com.example.unirideapi.service.RutaService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +26,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
+@Tag(
+        name = "Rutas",
+        description = "Endpoints para gestionar rutas." +
+                "Permite crear rutas, buscar por varios filtros, actualizar estado, obtener historial y exportar PDFs."
+)
 @RestController
 @RequestMapping("/rutas")
 @PreAuthorize("hasAnyRole('CONDUCTOR', 'ADMIN')")
@@ -66,26 +77,73 @@ public class RutaController {
     public ResponseEntity<List<RutaResponseDTO>> searchByDestino(@RequestParam Map<String, String> params) {
         return ResponseEntity.ok(rutaService.searchBy(params.get("destino"), params.get("origen"), params.get("hora"), params.get("fecha")));
     }
+
+    @Operation(
+            summary = "Obtener total de viajes de un conductor",
+            description = "Devuelve el número total de viajes realizados por un conductor específico."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Se obtuvo el total de viajes correctamente",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Integer.class))),
+            @ApiResponse(responseCode = "401", description = "Acceso no autorizado, token inválido o no proporcionado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado: rol insuficiente para ver las estadísticas"),
+            @ApiResponse(responseCode = "404", description = "Conductor no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @GetMapping("/conductor/{conductorId}/total")
     public ResponseEntity<?>obtenerTotalViajes(@PathVariable Integer conductorId) {
         int totalRutas = rutaService.obtenerTotalViajes(conductorId);
         return ResponseEntity.ok(totalRutas);
-        //return ResponseEntity.ok(Map.of("totalViajes", totalViajes));
     }
 
+    @Operation(
+            summary = "Obtener frecuencia de viajes de un conductor",
+            description = "Devuelve la frecuencia de viajes realizados por día de la semana."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Frecuencia de viajes obtenida correctamente",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class))),
+            @ApiResponse(responseCode = "401", description = "Acceso no autorizado, token inválido o no proporcionado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado: rol insuficiente"),
+            @ApiResponse(responseCode = "404", description = "Conductor no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @GetMapping("/conductor/{conductorId}/frecuencia")
     public ResponseEntity<Map<String, Integer>> obtenerFrecuenciaViajes(@PathVariable Integer conductorId) {
         Map<String, Integer> frecuencia = rutaService.obtenerFrecuenciaViajesPorPasajero(conductorId);
         return ResponseEntity.ok(frecuencia);
     }
 
+    @Operation(
+            summary = "Obtener rutas más frecuentes de un conductor",
+            description = "Devuelve las rutas más utilizadas por un conductor ordenadas por frecuencia."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Rutas obtenidas correctamente",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = RutaFrecuenteResponseDTO.class))),
+            @ApiResponse(responseCode = "401", description = "Acceso no autorizado, token inválido o no proporcionado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado: rol insuficiente"),
+            @ApiResponse(responseCode = "404", description = "No se encontraron rutas frecuentes"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @GetMapping("/conductor/{conductorId}/RutaFrecuente")
     public ResponseEntity<List<RutaFrecuenteResponseDTO>> obtenerRutasMasFrecuentes(
             @PathVariable Integer conductorId) {
         return ResponseEntity.ok(rutaService.obtenerRutasMasFrecuentes(conductorId));
     }
 
-
+    @Operation(
+            summary = "Exportar historial de viajes de un conductor en PDF",
+            description = "Genera y devuelve un archivo PDF con el historial de viajes de un conductor."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Historial exportado correctamente",
+                    content = @Content(mediaType = "application/pdf")),
+            @ApiResponse(responseCode = "401", description = "Acceso no autorizado, token inválido o no proporcionado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado: rol insuficiente"),
+            @ApiResponse(responseCode = "404", description = "No hay historial de viajes para este conductor"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor al generar PDF")
+    })
     @GetMapping("/conductor/{conductorId}/historial/pdf")
     public ResponseEntity<byte[]> exportarHistorialPdf(@PathVariable Integer conductorId) {
         byte[] pdfBytes = rutaService.exportarHistorialPdf(conductorId);

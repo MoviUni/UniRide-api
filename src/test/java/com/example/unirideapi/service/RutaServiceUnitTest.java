@@ -1,4 +1,4 @@
-package com.example.unirideapi.unit;
+package com.example.unirideapi.service;
 
 import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
@@ -8,7 +8,7 @@ import com.example.unirideapi.mapper.RutaMapper;
 import com.example.unirideapi.model.Ruta;
 import com.example.unirideapi.model.enums.EstadoRuta;
 import com.example.unirideapi.repository.RutaRepository;
-import com.example.unirideapi.unit.impl.RutaServiceImpl;
+import com.example.unirideapi.service.impl.RutaServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 

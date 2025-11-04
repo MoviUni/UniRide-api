@@ -2,7 +2,8 @@ package com.example.unirideapi.controller;
 
 import com.example.unirideapi.dto.request.PasajeroRequestDTO;
 import com.example.unirideapi.dto.response.PasajeroResponseDTO;
-import com.example.unirideapi.unit.PasajeroService;
+import com.example.unirideapi.service.PasajeroService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(
+        name = "Pasajero",
+        description = "Endpoints para gestionar pasajeros" +
+                "Permite listar, paginar, crear, actualizar, eliminar y obtener el perfil de un pasajero."
+)
 @RestController
 @RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('PASAJERO', 'ADMIN')")

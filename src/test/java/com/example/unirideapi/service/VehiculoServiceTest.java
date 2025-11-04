@@ -1,4 +1,4 @@
-package com.example.unirideapi.unit;
+package com.example.unirideapi.service;
 
 import com.example.unirideapi.dto.request.VehiculoRequestDTO;
 import com.example.unirideapi.dto.response.VehiculoResponseDTO;
@@ -10,7 +10,7 @@ import com.example.unirideapi.model.Vehiculo;
 import com.example.unirideapi.repository.ConductorRepository;
 import com.example.unirideapi.repository.VehiculoRepository;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import com.example.unirideapi.unit.impl.VehiculoServiceImpl;
+import com.example.unirideapi.service.impl.VehiculoServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
