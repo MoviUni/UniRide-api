@@ -63,7 +63,7 @@ INSERT INTO solicitud_viaje (
     id_solicitud_viaje, fecha, hora, updated_at, estado_solicitud, id_ruta, id_pasajero
 ) VALUES
       (nextval('solicitud_viaje_seq'), '2025-10-05', '08:00:00', '2025-10-05 08:05:00', 'PENDIENTE',
-       (SELECT id_ruta FROM ruta WHERE origen='Barranco' AND destino='Miraflores' LIMIT 1),
+       (SELECT id_ruta FROM ruta WHERE origen='La Molina' AND destino='Centro de Lima' LIMIT 1),
       (SELECT id_pasajero FROM pasajero WHERE dni='77777777')
     ),
     (nextval('solicitud_viaje_seq'), '2025-10-05', '17:40:00', '2025-10-05 17:45:00', 'PENDIENTE',

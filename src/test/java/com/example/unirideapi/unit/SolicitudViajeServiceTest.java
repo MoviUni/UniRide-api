@@ -205,14 +205,8 @@ public class SolicitudViajeServiceTest {
     @DisplayName("Debe crear una solicitud de viaje exitosamente con datos válidos")
     void createSolicitudViaje_ValidData_Success() {
         // Arrange
-        SolicitudViajeRequestDTO request = new SolicitudViajeRequestDTO(
-                EstadoSolicitud.PENDIENTE,
-                LocalDate.parse("2025-09-23"),
-                LocalTime.parse("08:30:17"),
-                2,
-                1,
-                LocalDate.parse("2025-09-23")
-
+        SolicitudViajeRequestDTO request = new SolicitudViajeRequestDTO(EstadoSolicitud.PENDIENTE, LocalDate.parse("2025-09-23"), LocalTime.parse("08:30:17"),
+                2, 1, LocalDate.parse("2025-09-23")
         );
 
         //when(accountRepository.existsByAccountNumber(accountNumber)).thenReturn(false);
@@ -235,14 +229,12 @@ public class SolicitudViajeServiceTest {
         assertThat(response.fecha()).isEqualTo(LocalDate.parse("2025-09-23"));
         assertThat(response.updatedAt()).isEqualTo(LocalDateTime.parse("2025-09-23T08:30:17"));
         assertThat(response.rutaId()).isEqualTo(mockRuta.getIdRuta());
-
-        //verify(rutaRepository).existsRutasByIdRuta();
         verify(solicitudViajeRepository).save(any(SolicitudViaje.class));
     }
 
     @Test
     @DisplayName("No debe tener éxito creando una solicitud de viaje con datos no válidos")
-    void createSolicitudViaje_DuplicateData_Conflict() {
+    void createSolicitudViaje_DuplicateData_ThrowsBusinessRuleException() {
 
         // Arrange
         SolicitudViajeRequestDTO request2 = new SolicitudViajeRequestDTO(
@@ -271,7 +263,7 @@ public class SolicitudViajeServiceTest {
     }
     @Test
     @DisplayName("Debe cancelar una solicitud de manera exitosa.")
-    void patchSolicitudViaje_CambiarEstado_Success(){
+    void patchSolicitudViaje_EstadoValido_Success(){
         // Arrange
         SolicitudViaje savedSolicitud = createMockSolicitud(4, EstadoSolicitud.PENDIENTE,
                 LocalTime.parse("08:30:17"), LocalDate.parse("2025-09-23"),LocalDateTime.parse("2025-09-23T08:30:17"),
@@ -303,7 +295,7 @@ public class SolicitudViajeServiceTest {
 
     @Test
     @DisplayName("No debe tener exito cancelando la solicitud.")
-    void patchSolicitudViaje_CambiarEstado_Conflict(){
+    void patchSolicitudViaje_EstadoInvalido_ThrowsBusinessRuleException(){
         // Arrange
         SolicitudViaje savedSolicitud = createMockSolicitud(4, EstadoSolicitud.ACEPTADO,
                 LocalTime.parse("08:30:17"), LocalDate.parse("2025-09-23"),LocalDateTime.parse("2025-09-23T08:30:17"),
@@ -322,7 +314,7 @@ public class SolicitudViajeServiceTest {
     }
     @Test
     @DisplayName("Debe mostrar un arreglo vacío de las solicitudes del pasajero (no tiene solicitudes)")
-    void getSolicitudViaje_SinSolicitudes_Success() {
+    void getEstadoSolicitudViaje_SinSolicitudes_Success() {
 
         // Act
         List<SolicitudEstadoResponseDTO> responses = solicitudViajeService.searchByUsuario(mockPasajero.getIdPasajero());
@@ -335,7 +327,7 @@ public class SolicitudViajeServiceTest {
 
     @Test
     @DisplayName("Debe mostrar un arreglo con todos los estados de las solicitudes del pasajero")
-    void getSolicitudViaje_ConSolicitudes_Success() {
+    void getEstadoSolicitudViaje_ConSolicitudes_Success() {
         // Arrange
         SolicitudViajeRequestDTO request = new SolicitudViajeRequestDTO(
                 EstadoSolicitud.PENDIENTE,
@@ -347,22 +339,16 @@ public class SolicitudViajeServiceTest {
 
         );
 
-        // Se crea una mockSolicitud
         SolicitudViaje savedSolicitud = createMockSolicitud(4, EstadoSolicitud.PENDIENTE,
                 LocalTime.parse("08:30:17"), LocalDate.parse("2025-09-23"),LocalDateTime.parse("2025-09-23T08:30:17"),
                 mockRuta, mockPasajero);
 
         when(solicitudViajeRepository.searchByUsuario(mockPasajero.getIdPasajero())).thenReturn(Arrays.asList(savedSolicitud));
         // Act
-        // guardar solicitud
-
-        // buscar estados de las solicitudes (deberia aparecer la solicitud que acabo de crear)
         List<SolicitudEstadoResponseDTO> responses = solicitudViajeService.searchByUsuario(savedSolicitud.getPasajero().getIdPasajero());
 
         // Assert
         assertThat(responses).isNotNull();
         assertThat(responses.size()).isGreaterThan(0);
     }
-
-
 }
