@@ -1,17 +1,17 @@
 package com.example.unirideapi.controller;
-import com.example.unirideapi.dto.request.RutaEstadoRequestDTO;
 import com.example.unirideapi.dto.request.VehiculoColorRequestDTO;
 import com.example.unirideapi.dto.request.VehiculoRequestDTO;
-import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.dto.response.VehiculoResponseDTO;
 import com.example.unirideapi.service.VehiculoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/vehiculos")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('CONDUCTOR','ADMIN')")
 public class VehiculoController {
     private final VehiculoService vehiculoService;
 

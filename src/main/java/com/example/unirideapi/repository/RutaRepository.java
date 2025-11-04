@@ -30,7 +30,7 @@ public interface RutaRepository extends JpaRepository<Ruta, Long> {
 
     @Query("SELECT b FROM Ruta b WHERE LOWER(b.destino) = LOWER(:destino) AND LOWER(b.origen) = LOWER(:origen)" +
             "AND b.horaSalida = :hora AND b.fechaSalida = :fecha")
-    List<Ruta> searchBy(@Param("destino") String destino, @Param("origen") String origen, @Param("hora") String hora, @Param("fecha") String fecha);
+    List<Ruta> searchBy(@Param("destino") String destino, @Param("origen") String origen, @Param("hora") LocalTime hora, @Param("fecha") LocalDate fecha);
 
     @Query("SELECT b FROM Ruta b WHERE b.horaSalida <= :horaSalida")
     List<Ruta> searchByHora (@Param("horaSalida") LocalTime horaSalida);

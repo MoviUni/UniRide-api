@@ -5,10 +5,13 @@ import com.example.unirideapi.exception.ResourceNotFoundException;
 import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.mapper.RutaMapper;
+import com.example.unirideapi.model.Conductor;
 import com.example.unirideapi.model.Ruta;
+import com.example.unirideapi.repository.ConductorRepository;
 import com.example.unirideapi.repository.RutaRepository;
 import com.example.unirideapi.service.RutaService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,23 +23,15 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.springframework.stereotype.Service;import org.springframework.stereotype.Service;
 
-import javax.swing.text.Document;
 import java.io.ByteArrayOutputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.List;
-import java.util.stream.Collectors;
-import com.example.unirideapi.dto.response.RutaResponseDTO;
+
 import com.example.unirideapi.exception.BusinessRuleException;
-import com.example.unirideapi.exception.ResourceNotFoundException;
-import com.example.unirideapi.mapper.RutaMapper;
+
 import com.example.unirideapi.model.enums.EstadoRuta;
-import com.example.unirideapi.repository.RutaRepository;
-import com.example.unirideapi.service.RutaService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
@@ -44,14 +39,28 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RutaServiceImpl implements RutaService {
     private final RutaRepository rutaRepository;
+    private final ConductorRepository conductorRepository;
     private  final RutaMapper rutaMapper;
 
     @Override
     public RutaResponseDTO create(RutaRequestDTO rutaRequestDTO) {
-        Ruta ruta = rutaMapper.toEntity(rutaRequestDTO);
-        return rutaMapper.toDTO( rutaRepository.save(ruta));
+        //Ruta ruta = rutaMapper.toEntity(rutaRequestDTO);
+        Conductor conductor = conductorRepository.findById(rutaRequestDTO.conductorId())
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Conductor no encontrado %s", rutaRequestDTO.conductorId())));
+        Ruta ruta = Ruta.builder()
+                .estadoRuta(rutaRequestDTO.estadoRuta())
+                .asientosDisponibles(rutaRequestDTO.asientosDisponibles())
+                .origen(rutaRequestDTO.origen())
+                .destino(rutaRequestDTO.destino())
+                .fechaSalida(rutaRequestDTO.fechaSalida())
+                .horaSalida(rutaRequestDTO.horaSalida())
+                .tarifa(rutaRequestDTO.tarifa().longValue())
+                .conductor(conductor)
+                .build();
+        return toResponse(rutaRepository.save(ruta));
     }
     @Override
     public List<RutaResponseDTO> searchByDisponible(){
@@ -93,8 +102,10 @@ public class RutaServiceImpl implements RutaService {
     }
     @Override
     public List<RutaResponseDTO> searchBy(String destino, String origen, String hora, String fecha) {
-        return rutaRepository.searchBy(destino, origen, hora, fecha).stream()
-                .map(rutaMapper::toDTO)
+        LocalDate fh = LocalDate.parse(fecha);
+        LocalTime tm = LocalTime.parse(hora);
+        return rutaRepository.searchBy(destino, origen, tm, fh).stream()
+                .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
@@ -249,7 +260,7 @@ public class RutaServiceImpl implements RutaService {
     @Transactional
     @Override
     public RutaResponseDTO updateEstadoRuta(Integer idRuta, EstadoRuta nuevoEstado) {
-        var ruta = rutaRepository.findById((long)idRuta)
+        var ruta = rutaRepository.findById(Long.valueOf(idRuta))
                 .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrada"));
 
         //Regla 1: Solo rutas PROGRAMADAS pueden cambiar a CONFIRMADO o CANCELADO
@@ -295,5 +306,17 @@ public class RutaServiceImpl implements RutaService {
                 .collect(Collectors.toList());
     }
 
-
+    private RutaResponseDTO toResponse(Ruta ruta) {
+        return RutaResponseDTO.builder()
+                .idConductor(ruta.getConductor().getIdConductor())
+                .asientosDisponibles(ruta.getAsientosDisponibles())
+                .idRuta(ruta.getIdRuta())
+                .estadoRuta(ruta.getEstadoRuta())
+                .origen(ruta.getOrigen())
+                .destino(ruta.getDestino())
+                .fechaSalida(ruta.getFechaSalida())
+                .horaSalida(ruta.getHoraSalida())
+                .tarifa(ruta.getTarifa())
+                .build();
+    }
 }

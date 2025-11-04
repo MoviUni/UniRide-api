@@ -18,11 +18,12 @@ public class Usuario {
 
     private String password;
 
-    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private Pasajero pasajero;
 
-    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private Conductor conductor;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idRol", referencedColumnName = "idRol",
