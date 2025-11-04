@@ -18,6 +18,7 @@ import com.example.unirideapi.service.SolicitudViajeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -75,7 +76,7 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
     }
 
     @Override
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public List<SolicitudViajeResponseDTO> findSolicitudesByRutaId(Integer idRuta) {
         var ruta = rutaRepository.findById(Long.valueOf(idRuta))
                 .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrada"));
@@ -86,7 +87,7 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
                 .toList();
     }
     @Override
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public SolicitudViajeResponseDTO updateEstadoSolicitud(Integer idSolicitud, EstadoSolicitud nuevoEstado) {
         var solicitud = solicitudViajeRepository.findById((long)idSolicitud)
                 .orElseThrow(() -> new ResourceNotFoundException("Solicitud no encontrada"));
@@ -116,6 +117,34 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
 
         //Aplicar el nuevo estado
         solicitud.setEstadoSolicitud(nuevoEstado);
+        solicitudViajeRepository.save(solicitud);
+
+        return solicitudViajeMapper.toDTO(solicitud);
+    }
+
+    @Override
+    @Transactional
+    public SolicitudViajeResponseDTO cancelSolicitud(Integer idSolicitud) {
+        EstadoSolicitud estadoCancelado = EstadoSolicitud.CANCELADO;
+        var solicitud = solicitudViajeRepository.findById((long)idSolicitud)
+                .orElseThrow(() -> new ResourceNotFoundException("Solicitud no encontrada"));
+
+        var ruta = rutaRepository.findById(Long.valueOf(solicitud.getRuta().getIdRuta()))
+                .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrada"));
+
+        // Regla 1:Solo solicitudes en estado PENDIENTE pueden cambiar
+        if (solicitud.getEstadoSolicitud() != EstadoSolicitud.PENDIENTE) {
+            throw new BusinessRuleException("Solo se pueden cancelar solicitudes pendientes");
+        }
+
+        //Regla 2:La ruta debe estar PROGRAMADA o CONFIRMADA
+        if (ruta.getEstadoRuta() != EstadoRuta.PROGRAMADO && ruta.getEstadoRuta() != EstadoRuta.CONFIRMADO) {
+            throw new BusinessRuleException("No se pueden cancelar solicitudes si la ruta no está programada o confirmada");
+        }
+
+
+        //Aplicar el nuevo estado
+        solicitud.setEstadoSolicitud(estadoCancelado);
         solicitudViajeRepository.save(solicitud);
 
         return solicitudViajeMapper.toDTO(solicitud);

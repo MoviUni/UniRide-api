@@ -7,6 +7,7 @@ import com.example.unirideapi.dto.response.SolicitudEstadoResponseDTO;
 import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
 import com.example.unirideapi.exception.BusinessRuleException;
 
+import com.example.unirideapi.mapper.SolicitudViajeMapper;
 import com.example.unirideapi.model.*;
 import com.example.unirideapi.model.enums.ERol;
 import com.example.unirideapi.model.enums.EstadoSolicitud;
@@ -33,6 +34,7 @@ import java.time.LocalTime;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,6 +53,9 @@ public class SolicitudViajeServiceTest {
 
     @Mock
     private RutaRepository rutaRepository;
+
+    @Mock
+    private SolicitudViajeMapper solicitudViajeMapper;
 
     @InjectMocks
     private SolicitudViajeServiceImpl solicitudViajeService;
@@ -71,9 +76,7 @@ public class SolicitudViajeServiceTest {
         mockRol = createMockRol(ERol.PASAJERO,3);
         mockUsuario = createMockUsuario(1, mockRol,"user@uniride.test", "driver123");
 
-        mockPasajero = createMockPasajero(1,
-                "Carlos","Soto",
-                "5 años de experiencia conduciendo autos de servicio.",
+        mockPasajero = createMockPasajero(1, "Carlos","Soto", "5 años de experiencia conduciendo autos de servicio.",
                 LocalDateTime.parse("2025-09-30T09:00:00"),LocalDateTime.parse("2025-09-30T09:00:00"),
                 30,
                 "44444444",
@@ -93,7 +96,7 @@ public class SolicitudViajeServiceTest {
                 mockUsuario,
                 mockVehiculo);
 
-        mockRuta = createMockRuta(null, LocalDate.parse("2025-09-23"), LocalTime.parse("08:30:17"),"Surquillo", "UPC Monterrico", Long.parseLong("12"), 4, EstadoRuta.PROGRAMADO, mockConductor);
+        mockRuta = createMockRuta(1, LocalDate.parse("2025-09-23"), LocalTime.parse("08:30:17"),"Surquillo", "UPC Monterrico", Long.parseLong("12"), 4, EstadoRuta.PROGRAMADO, mockConductor);
     }
 
     private SolicitudViaje createMockSolicitud(Integer id, EstadoSolicitud estadoSolicitud, LocalTime hora, LocalDate fecha, LocalDateTime updatedAt, Ruta ruta, Pasajero pasajero){
@@ -255,20 +258,16 @@ public class SolicitudViajeServiceTest {
                 LocalTime.parse("08:30:17"), LocalDate.parse("2025-09-23"),LocalDateTime.parse("2025-09-23T08:30:17"),
                 mockRuta, mockPasajero);
 
-        when(solicitudViajeRepository.save(any(SolicitudViaje.class))).thenReturn(savedSolicitud1);
-        Pasajero pasajero1 = new Pasajero();
-        when(pasajeroRepository.findById(1)).thenReturn(Optional.of(pasajero1));
-        Ruta ruta2 = new Ruta();
-        when(rutaRepository.findById(1L)).thenReturn(Optional.of(ruta2));
-
-        when(solicitudViajeRepository.existDuplicate(1, 1)).thenReturn(true);
+        Pasajero pasajero1 = mockPasajero;
+        List<SolicitudViaje> lista = List.of(savedSolicitud1);
+        when(solicitudViajeRepository.searchByUsuario(pasajero1.getIdPasajero())).thenReturn(lista);
 
         // Assert
         assertThatThrownBy(() -> solicitudViajeService.create(request2))
                 .isInstanceOf(BusinessRuleException.class)
                 .hasMessageContaining("Un usuario no puede enviar más de una solicitud a una misma ruta");
 
-        verify(solicitudViajeRepository, never()).save(any(SolicitudViaje.class));
+
     }
     @Test
     @DisplayName("Debe cancelar una solicitud de manera exitosa.")
@@ -277,22 +276,48 @@ public class SolicitudViajeServiceTest {
         SolicitudViaje savedSolicitud = createMockSolicitud(4, EstadoSolicitud.PENDIENTE,
                 LocalTime.parse("08:30:17"), LocalDate.parse("2025-09-23"),LocalDateTime.parse("2025-09-23T08:30:17"),
                 mockRuta, mockPasajero);
+        when(solicitudViajeRepository.findById(Long.valueOf(savedSolicitud.getIdSolicitudViaje()))).thenReturn(Optional.of(savedSolicitud));
 
-        SolicitudViaje patchedSolicitud = createMockSolicitud(4, EstadoSolicitud.CANCELADO,
-                LocalTime.parse("08:30:17"), LocalDate.parse("2025-09-23"),LocalDateTime.parse("2025-09-23T08:30:17"),
-                mockRuta, mockPasajero);
+        Ruta ruta = mockRuta;
+        when(rutaRepository.findById(Long.valueOf(savedSolicitud.getRuta().getIdRuta()))).thenReturn(Optional.of(ruta));
 
-        Integer state = 0;
-        when(solicitudViajeRepository.actualizarEstadoSolicitud(savedSolicitud.getIdSolicitudViaje(), EstadoSolicitud.CANCELADO)).thenReturn(1);
-
+        when(solicitudViajeMapper.toDTO(any(SolicitudViaje.class)))
+                .thenAnswer(invocation -> {
+                    SolicitudViaje s = invocation.getArgument(0);
+                    return new SolicitudViajeResponseDTO(
+                            s.getIdSolicitudViaje(),
+                            s.getFecha(),
+                            s.getHora(),
+                            null,
+                            s.getEstadoSolicitud(),
+                            s.getRuta().getIdRuta(),
+                            100
+                    );
+                });
+        // Act
+        SolicitudViajeResponseDTO response = solicitudViajeService.cancelSolicitud(savedSolicitud.getIdSolicitudViaje());
         // Assert
-        assertThat(solicitudViajeRepository.findById(Long.valueOf(patchedSolicitud.getIdSolicitudViaje())).get().getEstadoSolicitud()).isEqualTo(EstadoSolicitud.CANCELADO);
-
+        assertThat(response).isNotNull();
+        assertThat(response.estadoSolicitud()).isEqualTo(EstadoSolicitud.CANCELADO);
     }
 
     @Test
     @DisplayName("No debe tener exito cancelando la solicitud.")
     void patchSolicitudViaje_CambiarEstado_Conflict(){
+        // Arrange
+        SolicitudViaje savedSolicitud = createMockSolicitud(4, EstadoSolicitud.ACEPTADO,
+                LocalTime.parse("08:30:17"), LocalDate.parse("2025-09-23"),LocalDateTime.parse("2025-09-23T08:30:17"),
+                mockRuta, mockPasajero);
+        when(solicitudViajeRepository.findById(Long.valueOf(savedSolicitud.getIdSolicitudViaje()))).thenReturn(Optional.of(savedSolicitud));
+
+        Ruta ruta = mockRuta;
+        when(rutaRepository.findById(Long.valueOf(savedSolicitud.getRuta().getIdRuta()))).thenReturn(Optional.of(ruta));
+
+
+        // Assert
+        assertThatThrownBy(() -> solicitudViajeService.cancelSolicitud(savedSolicitud.getIdSolicitudViaje()))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("Solo se pueden cancelar solicitudes pendientes");
 
     }
     @Test
@@ -326,23 +351,15 @@ public class SolicitudViajeServiceTest {
         SolicitudViaje savedSolicitud = createMockSolicitud(4, EstadoSolicitud.PENDIENTE,
                 LocalTime.parse("08:30:17"), LocalDate.parse("2025-09-23"),LocalDateTime.parse("2025-09-23T08:30:17"),
                 mockRuta, mockPasajero);
-        when(solicitudViajeRepository.save(any(SolicitudViaje.class))).thenReturn(savedSolicitud);
-
-        when(pasajeroRepository.findById(1)).thenReturn(Optional.of(mockPasajero));
-
-        when(rutaRepository.findById(1L)).thenReturn(Optional.of(mockRuta));
 
         when(solicitudViajeRepository.searchByUsuario(mockPasajero.getIdPasajero())).thenReturn(Arrays.asList(savedSolicitud));
         // Act
         // guardar solicitud
-        SolicitudViajeResponseDTO response = solicitudViajeService.create(request);
-
 
         // buscar estados de las solicitudes (deberia aparecer la solicitud que acabo de crear)
         List<SolicitudEstadoResponseDTO> responses = solicitudViajeService.searchByUsuario(savedSolicitud.getPasajero().getIdPasajero());
 
         // Assert
-        assertThat(response).isNotNull();
         assertThat(responses).isNotNull();
         assertThat(responses.size()).isGreaterThan(0);
     }

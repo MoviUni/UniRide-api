@@ -43,5 +43,13 @@ public class SolicitudViajeController {
         return ResponseEntity.ok(solicitudViajeService.searchByUsuario(id));
     }
 
+    @PatchMapping("/{idSolicitud}/cancelar")
+    public ResponseEntity<SolicitudViajeResponseDTO> cancelSolicitud(
+            @PathVariable Integer idSolicitud
+    ) {
+        var updated = solicitudViajeService.cancelSolicitud(idSolicitud);
+        return ResponseEntity.ok(updated);
+    }
+
 }
 
