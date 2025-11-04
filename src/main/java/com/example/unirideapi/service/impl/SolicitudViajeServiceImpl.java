@@ -1,4 +1,4 @@
-package com.example.unirideapi.unit.impl;
+package com.example.unirideapi.service.impl;
 
 import com.example.unirideapi.dto.request.SolicitudViajeRequestDTO;
 import com.example.unirideapi.dto.response.SolicitudEstadoResponseDTO;
@@ -14,7 +14,7 @@ import com.example.unirideapi.model.enums.EstadoSolicitud;
 import com.example.unirideapi.repository.PasajeroRepository;
 import com.example.unirideapi.repository.RutaRepository;
 import com.example.unirideapi.repository.SolicitudViajeRepository;
-import com.example.unirideapi.unit.SolicitudViajeService;
+import com.example.unirideapi.service.SolicitudViajeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

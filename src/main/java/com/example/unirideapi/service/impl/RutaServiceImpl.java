@@ -1,4 +1,4 @@
-package com.example.unirideapi.unit.impl;
+package com.example.unirideapi.service.impl;
 
 import com.example.unirideapi.dto.request.RutaRequestDTO;
 import com.example.unirideapi.exception.ResourceNotFoundException;
@@ -7,7 +7,7 @@ import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.mapper.RutaMapper;
 import com.example.unirideapi.model.Ruta;
 import com.example.unirideapi.repository.RutaRepository;
-import com.example.unirideapi.unit.RutaService;
+import com.example.unirideapi.service.RutaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

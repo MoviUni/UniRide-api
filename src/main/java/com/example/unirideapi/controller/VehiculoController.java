@@ -2,12 +2,14 @@ package com.example.unirideapi.controller;
 import com.example.unirideapi.dto.request.VehiculoColorRequestDTO;
 import com.example.unirideapi.dto.request.VehiculoRequestDTO;
 import com.example.unirideapi.dto.response.VehiculoResponseDTO;
-import com.example.unirideapi.unit.VehiculoService;
+import com.example.unirideapi.service.VehiculoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Vehículos", description = "Endpoints para gestionar vehículos de conductores.")
 @RestController
 @RequestMapping("/vehiculos")
 @RequiredArgsConstructor

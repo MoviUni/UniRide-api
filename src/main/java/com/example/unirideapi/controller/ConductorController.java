@@ -2,7 +2,8 @@ package com.example.unirideapi.controller;
 
 import com.example.unirideapi.dto.request.ConductorRequestDTO;
 import com.example.unirideapi.dto.response.ConductorResponseDTO;
-import com.example.unirideapi.unit.ConductorService;
+import com.example.unirideapi.service.ConductorService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(
+        name = "Conductor",
+        description = "Endpoints para gestionar conductores. " +
+                "Permite listar, paginar, crear, actualizar, eliminar y ver perfiles de conductores."
+)
 @RestController
 @RequiredArgsConstructor
 @PreAuthorize("hasAnyRole('CONDUCTOR', 'ADMIN')")

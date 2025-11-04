@@ -30,9 +30,8 @@ public class OpenAPIConfig {
         prodServer.setDescription("Server URL in Production environment");
 
         Contact contact = new Contact();
-        contact.setEmail("bances929@email.com");
-        contact.setName("Nicole");
-        contact.setUrl("https://github.com/NicoleBances");
+        contact.setName("UniRide");
+        contact.setUrl("https://github.com/MoviUni");
 
         Info info = new Info()
                 .title("UniRide API")

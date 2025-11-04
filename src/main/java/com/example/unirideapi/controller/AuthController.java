@@ -7,6 +7,7 @@ import com.example.unirideapi.dto.request.UsuarioRegistroRequestDTO;
 import com.example.unirideapi.dto.response.AuthResponseDTO;
 import com.example.unirideapi.dto.response.UsuarioPerfilResponseDTO;
 import com.example.unirideapi.service.UsuarioService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,10 @@ import org.springframework.web.bind.annotation.*;
  * Nota: Tu app ya expone el contexto "/api/v1" (por configuración),
  * así que este controller quedará en: /api/v1/auth/...
  */
+@Tag(
+        name = "Auth",
+        description = "Endpoints para registro de usuarios (pasajero y conductor) y login. "
+)
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor

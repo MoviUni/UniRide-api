@@ -4,7 +4,8 @@ import com.example.unirideapi.dto.request.SolicitudEstadoRequestDTO;
 import com.example.unirideapi.dto.request.SolicitudViajeRequestDTO;
 import com.example.unirideapi.dto.response.SolicitudEstadoResponseDTO;
 import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
-import com.example.unirideapi.unit.SolicitudViajeService;
+import com.example.unirideapi.service.SolicitudViajeService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(
+        name = "Solicitudes de Viaje",
+        description = "Endpoints para gestionar solicitudes de viaje." +
+                "Permite crear solicitudes, actualizar estado y listar solicitudes por ruta o usuario."
+)
 @RestController
 @RequestMapping("/solicitudes")
 @PreAuthorize("hasAnyRole('CONDUCTOR', 'PASAJERO', 'ADMIN')")
