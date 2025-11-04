@@ -7,23 +7,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.exception.BusinessRuleException;
 import com.example.unirideapi.exception.ResourceNotFoundException;
 import com.example.unirideapi.mapper.RutaMapper;
 import com.example.unirideapi.model.Ruta;
 import com.example.unirideapi.model.enums.EstadoRuta;
 import com.example.unirideapi.repository.RutaRepository;
-import com.example.unirideapi.service.impl.RutaServiceImpl;
-import org.junit.jupiter.api.DisplayName;
+
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.example.unirideapi.model.enums.EstadoRuta;
+
 import com.example.unirideapi.repository.ConductorRepository;
-import com.example.unirideapi.repository.RutaRepository;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -32,14 +30,11 @@ import java.util.Arrays;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-import org.junit.jupiter.api.Test;
-import java.util.Optional;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("RutaService - Pruebas unitarias de ruta service")

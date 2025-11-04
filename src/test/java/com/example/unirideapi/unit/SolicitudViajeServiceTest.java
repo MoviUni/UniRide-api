@@ -1,6 +1,5 @@
 package com.example.unirideapi.unit;
 
-import com.example.unirideapi.dto.request.SolicitudEstadoRequestDTO;
 import com.example.unirideapi.dto.request.SolicitudViajeRequestDTO;
 
 import com.example.unirideapi.dto.response.SolicitudEstadoResponseDTO;
@@ -16,17 +15,12 @@ import com.example.unirideapi.repository.SolicitudViajeRepository;
 
 import com.example.unirideapi.service.impl.SolicitudViajeServiceImpl;
 
-import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
-import com.example.unirideapi.exception.BusinessRuleException;
 import com.example.unirideapi.exception.ResourceNotFoundException;
-import com.example.unirideapi.mapper.SolicitudViajeMapper;
+
 import com.example.unirideapi.model.Ruta;
 import com.example.unirideapi.model.SolicitudViaje;
 import com.example.unirideapi.model.enums.EstadoRuta;
-import com.example.unirideapi.model.enums.EstadoSolicitud;
 import com.example.unirideapi.repository.RutaRepository;
-import com.example.unirideapi.repository.SolicitudViajeRepository;
-import com.example.unirideapi.service.impl.SolicitudViajeServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,20 +29,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-
-import com.example.unirideapi.model.enums.EstadoRuta;
-
-import com.example.unirideapi.repository.RutaRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
+
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,6 +62,7 @@ public class SolicitudViajeServiceTest {
     @InjectMocks
     private SolicitudViajeServiceImpl solicitudViajeService;
 
+    private Ruta mockRuta1;
     private Ruta mockRuta;
     private Pasajero mockPasajero;
     private Conductor mockConductor;
@@ -279,18 +267,35 @@ public class SolicitudViajeServiceTest {
     }
     @Test
     @DisplayName("Debe cancelar una solicitud de manera exitosa.")
-    void patchSolicitudViaje_EstadoValido_Success(){
+    void patchSolicitudViaje_EstadoValido_Success() {
         // Arrange
         SolicitudViaje savedSolicitud = createMockSolicitud(4, EstadoSolicitud.PENDIENTE,
-                LocalTime.parse("08:30:17"), LocalDate.parse("2025-09-23"),LocalDateTime.parse("2025-09-23T08:30:17"),
+                LocalTime.parse("08:30:17"), LocalDate.parse("2025-09-23"), LocalDateTime.parse("2025-09-23T08:30:17"),
                 mockRuta1, mockPasajero);
         when(solicitudViajeRepository.findById(Long.valueOf(savedSolicitud.getIdSolicitudViaje()))).thenReturn(Optional.of(savedSolicitud));
 
         Ruta ruta = mockRuta1;
         when(rutaRepository.findById(Long.valueOf(savedSolicitud.getRuta().getIdRuta()))).thenReturn(Optional.of(ruta));
-=======
+        when(solicitudViajeMapper.toDTO(any(SolicitudViaje.class)))
+                .thenAnswer(invocation -> {
+                    SolicitudViaje s = invocation.getArgument(0);
+                    return new SolicitudViajeResponseDTO(
+                            s.getIdSolicitudViaje(),
+                            s.getFecha(),
+                            s.getHora(),
+                            null,
+                            s.getEstadoSolicitud(),
+                            s.getRuta().getIdRuta(),
+                            100
+                    );
+                });
 
-    
+        // Act
+        SolicitudViajeResponseDTO response = solicitudViajeService.cancelSolicitud(savedSolicitud.getIdSolicitudViaje());
+        // Assert
+        assertThat(response).isNotNull();
+        assertThat(response.estadoSolicitud()).isEqualTo(EstadoSolicitud.CANCELADO);
+    }
     private Ruta createMockRuta(Integer idRuta, EstadoRuta estado) {
         Ruta ruta=new Ruta();
         ruta.setIdRuta(idRuta);
@@ -390,11 +395,12 @@ public class SolicitudViajeServiceTest {
                     );
                 });
 
-        // Act
-        SolicitudViajeResponseDTO response = solicitudViajeService.cancelSolicitud(savedSolicitud.getIdSolicitudViaje());
-        // Assert
-        assertThat(response).isNotNull();
-        assertThat(response.estadoSolicitud()).isEqualTo(EstadoSolicitud.CANCELADO);
+        // CUANDO
+        SolicitudViajeResponseDTO resultado = solicitudViajeService.updateEstadoSolicitud(1, EstadoSolicitud.ACEPTADO);
+
+        // ENTONCES
+        assertThat(resultado.estadoSolicitud()).isEqualTo(EstadoSolicitud.ACEPTADO);
+        assertThat(mockRuta.getAsientosDisponibles()).isEqualTo(2);
     }
 
     @Test
@@ -455,16 +461,8 @@ public class SolicitudViajeServiceTest {
         assertThat(responses).isNotNull();
         assertThat(responses.size()).isGreaterThan(0);
     }
-}
-=======
 
-        // CUANDO
-        SolicitudViajeResponseDTO resultado = solicitudViajeService.updateEstadoSolicitud(1, EstadoSolicitud.ACEPTADO);
 
-        // ENTONCES
-        assertThat(resultado.estadoSolicitud()).isEqualTo(EstadoSolicitud.ACEPTADO);
-        assertThat(mockRuta1.getAsientosDisponibles()).isEqualTo(2);
-    }
     @Test
     @DisplayName("CP02: Rechazar solicitud - debe rechazar una solicitud pendiente sin modificar los asientos disponibles")
     void updateEstadoSolicitud_RechazarSolicitud_Success() {
