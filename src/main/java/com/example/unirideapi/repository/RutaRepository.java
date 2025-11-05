@@ -103,6 +103,7 @@ public interface RutaRepository extends JpaRepository<Ruta, Long> {
 
     @Query(value = "SELECT COUNT(*) FROM pasajero p WHERE p.id_ruta = :idRuta", nativeQuery = true)
     int countReservas(@Param("idRuta") Long idRuta);
+
 }
 
 

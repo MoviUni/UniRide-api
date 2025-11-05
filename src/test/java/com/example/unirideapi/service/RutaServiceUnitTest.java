@@ -653,13 +653,41 @@ public class RutaServiceUnitTest {
                 .hasMessage("Capacidad mínima 1");
     }
 
-    // ---------- CP15 - Reducción de capacidad con reservas (pendiente de implementación)
-    @Disabled("Pendiente: lógica para impedir reducción por debajo de reservas")
+    // ---------- CP15 - Reducción de capacidad con reservas (BLOQUEA)
     @Test
-    @DisplayName("CP15 - Reducción de capacidad con reservas: impide acción y advierte")
+    @DisplayName("CP15 - Reducción de capacidad con reservas: impide reducir por debajo de reservas")
     void actualizarRuta_reduccionCapacidad_conReservas_impide() {
-        // Aquí irá el test cuando exista la lógica que consulta reservas y bloquee
+        Long idRuta = 500L; Integer idConductor = 77;
+
+        com.example.unirideapi.model.Ruta existente = new com.example.unirideapi.model.Ruta();
+        existente.setIdRuta(idRuta.intValue()); // <-- Integer
+        var conductor = new com.example.unirideapi.model.Conductor();
+        conductor.setIdConductor(idConductor);
+        existente.setConductor(conductor);
+        existente.setFechaSalida(LocalDate.now().plusDays(2));
+        existente.setHoraSalida(LocalTime.of(9, 0));
+
+        var dto = com.example.unirideapi.dto.request.RutaRequestDTO.builder()
+                .origen("Lima").destino("UPC")
+                .fechaSalida(LocalDate.now().plusDays(2))
+                .horaSalida(LocalTime.of(9, 0))
+                .tarifa(10f).asientosDisponibles(2) // < reservas (3)
+                .estadoRuta(EstadoRuta.PROGRAMADO).conductorId(idConductor)
+                .build();
+
+        when(rutaRepository.findById(idRuta)).thenReturn(Optional.of(existente));
+        when(rutaRepository.countReservas(idRuta)).thenReturn(3); // <-- OK
+
+        assertThatThrownBy(() -> rutaService.actualizarRutaFull(idRuta, idConductor, dto, false))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("capacidad")
+                .hasMessageContaining("reservados");
+
+        verify(rutaRepository).findById(idRuta);
+        verify(rutaRepository).countReservas(idRuta);
+        verify(rutaRepository, never()).save(any(com.example.unirideapi.model.Ruta.class));
     }
+
 
     // ---------- CP16 - Edición exitosa (cambio de hora) siendo dueño
     @Test
@@ -724,12 +752,57 @@ public class RutaServiceUnitTest {
         verify(rutaRepository, never()).save(any(Ruta.class));
     }
 
-    // ---------- CP18 - Editar con reservas (pendiente de confirmación y notificación)
-    @Disabled("Pendiente: lógica para pedir confirmación y notificar pasajeros")
+    // ---------- CP18 - Edición con reservas sin confirmar (BLOQUEA) y con confirmar (OK)
     @Test
-    @DisplayName("CP18 - Editar ruta con reservas: requiere confirmación y notifica pasajeros")
-    void actualizarRuta_conReservas_pideConfirmacionYNotifica() {
-        // Se habilitará cuando se implemente la integración con reservas/notificaciones
+    @DisplayName("CP18 - Editar ruta con reservas: sin confirmar bloquea; con confirmar permite")
+    void actualizarRuta_conReservas_confirmaSegunFlag() {
+        Long idRuta = 600L; Integer idConductor = 42;
+
+        com.example.unirideapi.model.Ruta existente = new com.example.unirideapi.model.Ruta();
+        existente.setIdRuta(idRuta.intValue()); // <-- Integer
+        var conductor = new com.example.unirideapi.model.Conductor();
+        conductor.setIdConductor(idConductor);
+        existente.setConductor(conductor);
+        existente.setFechaSalida(LocalDate.of(2025, 10, 20));
+        existente.setHoraSalida(LocalTime.of(8, 30));
+
+        var dto = com.example.unirideapi.dto.request.RutaRequestDTO.builder()
+                .origen("Lima").destino("UPC")
+                .fechaSalida(LocalDate.of(2025, 10, 21)) // cambia fecha
+                .horaSalida(LocalTime.of(9, 0))          // cambia hora
+                .tarifa(12f).asientosDisponibles(4)
+                .estadoRuta(EstadoRuta.PROGRAMADO).conductorId(idConductor)
+                .build();
+
+        when(rutaRepository.findById(idRuta)).thenReturn(Optional.of(existente));
+        when(rutaRepository.countReservas(idRuta)).thenReturn(2); // hay reservas
+
+        // Sin confirmación => BLOQUEA
+        assertThatThrownBy(() -> rutaService.actualizarRutaFull(idRuta, idConductor, dto, false))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("confirmación")
+                .hasMessageContaining("horario/fecha");
+
+        // Con confirmación => PERMITE y guarda
+        when(rutaRepository.findById(idRuta)).thenReturn(Optional.of(existente)); // segunda llamada
+        when(rutaRepository.countReservas(idRuta)).thenReturn(2);
+        when(rutaRepository.save(any(com.example.unirideapi.model.Ruta.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+        when(rutaMapper.toDTO(any(com.example.unirideapi.model.Ruta.class)))
+                .thenReturn(com.example.unirideapi.dto.response.RutaResponseDTO.builder()
+                        .idRuta(idRuta.intValue()) // <-- Integer
+                        .origen("Lima").destino("UPC")
+                        .fechaSalida(dto.fechaSalida()).horaSalida(dto.horaSalida())
+                        .tarifa(12L).asientosDisponibles(4).estadoRuta(EstadoRuta.PROGRAMADO)
+                        .idConductor(idConductor).build());
+
+        var ok = rutaService.actualizarRutaFull(idRuta, idConductor, dto, true);
+        assertThat(ok.fechaSalida()).isEqualTo(dto.fechaSalida());
+        assertThat(ok.horaSalida()).isEqualTo(dto.horaSalida());
+
+        verify(rutaRepository, times(2)).findById(idRuta);
+        verify(rutaRepository, times(2)).countReservas(idRuta);
+        verify(rutaRepository).save(any(com.example.unirideapi.model.Ruta.class));
     }
 
     // ---------- CP19 - Eliminar ruta sin reservas: se desactiva o elimina
@@ -753,12 +826,37 @@ public class RutaServiceUnitTest {
         verify(rutaRepository).delete(existente);
     }
 
-    // ---------- CP20 - Eliminar ruta con reservas (pendiente de confirmación/notificación)
-    @Disabled("Pendiente: lógica para confirmar y notificar pasajeros al eliminar")
+    // ---------- CP20 - Eliminar ruta con reservas sin confirmar (BLOQUEA) y confirmado (OK)
     @Test
-    @DisplayName("CP20 - Eliminar ruta con reservas: requiere confirmación y notifica")
+    @DisplayName("CP20 - Eliminar ruta con reservas sin confirmar: bloquea; confirmado: elimina")
     void eliminarRuta_conReservas_requiereConfirmacion() {
-        // Se habilitará cuando exista la regla de negocio
+        Long idRuta = 700L; Integer idConductor = 55;
+
+        com.example.unirideapi.model.Ruta existente = new com.example.unirideapi.model.Ruta();
+        existente.setIdRuta(idRuta.intValue()); // <-- Integer
+        var conductor = new com.example.unirideapi.model.Conductor();
+        conductor.setIdConductor(idConductor);
+        existente.setConductor(conductor);
+
+        when(rutaRepository.findById(idRuta)).thenReturn(Optional.of(existente));
+        when(rutaRepository.countReservas(idRuta)).thenReturn(5);
+
+        // Sin confirmar => BLOQUEA
+        assertThatThrownBy(() -> rutaService.eliminarRutaDeConductor(idRuta, idConductor, false))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("confirmación")
+                .hasMessageContaining("eliminar");
+
+        // Confirmado => ELIMINA
+        when(rutaRepository.findById(idRuta)).thenReturn(Optional.of(existente)); // segunda llamada
+        when(rutaRepository.countReservas(idRuta)).thenReturn(5);
+        doNothing().when(rutaRepository).delete(existente);
+
+        rutaService.eliminarRutaDeConductor(idRuta, idConductor, true);
+
+        verify(rutaRepository, times(2)).findById(idRuta);
+        verify(rutaRepository, times(2)).countReservas(idRuta);
+        verify(rutaRepository).delete(existente);
     }
 
     // ---------- CP21 - Eliminar siendo otro usuario: acción no permitida
