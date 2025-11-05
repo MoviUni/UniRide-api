@@ -220,7 +220,7 @@ public class RutaServiceImpl implements RutaService {
             }
 
         } catch (BusinessRuleException e) {
-            // re-lanzamos si ya es del tipo esperado
+            // relanzamos si ya es del tipo esperado
             throw e;
         } catch (Exception e) {
             throw new BusinessRuleException("Hubo un error al exportar tu reporte");
@@ -273,7 +273,7 @@ public class RutaServiceImpl implements RutaService {
                         .destino(row[1].toString())
                         .fechaSalida(LocalDate.parse(row[2].toString()))
                         .horaSalida(LocalTime.parse(row[3].toString()))
-                        .tarifa(Long.parseLong(row[4].toString())) // ERROR : Required Long, Provided Double
+                        .tarifa(((Number) row[4]).longValue())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -337,6 +337,140 @@ public class RutaServiceImpl implements RutaService {
         }
 
         rutaRepository.delete(ruta);
+    }
+
+    // =====================
+// HELPERS PRIVADOS
+// =====================
+    private boolean esNuloOVacio(String s) {
+        return s == null || s.isBlank();
+    }
+
+    /** Chequeo de duplicado usando tu propio searchBy(...) */
+    private boolean existeRutaDuplicada(Integer idConductor,
+                                        String origen,
+                                        String destino,
+                                        LocalDate fecha,
+                                        LocalTime hora) {
+        return rutaRepository
+                .searchBy(destino, origen, hora, fecha)
+                .stream()
+                .anyMatch(r -> r.getConductor() != null
+                        && r.getConductor().getIdConductor() != null
+                        && r.getConductor().getIdConductor().equals(idConductor));
+    }
+
+    /** Placeholder: mientras no tengas countReservas(idRuta) en el repo, devuelve 0 */
+    private int obtenerReservas(Long idRuta) {
+        // TODO: si luego agregas rutaRepository.countReservas(idRuta), retorna ese valor real.
+        return 0;
+    }
+
+    // ======================================================
+// PUBLICAR RUTA con validaciones (NO reemplaza tu create())
+// ======================================================
+    public RutaResponseDTO publicarRutaComoConductor(RutaRequestDTO dto) {
+        if (esNuloOVacio(dto.destino())) {
+            throw new BusinessRuleException("Destino es obligatorio");
+        }
+        if (dto.asientosDisponibles() == null || dto.asientosDisponibles() < 1) {
+            throw new BusinessRuleException("Capacidad mínima 1");
+        }
+        if (dto.conductorId() != null &&
+                existeRutaDuplicada(dto.conductorId(), dto.origen(), dto.destino(),
+                        dto.fechaSalida(), dto.horaSalida())) {
+            throw new BusinessRuleException("Ruta duplicada no permitida");
+        }
+        // Reutiliza tu create() que ya funciona
+        return create(dto);
+    }
+
+    // =====================================================================
+// ACTUALIZAR con reglas y confirmación (nombre distinto del tuyo)
+// =====================================================================
+    @Transactional
+    public RutaResponseDTO actualizarRutaFullConReglas(Long idRuta,
+                                                       Integer idConductor,
+                                                       RutaRequestDTO dto,
+                                                       boolean confirmarCambios) {
+        var ruta = rutaRepository.findById(idRuta)
+                .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrada"));
+
+        // Propiedad
+        if (ruta.getConductor() == null
+                || ruta.getConductor().getIdConductor() == null
+                || !ruta.getConductor().getIdConductor().equals(idConductor)) {
+            throw new AccessDeniedException("No puedes editar rutas de otro conductor");
+        }
+
+        // Capacidad
+        if (dto.asientosDisponibles() == null || dto.asientosDisponibles() < 1) {
+            throw new BusinessRuleException("Capacidad mínima 1");
+        }
+
+        int reservas = obtenerReservas(idRuta);
+        if (reservas > 0 && dto.asientosDisponibles() < reservas) {
+            throw new BusinessRuleException("No puedes reducir la capacidad por debajo de pasajeros reservados");
+        }
+
+        boolean cambiaFecha = dto.fechaSalida() != null && !dto.fechaSalida().equals(ruta.getFechaSalida());
+        boolean cambiaHora  = dto.horaSalida()  != null && !dto.horaSalida().equals(ruta.getHoraSalida());
+        if (reservas > 0 && (cambiaFecha || cambiaHora) && !confirmarCambios) {
+            throw new BusinessRuleException("La ruta tiene pasajeros: se requiere confirmación para cambiar horario/fecha");
+        }
+
+        // Actualización total (respetando tu tipo Long en tarifa)
+        ruta.setOrigen(dto.origen());
+        ruta.setDestino(dto.destino());
+        ruta.setFechaSalida(dto.fechaSalida());
+        ruta.setHoraSalida(dto.horaSalida());
+        ruta.setTarifa(dto.tarifa() == null ? null : dto.tarifa().longValue());
+        ruta.setAsientosDisponibles(dto.asientosDisponibles());
+        ruta.setEstadoRuta(dto.estadoRuta());
+
+        return rutaMapper.toDTO(rutaRepository.save(ruta));
+    }
+
+    // =====================================================================
+// ELIMINAR con confirmación (nombre distinto del tuyo)
+// =====================================================================
+    @Transactional
+    public void eliminarRutaDeConductorConReglas(Long idRuta, Integer idConductor, boolean confirmar) {
+        var ruta = rutaRepository.findById(idRuta)
+                .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrada"));
+
+        if (ruta.getConductor() == null
+                || ruta.getConductor().getIdConductor() == null
+                || !ruta.getConductor().getIdConductor().equals(idConductor)) {
+            throw new AccessDeniedException("No puedes eliminar rutas de otro conductor");
+        }
+
+        int reservas = obtenerReservas(idRuta);
+        if (reservas > 0 && !confirmar) {
+            throw new BusinessRuleException("La ruta tiene pasajeros: se requiere confirmación para eliminar");
+        }
+
+        rutaRepository.delete(ruta);
+    }
+
+    // ======================================================
+// CONSULTAR todas mis rutas (alias para controlador)
+// ======================================================
+    public List<RutaResponseDTO> consultarRutasPublicadasComoConductor(Integer idConductor) {
+        return listarRutasDelConductor(idConductor);
+    }
+
+    @Override
+    public RutaResponseDTO actualizarRutaFull(Long idRuta,
+                                              Integer idConductor,
+                                              RutaRequestDTO dto,
+                                              boolean confirmarCambios) {
+        return actualizarRutaFullConReglas(idRuta, idConductor, dto, confirmarCambios);
+    }
+
+    @Override
+    public void eliminarRutaDeConductor(Long idRuta, Integer idConductor, boolean confirmar) {
+        eliminarRutaDeConductorConReglas(idRuta, idConductor, confirmar);
     }
 
 

@@ -184,21 +184,33 @@ public class RutaController {
         return ResponseEntity.ok(rutaService.listarRutasDelConductorPorEstado(idConductor, estado));
     }
 
-    // ⬇️ ADD: NUEVO — actualizar mi ruta (PUT, reemplazo completo, usando tu RutaRequestDTO)
+    // PUT — ahora con confirmación opcional (?confirmar=true)
     @PutMapping("/{idRuta}/conductor/{idConductor}")
     public ResponseEntity<RutaResponseDTO> actualizarRuta(
             @PathVariable Long idRuta,
             @PathVariable Integer idConductor,
+            @RequestParam(name = "confirmar", defaultValue = "false") boolean confirmar,
             @RequestBody @Valid RutaRequestDTO dto) {
-        return ResponseEntity.ok(rutaService.actualizarRutaFull(idRuta, idConductor, dto));
+
+        return ResponseEntity.ok(
+                rutaService.actualizarRutaFull(idRuta, idConductor, dto, confirmar)
+        );
     }
 
-    // ⬇️ ADD: NUEVO — eliminar mi ruta
+    // DELETE — ahora con confirmación opcional (?confirmar=true)
     @DeleteMapping("/{idRuta}/conductor/{idConductor}")
     public ResponseEntity<Void> eliminarRuta(
             @PathVariable Long idRuta,
-            @PathVariable Integer idConductor) {
-        rutaService.eliminarRutaDeConductor(idRuta, idConductor);
+            @PathVariable Integer idConductor,
+            @RequestParam(name = "confirmar", defaultValue = "false") boolean confirmar) {
+
+        rutaService.eliminarRutaDeConductor(idRuta, idConductor, confirmar);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/publicar")
+    public ResponseEntity<RutaResponseDTO> publicar(@RequestBody @Valid RutaRequestDTO dto) {
+        return ResponseEntity.ok(rutaService.publicarRutaComoConductor(dto));
+    }
+
 }
