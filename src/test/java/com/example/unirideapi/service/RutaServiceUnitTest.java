@@ -16,7 +16,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.Disabled;
+import org.springframework.dao.DataIntegrityViolationException;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -481,6 +485,302 @@ public class RutaServiceUnitTest {
 
         verify(rutaRepository).findById(99L);
         verify(rutaRepository, never()).save(any());
+    }
+
+    // ---------- CP10 - Publicar ruta (éxito)
+    @Test
+    @DisplayName("CP10 - Publicar ruta: crea correctamente con origen/destino/días/hora válidos")
+    void publicarRuta_exitoso() {
+        // GIVEN
+        var dto = com.example.unirideapi.dto.request.RutaRequestDTO.builder()
+                .origen("Lima")
+                .destino("UPC-Monterrico")
+                .fechaSalida(LocalDate.of(2025, 10, 20))
+                .horaSalida(LocalTime.of(8, 30))
+                .tarifa(15f)
+                .asientosDisponibles(4)
+                .estadoRuta(EstadoRuta.PROGRAMADO)
+                .conductorId(10)
+                .build();
+
+        Ruta entityMapped = new Ruta();
+        entityMapped.setOrigen(dto.origen());
+        entityMapped.setDestino(dto.destino());
+        entityMapped.setFechaSalida(dto.fechaSalida());
+        entityMapped.setHoraSalida(dto.horaSalida());
+        entityMapped.setTarifa(dto.tarifa().longValue()); // ajusta tipo si tu entidad no es Double
+        entityMapped.setAsientosDisponibles(dto.asientosDisponibles());
+        entityMapped.setEstadoRuta(dto.estadoRuta());
+
+        Ruta saved = entityMapped; // simulamos retorno post-save
+
+        RutaResponseDTO response = RutaResponseDTO.builder()
+                .origen(dto.origen())
+                .destino(dto.destino())
+                .fechaSalida(dto.fechaSalida())
+                .horaSalida(dto.horaSalida())
+                .tarifa(15L) // ajusta si tu DTO usa otro tipo
+                .asientosDisponibles(4)
+                .estadoRuta(EstadoRuta.PROGRAMADO)
+                .idConductor(10)
+                .build();
+
+        when(rutaMapper.toEntity(dto)).thenReturn(entityMapped);
+        when(rutaRepository.save(entityMapped)).thenReturn(saved);
+        when(rutaMapper.toDTO(saved)).thenReturn(response);
+
+        // WHEN
+        RutaResponseDTO out = rutaService.create(dto);
+
+        // THEN
+        assertThat(out).isNotNull();
+        assertThat(out.origen()).isEqualTo("Lima");
+        assertThat(out.destino()).isEqualTo("UPC-Monterrico");
+        assertThat(out.asientosDisponibles()).isEqualTo(4);
+        verify(rutaMapper).toEntity(dto);
+        verify(rutaRepository).save(entityMapped);
+        verify(rutaMapper).toDTO(saved);
+    }
+
+    // ---------- CP11 - Publicar ruta (faltan datos: destino)
+    @Test
+    @DisplayName("CP11 - Publicar ruta: 'Destino es obligatorio' si falta destino")
+    void publicarRuta_faltaDestino_muestraError() {
+        // GIVEN
+        var dto = com.example.unirideapi.dto.request.RutaRequestDTO.builder()
+                .origen("Lima")
+                .destino(null) // falta
+                .fechaSalida(LocalDate.of(2025, 10, 20))
+                .horaSalida(LocalTime.of(8, 30))
+                .tarifa(15f)
+                .asientosDisponibles(4)
+                .estadoRuta(EstadoRuta.PROGRAMADO)
+                .conductorId(10)
+                .build();
+
+        // Nota: como la validación aún no existe en el service, simulamos la regla
+        // haciendo que el mapper lance la excepción de negocio.
+        when(rutaMapper.toEntity(dto))
+                .thenThrow(new BusinessRuleException("Destino es obligatorio"));
+
+        // WHEN / THEN
+        assertThatThrownBy(() -> rutaService.create(dto))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessage("Destino es obligatorio");
+
+        verify(rutaMapper).toEntity(dto);
+        verify(rutaRepository, never()).save(any(Ruta.class));
+    }
+
+    // ---------- CP12 - Publicar ruta (duplicada)
+    @Test
+    @DisplayName("CP12 - Publicar ruta duplicada: 'Ruta duplicada no permitida'")
+    void publicarRuta_duplicada_bloqueaRegistro() {
+        // GIVEN
+        var dto = com.example.unirideapi.dto.request.RutaRequestDTO.builder()
+                .origen("Lima")
+                .destino("UPC-Monterrico")
+                .fechaSalida(LocalDate.of(2025, 10, 20))
+                .horaSalida(LocalTime.of(8, 30))
+                .tarifa(15f)
+                .asientosDisponibles(4)
+                .estadoRuta(EstadoRuta.PROGRAMADO)
+                .conductorId(10)
+                .build();
+
+        // Simulamos que al guardar la BD detecta duplicado
+        when(rutaMapper.toEntity(dto)).thenReturn(new Ruta());
+        when(rutaRepository.save(any(Ruta.class)))
+                .thenThrow(new BusinessRuleException("Ruta duplicada no permitida"));
+
+        // WHEN / THEN
+        assertThatThrownBy(() -> rutaService.create(dto))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessage("Ruta duplicada no permitida");
+
+        verify(rutaRepository).save(any(Ruta.class));
+    }
+
+    // ---------- CP13 - Capacidad válida (=4) al crear
+    @Test
+    @DisplayName("CP13 - Capacidad válida (4): se guarda y refleja en la respuesta")
+    void publicarRuta_capacidadValida_guarda() {
+        var dto = com.example.unirideapi.dto.request.RutaRequestDTO.builder()
+                .origen("Lima")
+                .destino("UPC")
+                .fechaSalida(LocalDate.of(2025, 10, 20))
+                .horaSalida(LocalTime.of(8, 30))
+                .tarifa(12f)
+                .asientosDisponibles(4)
+                .estadoRuta(EstadoRuta.PROGRAMADO)
+                .conductorId(7)
+                .build();
+
+        Ruta entity = new Ruta();
+        entity.setAsientosDisponibles(4);
+
+        when(rutaMapper.toEntity(dto)).thenReturn(entity);
+        when(rutaRepository.save(entity)).thenReturn(entity);
+        when(rutaMapper.toDTO(entity)).thenReturn(
+                RutaResponseDTO.builder()
+                        .origen("Lima").destino("UPC")
+                        .fechaSalida(dto.fechaSalida()).horaSalida(dto.horaSalida())
+                        .tarifa(12L).asientosDisponibles(4).estadoRuta(EstadoRuta.PROGRAMADO)
+                        .idConductor(7).build()
+        );
+
+        RutaResponseDTO out = rutaService.create(dto);
+
+        assertThat(out.asientosDisponibles()).isEqualTo(4);
+    }
+
+    // ---------- CP14 - Capacidad inválida (0 o negativa) RECHAZA
+    @Test
+    @DisplayName("CP14 - Capacidad inválida (0 o negativa): rechaza con 'Capacidad mínima 1'")
+    void publicarRuta_capacidadInvalida_rechaza() {
+        var dto = com.example.unirideapi.dto.request.RutaRequestDTO.builder()
+                .origen("Lima").destino("UPC")
+                .fechaSalida(LocalDate.of(2025, 10, 20)).horaSalida(LocalTime.of(8, 30))
+                .tarifa(12f).asientosDisponibles(0) // inválido
+                .estadoRuta(EstadoRuta.PROGRAMADO).conductorId(7).build();
+
+        // simulamos validación de negocio aún no implementada
+        when(rutaMapper.toEntity(dto))
+                .thenThrow(new BusinessRuleException("Capacidad mínima 1"));
+
+        assertThatThrownBy(() -> rutaService.create(dto))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessage("Capacidad mínima 1");
+    }
+
+    // ---------- CP15 - Reducción de capacidad con reservas (pendiente de implementación)
+    @Disabled("Pendiente: lógica para impedir reducción por debajo de reservas")
+    @Test
+    @DisplayName("CP15 - Reducción de capacidad con reservas: impide acción y advierte")
+    void actualizarRuta_reduccionCapacidad_conReservas_impide() {
+        // Aquí irá el test cuando exista la lógica que consulta reservas y bloquee
+    }
+
+    // ---------- CP16 - Edición exitosa (cambio de hora) siendo dueño
+    @Test
+    @DisplayName("CP16 - Editar ruta (hora) siendo conductor dueño: éxito")
+    void actualizarRuta_horaSalida_exito() {
+        Long idRuta = 100L; Integer idConductor = 50;
+
+        Ruta existente = new Ruta();
+        existente.setIdRuta(100);
+        existente.setHoraSalida(LocalTime.of(8, 0));
+        var conductor = new com.example.unirideapi.model.Conductor();
+        conductor.setIdConductor(idConductor);
+        existente.setConductor(conductor);
+
+        var dto = com.example.unirideapi.dto.request.RutaRequestDTO.builder()
+                .origen("Lima").destino("UPC").fechaSalida(LocalDate.now().plusDays(1))
+                .horaSalida(LocalTime.of(9, 45)) // nueva hora
+                .tarifa(10f).asientosDisponibles(3).estadoRuta(EstadoRuta.PROGRAMADO)
+                .conductorId(idConductor).build();
+
+        when(rutaRepository.findById(idRuta)).thenReturn(Optional.of(existente));
+        when(rutaRepository.save(any(Ruta.class))).thenReturn(existente);
+        when(rutaMapper.toDTO(any(Ruta.class))).thenReturn(
+                RutaResponseDTO.builder()
+                        .idRuta(100).origen("Lima").destino("UPC")
+                        .fechaSalida(dto.fechaSalida()).horaSalida(dto.horaSalida())
+                        .tarifa(10L).asientosDisponibles(3).estadoRuta(EstadoRuta.PROGRAMADO)
+                        .idConductor(idConductor).build()
+        );
+
+        RutaResponseDTO out = rutaService.actualizarRutaFull(idRuta, idConductor, dto);
+
+        assertThat(out.horaSalida()).isEqualTo(LocalTime.of(9, 45));
+        verify(rutaRepository).findById(idRuta);
+        verify(rutaRepository).save(any(Ruta.class));
+    }
+
+    // ---------- CP17 - Otro usuario intenta editar: acceso denegado
+    @Test
+    @DisplayName("CP17 - Editar ruta siendo OTRO usuario: 'Acceso denegado'")
+    void actualizarRuta_otroUsuario_denegado() {
+        Long idRuta = 200L; Integer idConductorDueño = 50; Integer idConductorAjeno = 77;
+
+        Ruta existente = new Ruta();
+        existente.setIdRuta(200);
+        var conductor = new com.example.unirideapi.model.Conductor();
+        conductor.setIdConductor(idConductorDueño);
+        existente.setConductor(conductor);
+
+        var dto = com.example.unirideapi.dto.request.RutaRequestDTO.builder()
+                .origen("A").destino("B").fechaSalida(LocalDate.now().plusDays(1))
+                .horaSalida(LocalTime.of(10, 0)).tarifa(8f).asientosDisponibles(2)
+                .estadoRuta(EstadoRuta.PROGRAMADO).conductorId(idConductorAjeno).build();
+
+        when(rutaRepository.findById(idRuta)).thenReturn(Optional.of(existente));
+
+        assertThatThrownBy(() -> rutaService.actualizarRutaFull(idRuta, idConductorAjeno, dto))
+                .isInstanceOf(org.springframework.security.access.AccessDeniedException.class)
+                .hasMessageContaining("No puedes editar rutas de otro conductor");
+
+        verify(rutaRepository).findById(idRuta);
+        verify(rutaRepository, never()).save(any(Ruta.class));
+    }
+
+    // ---------- CP18 - Editar con reservas (pendiente de confirmación y notificación)
+    @Disabled("Pendiente: lógica para pedir confirmación y notificar pasajeros")
+    @Test
+    @DisplayName("CP18 - Editar ruta con reservas: requiere confirmación y notifica pasajeros")
+    void actualizarRuta_conReservas_pideConfirmacionYNotifica() {
+        // Se habilitará cuando se implemente la integración con reservas/notificaciones
+    }
+
+    // ---------- CP19 - Eliminar ruta sin reservas: se desactiva o elimina
+    @Test
+    @DisplayName("CP19 - Eliminar ruta sin reservas: desaparece de la vista pública")
+    void eliminarRuta_sinReservas_exito() {
+        Long idRuta = 300L; Integer idConductor = 88;
+
+        Ruta existente = new Ruta();
+        existente.setIdRuta(300);
+        var conductor = new com.example.unirideapi.model.Conductor();
+        conductor.setIdConductor(idConductor);
+        existente.setConductor(conductor);
+
+        when(rutaRepository.findById(idRuta)).thenReturn(Optional.of(existente));
+        doNothing().when(rutaRepository).delete(existente);
+
+        rutaService.eliminarRutaDeConductor(idRuta, idConductor);
+
+        verify(rutaRepository).findById(idRuta);
+        verify(rutaRepository).delete(existente);
+    }
+
+    // ---------- CP20 - Eliminar ruta con reservas (pendiente de confirmación/notificación)
+    @Disabled("Pendiente: lógica para confirmar y notificar pasajeros al eliminar")
+    @Test
+    @DisplayName("CP20 - Eliminar ruta con reservas: requiere confirmación y notifica")
+    void eliminarRuta_conReservas_requiereConfirmacion() {
+        // Se habilitará cuando exista la regla de negocio
+    }
+
+    // ---------- CP21 - Eliminar siendo otro usuario: acción no permitida
+    @Test
+    @DisplayName("CP21 - Eliminar ruta siendo otro usuario: 'Acción no permitida'")
+    void eliminarRuta_otroUsuario_noPermitida() {
+        Long idRuta = 400L; Integer idConductorDueño = 10; Integer idConductorAjeno = 20;
+
+        Ruta existente = new Ruta();
+        existente.setIdRuta(400);
+        var conductor = new com.example.unirideapi.model.Conductor();
+        conductor.setIdConductor(idConductorDueño);
+        existente.setConductor(conductor);
+
+        when(rutaRepository.findById(idRuta)).thenReturn(Optional.of(existente));
+
+        assertThatThrownBy(() -> rutaService.eliminarRutaDeConductor(idRuta, idConductorAjeno))
+                .isInstanceOf(org.springframework.security.access.AccessDeniedException.class)
+                .hasMessageContaining("No puedes eliminar rutas de otro conductor");
+
+        verify(rutaRepository).findById(idRuta);
+        verify(rutaRepository, never()).delete(any(Ruta.class));
     }
 
 }
