@@ -281,7 +281,7 @@ public class RutaServiceUnitTest {
         verify(rutaRepository).save(ruta);
     }
     @Test
-    @DisplayName("CP03: Fuera del plazo - no debe permitir cambio de estado si la ruta ya está confirmada o cancelada")
+    @DisplayName("CP03: Estado inválido - no debe permitir cambio de estado si la ruta ya está confirmada o cancelada")
     void updateEstadoRuta_RutaConfirmada_ThrowsException() {
         // Dado
         Ruta ruta = new Ruta();
@@ -303,7 +303,7 @@ public class RutaServiceUnitTest {
         verify(rutaRepository, never()).save(any());
     }
     @Test
-    @DisplayName("CP04: Acción no permitida - no debe permitir confirmar o cancelar si falta menos de 1 hora para la salida")
+    @DisplayName("CP04: Fuera de plazo - no debe permitir confirmar o cancelar si falta menos de 1 hora para la salida")
     void updateEstadoRuta_MenosDeUnaHora_ThrowsException() {
         // Dado
         Ruta ruta = new Ruta();
