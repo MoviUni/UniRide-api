@@ -38,11 +38,11 @@ INSERT INTO conductor (
        (SELECT id_usuario FROM usuario WHERE email='conductor3@uniride.test'));
 
 -- ========== VEHICULOS ==========
-INSERT INTO vehiculo (
-    placa, soat, modelo, color, marca, capacidad, descripcion_vehiculo, id_conductor
-) VALUES
-      ('ABC-123', TRUE, 'Yaris', 'Rojo', 'Toyota', 4, 'Sedán compacto, aire acondicionado y GPS.', (SELECT id_conductor FROM conductor WHERE dni='44444444')),
-      ('XYZ-987', TRUE, 'Accent', 'Azul', 'Hyundai', 4, 'Buen maletero, mantenimiento al día y asientos cómodos.', (SELECT id_conductor FROM conductor WHERE dni='55555555'));
+-- INSERT INTO vehiculo (
+--     placa, soat, modelo, color, marca, capacidad, descripcion_vehiculo, id_vehiculo
+-- ) VALUES
+--       ('ABC-123', TRUE, 'Yaris', 'Rojo', 'Toyota', 4, 'Sedán compacto, aire acondicionado y GPS.', (SELECT id_conductor FROM conductor WHERE dni='44444444')),
+--       ('XYZ-987', TRUE, 'Accent', 'Azul', 'Hyundai', 4, 'Buen maletero, mantenimiento al día y asientos cómodos.', (SELECT id_conductor FROM conductor WHERE dni='55555555'));
 
 -- ========== PASAJEROS ==========
 INSERT INTO pasajero (
@@ -53,7 +53,7 @@ INSERT INTO pasajero (
 
 -- ========== RUTAS ==========
 INSERT INTO ruta (
-    origen, destino, fecha_salida, hora_salida, tarifa, asientos_disponibles, estado_ruta, id_conductor
+    origen, destino, fecha_salida, hora_salida, tarifa, asientos_disponibles, estado, id_conductor --estado_ruta
 ) VALUES
       ('Barranco', 'Miraflores', '2025-10-05', '08:00:00', 8.00, 3, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='44444444')),
@@ -66,7 +66,7 @@ INSERT INTO ruta (
 
 -- ========== SOLICITUDES ==========
 INSERT INTO solicitud_viaje (
-    fecha, hora, updated_at, estado_solicitud, id_ruta, id_pasajero
+    fecha, hora, updated_at, estado, id_ruta, id_pasajero --estado_solicitud
 ) VALUES
       ('2025-10-05', '08:00:00', '2025-10-05 08:05:00', 'PENDIENTE',
        (SELECT id_ruta FROM ruta WHERE origen='Barranco' AND destino='Miraflores'),
@@ -77,12 +77,12 @@ INSERT INTO solicitud_viaje (
 
 -- ========== PAGOS ==========
 INSERT INTO pago (
-    monto, fecha, hora, comision, medio_pago, estado_pago, id_solicitud_viaje
+    monto, fecha, hora, comision, medio_pago, estado, id_solicitud_viaje --estado_pago
 ) VALUES
       (8.00, '2025-10-05', '08:10:00', 0.50, 'YAPE', 'COMPLETADO',
-       (SELECT id_solicitud_viaje FROM solicitud_viaje WHERE estado_solicitud='PENDIENTE')),
+       (SELECT id_solicitud_viaje FROM solicitud_viaje WHERE estado='PENDIENTE')),
       (10.00, '2025-10-05', '17:50:00', 0.60, 'TARJETA_DEBITO', 'EN_PROGRESO',
-       (SELECT id_solicitud_viaje FROM solicitud_viaje WHERE estado_solicitud='ACEPTADO'));
+       (SELECT id_solicitud_viaje FROM solicitud_viaje WHERE estado='ACEPTADO'));
 
 -- ========== CALIFICACIONES ==========
 INSERT INTO calificacion (puntaje, comentario, updated_at, id_conductor, id_pasajero)

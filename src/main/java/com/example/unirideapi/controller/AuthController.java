@@ -44,7 +44,8 @@ public class AuthController {
                     content = @Content(schema = @Schema(implementation = UsuarioPerfilResponseDTO.class))),
             @ApiResponse(responseCode = "400", description = "Datos inválidos o incompletos"),
             @ApiResponse(responseCode = "401", description = "Acceso no autorizado"),
-            @ApiResponse(responseCode = "403", description = "Acceso denegado: rol insuficiente")
+            @ApiResponse(responseCode = "403", description = "Acceso denegado: rol insuficiente"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PostMapping("/registro/pasajero")
     public ResponseEntity<UsuarioPerfilResponseDTO> registroPasajero(
@@ -64,7 +65,8 @@ public class AuthController {
                     content = @Content(schema = @Schema(implementation = UsuarioPerfilResponseDTO.class))),
             @ApiResponse(responseCode = "400", description = "Datos inválidos o incompletos"),
             @ApiResponse(responseCode = "401", description = "Acceso no autorizado"),
-            @ApiResponse(responseCode = "403", description = "Acceso denegado: rol insuficiente")
+            @ApiResponse(responseCode = "403", description = "Acceso denegado: rol insuficiente"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PostMapping("/registro/conductor")
     public ResponseEntity<UsuarioPerfilResponseDTO> registroConductor(
@@ -84,7 +86,8 @@ public class AuthController {
                     content = @Content(schema = @Schema(implementation = AuthResponseDTO.class))),
             @ApiResponse(responseCode = "400", description = "Datos de login inválidos"),
             @ApiResponse(responseCode = "401", description = "Credenciales incorrectas o token inválido"),
-            @ApiResponse(responseCode = "403", description = "Acceso denegado")
+            @ApiResponse(responseCode = "403", description = "Acceso denegado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
