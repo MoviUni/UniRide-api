@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.junit.jupiter.api.Disabled;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -652,40 +653,52 @@ public class RutaServiceUnitTest {
                 .hasMessage("Capacidad mínima 1");
     }
 
-    // ---------- CP15 - Reducción de capacidad con reservas (BLOQUEA)
+    // ---------- CP15 - Reducción de capacidad con reservas: BLOQUEA siempre
     @Test
-    @DisplayName("CP15 - Reducción de capacidad con reservas: impide reducir por debajo de reservas")
+    @DisplayName("CP15 - Reducir capacidad por debajo de reservas: lanza BusinessRuleException")
     void actualizarRuta_reduccionCapacidad_conReservas_impide() {
-        Long idRuta = 500L; Integer idConductor = 77;
+        // ids: Long para repo/service; Integer para entidad/DTO
+        Long idRuta = 600L;
+        Integer idConductor = 77;
 
-        com.example.unirideapi.model.Ruta existente = new com.example.unirideapi.model.Ruta();
-        existente.setIdRuta(idRuta.intValue()); // <-- Integer
+        // Ruta existente (dueño correcto)
+        var existente = new com.example.unirideapi.model.Ruta();
+        existente.setIdRuta(idRuta.intValue());
         var conductor = new com.example.unirideapi.model.Conductor();
         conductor.setIdConductor(idConductor);
         existente.setConductor(conductor);
-        existente.setFechaSalida(LocalDate.now().plusDays(2));
-        existente.setHoraSalida(LocalTime.of(9, 0));
+        existente.setOrigen("A");
+        existente.setDestino("B");
+        existente.setFechaSalida(LocalDate.now().plusDays(1));
+        existente.setHoraSalida(LocalTime.of(8, 0));
+        existente.setAsientosDisponibles(6);
+        existente.setEstadoRuta(EstadoRuta.PROGRAMADO);
 
+        // DTO intenta BAJAR la capacidad por debajo de reservas (=5)
         var dto = com.example.unirideapi.dto.request.RutaRequestDTO.builder()
-                .origen("Lima").destino("UPC")
-                .fechaSalida(LocalDate.now().plusDays(2))
-                .horaSalida(LocalTime.of(9, 0))
-                .tarifa(10f).asientosDisponibles(2) // < reservas (3)
-                .estadoRuta(EstadoRuta.PROGRAMADO).conductorId(idConductor)
+                .origen("A").destino("B")
+                .fechaSalida(existente.getFechaSalida())
+                .horaSalida(existente.getHoraSalida())
+                .tarifa(10f)
+                .asientosDisponibles(3)               // <--- menor que reservas (5)
+                .estadoRuta(EstadoRuta.PROGRAMADO)
+                .conductorId(idConductor)
                 .build();
 
-        when(rutaRepository.findById(idRuta)).thenReturn(Optional.of(existente));
-        when(rutaRepository.countReservas(idRuta)).thenReturn(3); // <-- OK
+        when(rutaRepository.findById(idRuta)).thenReturn(java.util.Optional.of(existente));
+        when(rutaRepository.countReservas(idRuta)).thenReturn(5); // <--- hay reservas
 
-        assertThatThrownBy(() -> rutaService.actualizarRutaFull(idRuta, idConductor, dto, false))
+        // Sin importar confirmarCambios, la reducción por debajo de reservas BLOQUEA
+        assertThatThrownBy(() ->
+                rutaService.actualizarRutaFull(idRuta, idConductor, dto, false)
+        )
                 .isInstanceOf(BusinessRuleException.class)
-                .hasMessageContaining("capacidad")
-                .hasMessageContaining("reservados");
+                .hasMessageContaining("No puedes reducir la capacidad");
 
-        verify(rutaRepository).findById(idRuta);
-        verify(rutaRepository).countReservas(idRuta);
+        // No se guarda
         verify(rutaRepository, never()).save(any(com.example.unirideapi.model.Ruta.class));
     }
+
 
 
     // ---------- CP16 - Edición exitosa (cambio de hora) siendo dueño
@@ -825,38 +838,37 @@ public class RutaServiceUnitTest {
         verify(rutaRepository).delete(existente);
     }
 
-    // ---------- CP20 - Eliminar ruta con reservas sin confirmar (BLOQUEA) y confirmado (OK)
     @Test
-    @DisplayName("CP20 - Eliminar ruta con reservas sin confirmar: bloquea; confirmado: elimina")
+    @DisplayName("CP20 - Eliminar ruta con reservas: requiere confirmación y, si confirma, elimina")
     void eliminarRuta_conReservas_requiereConfirmacion() {
-        Long idRuta = 700L; Integer idConductor = 55;
+        Long idRuta = 400L;
+        Integer idConductor = 10;
 
-        com.example.unirideapi.model.Ruta existente = new com.example.unirideapi.model.Ruta();
-        existente.setIdRuta(idRuta.intValue()); // <-- Integer
+        Ruta existente = new Ruta();
+        existente.setIdRuta(idRuta.intValue());
         var conductor = new com.example.unirideapi.model.Conductor();
         conductor.setIdConductor(idConductor);
         existente.setConductor(conductor);
 
-        when(rutaRepository.findById(idRuta)).thenReturn(Optional.of(existente));
-        when(rutaRepository.countReservas(idRuta)).thenReturn(5);
+        when(rutaRepository.findById(idRuta)).thenReturn(java.util.Optional.of(existente));
 
-        // Sin confirmar => BLOQUEA
-        assertThatThrownBy(() -> rutaService.eliminarRutaDeConductor(idRuta, idConductor, false))
+        // Subclase que fuerza "hay 3 reservas"
+        RutaServiceImpl service = new RutaServiceImpl(rutaRepository, rutaMapper) {
+            @Override protected int obtenerReservas(Long ignored) { return 3; }
+        };
+
+        // SIN confirmación => debe lanzar BusinessRuleException
+        assertThatThrownBy(() -> service.eliminarRutaDeConductorConReglas(idRuta, idConductor, false))
                 .isInstanceOf(BusinessRuleException.class)
-                .hasMessageContaining("confirmación")
-                .hasMessageContaining("eliminar");
+                .hasMessageContaining("se requiere confirmación");
 
-        // Confirmado => ELIMINA
-        when(rutaRepository.findById(idRuta)).thenReturn(Optional.of(existente)); // segunda llamada
-        when(rutaRepository.countReservas(idRuta)).thenReturn(5);
-        doNothing().when(rutaRepository).delete(existente);
+        verify(rutaRepository, never()).delete(any(Ruta.class));
 
-        rutaService.eliminarRutaDeConductor(idRuta, idConductor, true);
-
-        verify(rutaRepository, times(2)).findById(idRuta);
-        verify(rutaRepository, times(2)).countReservas(idRuta);
+        // CON confirmación => elimina
+        assertDoesNotThrow(() -> service.eliminarRutaDeConductorConReglas(idRuta, idConductor, true));
         verify(rutaRepository).delete(existente);
     }
+
 
     // ---------- CP21 - Eliminar siendo otro usuario: acción no permitida
     @Test

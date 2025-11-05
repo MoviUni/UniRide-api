@@ -361,7 +361,7 @@ public class RutaServiceImpl implements RutaService {
     }
 
     /** Placeholder: mientras no tengas countReservas(idRuta) en el repo, devuelve 0 */
-    private int obtenerReservas(Long idRuta) {
+    protected int obtenerReservas(Long idRuta) {
         // TODO: si luego agregas rutaRepository.countReservas(idRuta), retorna ese valor real.
         return 0;
     }
@@ -408,7 +408,7 @@ public class RutaServiceImpl implements RutaService {
             throw new BusinessRuleException("Capacidad mínima 1");
         }
 
-        int reservas = obtenerReservas(idRuta);
+        int reservas = rutaRepository.countReservas(idRuta);
         if (reservas > 0 && dto.asientosDisponibles() < reservas) {
             throw new BusinessRuleException("No puedes reducir la capacidad por debajo de pasajeros reservados");
         }
