@@ -47,80 +47,74 @@ public class SolicitudViajeServiceTest {
 
     private Ruta mockRuta;
 
-    @BeforeEach
-    void setUp() {
-        mockRuta=createMockRuta(10,EstadoRuta.PROGRAMADO);
-    }
-    private Ruta createMockRuta(Integer idRuta, EstadoRuta estado) {
-        Ruta ruta=new Ruta();
-        ruta.setIdRuta(idRuta);
-        ruta.setEstadoRuta(estado);
-        return ruta;
-    }
-    private SolicitudViaje createMockSolicitud(Integer id, EstadoSolicitud estado, Ruta ruta) {
-        SolicitudViaje solicitud= new SolicitudViaje();
-        solicitud.setIdSolicitudViaje(id);
-        solicitud.setFecha(LocalDate.now());
-        solicitud.setHora(LocalTime.now());
-        solicitud.setEstadoSolicitud(estado);
-        solicitud.setRuta(ruta);
-        return solicitud;
-    }
-    private SolicitudViajeResponseDTO createMockDTO(SolicitudViaje solicitudViaje, Integer idPasajero) {
-        return new SolicitudViajeResponseDTO(
-                solicitudViaje.getIdSolicitudViaje(),
-                solicitudViaje.getFecha(),
-                solicitudViaje.getHora(),
-                null,
-                solicitudViaje.getEstadoSolicitud(),
-                solicitudViaje.getRuta().getIdRuta(),
-                idPasajero
-        );
-    }
     // -----US: 13------
     @Test
     @DisplayName("CP01: Listado de solicitudes - debe listar las solicitudes por ruta")
     void findSolicitudesByRutaId_RutaExistente_Success() {
-        // Arrange
-        Integer idRuta=10;
-        SolicitudViaje solicitudPendiente=createMockSolicitud(1,EstadoSolicitud.PENDIENTE,mockRuta);
-        SolicitudViaje solicitudAceptada= createMockSolicitud(2, EstadoSolicitud.ACEPTADO, mockRuta);
+        // DADO
+        Integer idRuta = 10;
 
-        List<SolicitudViaje> solicitudes = List.of(solicitudPendiente,solicitudAceptada);
+        Ruta ruta = new Ruta();
+        ruta.setIdRuta(idRuta);
+        ruta.setEstadoRuta(EstadoRuta.PROGRAMADO);
 
-        when(rutaRepository.findById((long)idRuta)).thenReturn(Optional.of(mockRuta));
-        when(solicitudViajeRepository.findByRutaId(idRuta)).thenReturn(solicitudes);;
+        SolicitudViaje solicitudPendiente = new SolicitudViaje();
+        solicitudPendiente.setIdSolicitudViaje(1);
+        solicitudPendiente.setFecha(LocalDate.now());
+        solicitudPendiente.setHora(LocalTime.now());
+        solicitudPendiente.setEstadoSolicitud(EstadoSolicitud.PENDIENTE);
+        solicitudPendiente.setRuta(ruta);
 
-        SolicitudViajeResponseDTO dtoPendiente=createMockDTO(solicitudPendiente, 5);
-        SolicitudViajeResponseDTO dtoAceptada=createMockDTO(solicitudAceptada, 6);
+        SolicitudViaje solicitudAceptada = new SolicitudViaje();
+        solicitudAceptada.setIdSolicitudViaje(2);
+        solicitudAceptada.setFecha(LocalDate.now());
+        solicitudAceptada.setHora(LocalTime.now());
+        solicitudAceptada.setEstadoSolicitud(EstadoSolicitud.ACEPTADO);
+        solicitudAceptada.setRuta(ruta);
+
+        List<SolicitudViaje> solicitudes = List.of(solicitudPendiente, solicitudAceptada);
+
+        SolicitudViajeResponseDTO dtoPendiente = new SolicitudViajeResponseDTO(
+                1, solicitudPendiente.getFecha(), solicitudPendiente.getHora(), null,
+                EstadoSolicitud.PENDIENTE, idRuta, 5
+        );
+
+        SolicitudViajeResponseDTO dtoAceptada = new SolicitudViajeResponseDTO(
+                2, solicitudAceptada.getFecha(), solicitudAceptada.getHora(), null,
+                EstadoSolicitud.ACEPTADO, idRuta, 6
+        );
+
+        when(rutaRepository.findById(10L)).thenReturn(Optional.of(ruta));
+        when(solicitudViajeRepository.findByRutaId(10)).thenReturn(solicitudes);
         when(solicitudViajeMapper.toDTO(solicitudPendiente)).thenReturn(dtoPendiente);
         when(solicitudViajeMapper.toDTO(solicitudAceptada)).thenReturn(dtoAceptada);
-        // Act
+
+        // CUANDO
         List<SolicitudViajeResponseDTO> resultado = solicitudViajeService.findSolicitudesByRutaId(idRuta);
-        // Assert
+
+        // ENTONCES
         assertThat(resultado).isNotEmpty();
         assertThat(resultado).hasSize(2);
         assertThat(resultado.get(0).estadoSolicitud()).isEqualTo(EstadoSolicitud.PENDIENTE);
         assertThat(resultado.get(1).estadoSolicitud()).isEqualTo(EstadoSolicitud.ACEPTADO);
 
-        // Verificar
-        verify(rutaRepository).findById((long) idRuta);
-        verify(solicitudViajeRepository).findByRutaId(idRuta);
+        verify(rutaRepository).findById(10L);
+        verify(solicitudViajeRepository).findByRutaId(10);
         verify(solicitudViajeMapper, times(2)).toDTO(any(SolicitudViaje.class));
     }
     @Test
     @DisplayName("CP02: Ruta no encontrada - debe lanzar excepción cuando la ruta no existe.")
     void findSolicitudesByRutaId_RutaNoEncontrada_ThrowsException() {
+        // DADO
         Integer idRutaInexistente = 99;
+        when(rutaRepository.findById(99L)).thenReturn(Optional.empty());
 
-        when(rutaRepository.findById((long) idRutaInexistente)).thenReturn(Optional.empty());
-
-
+        // CUANDO / ENTONCES
         assertThatThrownBy(() -> solicitudViajeService.findSolicitudesByRutaId(idRutaInexistente))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Ruta no encontrada");
 
-        verify(rutaRepository).findById((long) idRutaInexistente);
+        verify(rutaRepository).findById(99L);
         verifyNoInteractions(solicitudViajeRepository);
         verifyNoInteractions(solicitudViajeMapper);
     }
@@ -128,70 +122,85 @@ public class SolicitudViajeServiceTest {
     @Test
     @DisplayName("CP01: Aceptar solicitud - debe aceptar una solicitud pendiente y reducir los asientos disponibles")
     void updateEstadoSolicitud_AceptarSolicitud_Success() {
+        // DADO
+        Ruta mockRuta = new Ruta();
+        mockRuta.setIdRuta(10);
         mockRuta.setEstadoRuta(EstadoRuta.CONFIRMADO);
         mockRuta.setAsientosDisponibles(3);
 
-        SolicitudViaje solicitud = createMockSolicitud(1, EstadoSolicitud.PENDIENTE, mockRuta);
+        SolicitudViaje solicitud = new SolicitudViaje();
+        solicitud.setIdSolicitudViaje(1);
+        solicitud.setFecha(LocalDate.now());
+        solicitud.setHora(LocalTime.now());
+        solicitud.setEstadoSolicitud(EstadoSolicitud.PENDIENTE);
+        solicitud.setRuta(mockRuta);
+
+        SolicitudViajeResponseDTO expectedResponse = new SolicitudViajeResponseDTO(
+                1,
+                solicitud.getFecha(),
+                solicitud.getHora(),
+                null,
+                EstadoSolicitud.ACEPTADO,
+                mockRuta.getIdRuta(),
+                100
+        );
 
         when(solicitudViajeRepository.findById(1L)).thenReturn(Optional.of(solicitud));
         when(rutaRepository.findById(10L)).thenReturn(Optional.of(mockRuta));
-
-        when(solicitudViajeMapper.toDTO(any(SolicitudViaje.class)))
-                .thenAnswer(invocation -> {
-                    SolicitudViaje s = invocation.getArgument(0);
-                    return new SolicitudViajeResponseDTO(
-                            s.getIdSolicitudViaje(),
-                            s.getFecha(),
-                            s.getHora(),
-                            null,
-                            s.getEstadoSolicitud(),
-                            s.getRuta().getIdRuta(),
-                            100
-                    );
-                });
+        when(solicitudViajeRepository.save(any(SolicitudViaje.class))).thenReturn(solicitud);
+        when(solicitudViajeMapper.toDTO(any(SolicitudViaje.class))).thenReturn(expectedResponse);
 
         // CUANDO
         SolicitudViajeResponseDTO resultado = solicitudViajeService.updateEstadoSolicitud(1, EstadoSolicitud.ACEPTADO);
 
         // ENTONCES
+        assertThat(resultado).isNotNull();
         assertThat(resultado.estadoSolicitud()).isEqualTo(EstadoSolicitud.ACEPTADO);
         assertThat(mockRuta.getAsientosDisponibles()).isEqualTo(2);
+
+        verify(solicitudViajeRepository).findById(1L);
+        verify(rutaRepository).findById(10L);
+        verify(solicitudViajeRepository).save(solicitud);
     }
     @Test
     @DisplayName("CP02: Rechazar solicitud - debe rechazar una solicitud pendiente sin modificar los asientos disponibles")
     void updateEstadoSolicitud_RechazarSolicitud_Success() {
-        // DADO QUE existe una solicitud pendiente y una ruta programada con asientos disponibles
+        // DADO
+        Ruta mockRuta = new Ruta();
+        mockRuta.setIdRuta(10);
         mockRuta.setEstadoRuta(EstadoRuta.PROGRAMADO);
         mockRuta.setAsientosDisponibles(4);
 
-        SolicitudViaje solicitud = createMockSolicitud(2, EstadoSolicitud.PENDIENTE, mockRuta);
+        SolicitudViaje solicitud = new SolicitudViaje();
+        solicitud.setIdSolicitudViaje(2);
+        solicitud.setFecha(LocalDate.now());
+        solicitud.setHora(LocalTime.now());
+        solicitud.setEstadoSolicitud(EstadoSolicitud.PENDIENTE);
+        solicitud.setRuta(mockRuta);
+
+        SolicitudViajeResponseDTO expectedResponse = new SolicitudViajeResponseDTO(
+                2,
+                solicitud.getFecha(),
+                solicitud.getHora(),
+                null,
+                EstadoSolicitud.RECHAZADO,
+                mockRuta.getIdRuta(),
+                200
+        );
 
         when(solicitudViajeRepository.findById(2L)).thenReturn(Optional.of(solicitud));
         when(rutaRepository.findById(10L)).thenReturn(Optional.of(mockRuta));
+        when(solicitudViajeRepository.save(any(SolicitudViaje.class))).thenReturn(solicitud);
+        when(solicitudViajeMapper.toDTO(any(SolicitudViaje.class))).thenReturn(expectedResponse);
 
-        when(solicitudViajeMapper.toDTO(any(SolicitudViaje.class)))
-                .thenAnswer(invocation -> {
-                    SolicitudViaje s = invocation.getArgument(0);
-                    return new SolicitudViajeResponseDTO(
-                            s.getIdSolicitudViaje(),
-                            s.getFecha(),
-                            s.getHora(),
-                            null,
-                            s.getEstadoSolicitud(),
-                            s.getRuta().getIdRuta(),
-                            200
-                    );
-                });
-
-        // CUANDO el conductor rechaza la solicitud
+        // CUANDO
         SolicitudViajeResponseDTO resultado = solicitudViajeService.updateEstadoSolicitud(2, EstadoSolicitud.RECHAZADO);
 
-        // ENTONCES la solicitud cambia a estado RECHAZADO y los asientos no se modifican
+        // ENTONCES
         assertThat(resultado).isNotNull();
         assertThat(resultado.estadoSolicitud()).isEqualTo(EstadoSolicitud.RECHAZADO);
         assertThat(mockRuta.getAsientosDisponibles()).isEqualTo(4);
 
-        // Verificaciones
         verify(solicitudViajeRepository).findById(2L);
         verify(rutaRepository).findById(10L);
         verify(solicitudViajeRepository).save(solicitud);
@@ -200,23 +209,29 @@ public class SolicitudViajeServiceTest {
     @Test
     @DisplayName("CP03: Repetir acción - debe lanzar excepción si se intenta modificar una solicitud ya aceptada o rechazada")
     void updateEstadoSolicitud_SolicitudNoPendiente_ThrowsException() {
-        // DADO QUE la solicitud ya fue aceptada
+        // DADO
+        Ruta mockRuta = new Ruta();
+        mockRuta.setIdRuta(10);
         mockRuta.setEstadoRuta(EstadoRuta.CONFIRMADO);
         mockRuta.setAsientosDisponibles(2);
-        SolicitudViaje solicitud = createMockSolicitud(3, EstadoSolicitud.ACEPTADO, mockRuta);
+
+        SolicitudViaje solicitud = new SolicitudViaje();
+        solicitud.setIdSolicitudViaje(3);
+        solicitud.setFecha(LocalDate.now());
+        solicitud.setHora(LocalTime.now());
+        solicitud.setEstadoSolicitud(EstadoSolicitud.ACEPTADO);
+        solicitud.setRuta(mockRuta);
 
         when(solicitudViajeRepository.findById(3L)).thenReturn(Optional.of(solicitud));
         when(rutaRepository.findById(10L)).thenReturn(Optional.of(mockRuta));
 
-        // CUANDO el conductor intenta volver a aceptar o rechazar la solicitud
-        // ENTONCES se lanza una excepción de regla de negocio
+        // CUANDO / ENTONCES
         assertThatThrownBy(() ->
                 solicitudViajeService.updateEstadoSolicitud(3, EstadoSolicitud.RECHAZADO)
         )
                 .isInstanceOf(BusinessRuleException.class)
                 .hasMessageContaining("Solo se pueden aceptar o rechazar solicitudes pendientes");
 
-        // Verificaciones
         verify(solicitudViajeRepository).findById(3L);
         verify(rutaRepository).findById(10L);
         verify(solicitudViajeRepository, never()).save(any());
@@ -226,23 +241,26 @@ public class SolicitudViajeServiceTest {
     @DisplayName("CP04: Ruta con estado inválido - debe lanzar excepción si la ruta no está programada ni confirmada")
     void updateEstadoSolicitud_RutaInvalida_ThrowsException() {
         // DADO QUE la ruta está cancelada
+        Ruta mockRuta = new Ruta();
+        mockRuta.setIdRuta(10);
         mockRuta.setEstadoRuta(EstadoRuta.CANCELADO);
         mockRuta.setAsientosDisponibles(3);
 
-        SolicitudViaje solicitud = createMockSolicitud(4, EstadoSolicitud.PENDIENTE, mockRuta);
+        SolicitudViaje solicitud = new SolicitudViaje();
+        solicitud.setIdSolicitudViaje(4);
+        solicitud.setEstadoSolicitud(EstadoSolicitud.PENDIENTE);
+        solicitud.setRuta(mockRuta);
 
         when(solicitudViajeRepository.findById(4L)).thenReturn(Optional.of(solicitud));
         when(rutaRepository.findById(10L)).thenReturn(Optional.of(mockRuta));
 
-        // CUANDO el conductor intenta aceptar o rechazar la solicitud
-        // ENTONCES el sistema lanza una excepción por estado inválido de la ruta
+        // CUANDO / ENTONCES
         assertThatThrownBy(() ->
                 solicitudViajeService.updateEstadoSolicitud(4, EstadoSolicitud.ACEPTADO)
         )
                 .isInstanceOf(BusinessRuleException.class)
                 .hasMessageContaining("No se pueden aceptar o rechazar solicitudes si la ruta no está programada o confirmada");
 
-        // Verificaciones
         verify(solicitudViajeRepository).findById(4L);
         verify(rutaRepository).findById(10L);
         verify(solicitudViajeRepository, never()).save(any());
@@ -251,24 +269,26 @@ public class SolicitudViajeServiceTest {
     @Test
     @DisplayName("CP05: Sin asientos disponibles - debe lanzar excepción si no hay asientos disponibles para aceptar la solicitud")
     void updateEstadoSolicitud_SinAsientosDisponibles_ThrowsException() {
-        // DADO QUE la ruta está programada pero no tiene asientos disponibles
+        // DADO QUE la ruta está programada pero no tiene asientos
+        Ruta mockRuta = new Ruta();
+        mockRuta.setIdRuta(10);
         mockRuta.setEstadoRuta(EstadoRuta.PROGRAMADO);
         mockRuta.setAsientosDisponibles(0);
 
-        SolicitudViaje solicitud = createMockSolicitud(5, EstadoSolicitud.PENDIENTE, mockRuta);
+        SolicitudViaje solicitud = new SolicitudViaje();
+        solicitud.setIdSolicitudViaje(5);
+        solicitud.setEstadoSolicitud(EstadoSolicitud.PENDIENTE);
+        solicitud.setRuta(mockRuta);
 
         when(solicitudViajeRepository.findById(5L)).thenReturn(Optional.of(solicitud));
         when(rutaRepository.findById(10L)).thenReturn(Optional.of(mockRuta));
 
-        // CUANDO el conductor intenta aceptar la solicitud
-        // ENTONCES el sistema lanza una excepción indicando que no hay asientos
         assertThatThrownBy(() ->
                 solicitudViajeService.updateEstadoSolicitud(5, EstadoSolicitud.ACEPTADO)
         )
                 .isInstanceOf(BusinessRuleException.class)
                 .hasMessageContaining("No hay asientos disponibles para aceptar la solicitud");
 
-        // Verificaciones
         verify(solicitudViajeRepository).findById(5L);
         verify(rutaRepository).findById(10L);
         verify(rutaRepository, never()).save(any());
@@ -280,15 +300,12 @@ public class SolicitudViajeServiceTest {
         // DADO QUE no existe una solicitud con el ID proporcionado
         when(solicitudViajeRepository.findById(6L)).thenReturn(Optional.empty());
 
-        // CUANDO el conductor intenta aceptar o rechazar la solicitud
-        // ENTONCES el sistema lanza una excepción de recurso no encontrado
         assertThatThrownBy(() ->
                 solicitudViajeService.updateEstadoSolicitud(6, EstadoSolicitud.ACEPTADO)
         )
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Solicitud no encontrada");
 
-        // Verificaciones
         verify(solicitudViajeRepository).findById(6L);
         verify(rutaRepository, never()).findById(any());
         verify(solicitudViajeRepository, never()).save(any());
@@ -297,19 +314,23 @@ public class SolicitudViajeServiceTest {
     @DisplayName("CP07: Ruta no encontrada - debe lanzar excepción si la ruta asociada a la solicitud no existe")
     void updateEstadoSolicitud_RutaNoEncontrada_ThrowsException() {
         // DADO QUE existe una solicitud pendiente, pero la ruta no se encuentra
-        SolicitudViaje solicitud = createMockSolicitud(7, EstadoSolicitud.PENDIENTE, mockRuta);
+        Ruta mockRuta = new Ruta();
+        mockRuta.setIdRuta(10);
+
+        SolicitudViaje solicitud = new SolicitudViaje();
+        solicitud.setIdSolicitudViaje(7);
+        solicitud.setEstadoSolicitud(EstadoSolicitud.PENDIENTE);
+        solicitud.setRuta(mockRuta);
 
         when(solicitudViajeRepository.findById(7L)).thenReturn(Optional.of(solicitud));
         when(rutaRepository.findById(10L)).thenReturn(Optional.empty());
 
-        // CUANDO / ENTONCES
         assertThatThrownBy(() ->
                 solicitudViajeService.updateEstadoSolicitud(7, EstadoSolicitud.ACEPTADO)
         )
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Ruta no encontrada");
 
-        // Verificaciones
         verify(solicitudViajeRepository).findById(7L);
         verify(rutaRepository).findById(10L);
         verify(solicitudViajeRepository, never()).save(any());
