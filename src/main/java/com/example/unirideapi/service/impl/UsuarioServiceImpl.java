@@ -6,6 +6,7 @@ import com.example.unirideapi.dto.request.PasajeroRequestDTO;
 import com.example.unirideapi.dto.request.UsuarioRegistroRequestDTO;
 import com.example.unirideapi.dto.response.AuthResponseDTO;
 import com.example.unirideapi.dto.response.UsuarioPerfilResponseDTO;
+import com.example.unirideapi.exception.BusinessRuleException;
 import com.example.unirideapi.exception.RoleNotFoundException;
 import com.example.unirideapi.mapper.UsuarioMapper;
 import com.example.unirideapi.model.Conductor;
@@ -146,6 +147,15 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public AuthResponseDTO login(LoginRequestDTO loginRequestDTO) {
 
+        // Verificar si el usuario existe
+        Usuario usuario = usuarioRepository.findByEmail(loginRequestDTO.email())
+                .orElseThrow(() -> new BusinessRuleException("El correo electrónico no está registrado."));
+
+        // Verificar si la contraseña es correcta
+        if (!passwordEncoder.matches(loginRequestDTO.password(), usuario.getPassword())) {
+            throw new BusinessRuleException("La contraseña ingresada es incorrecta.");
+        }
+
         // OJO: LoginRequestDTO es record, por eso usamos email() / password()
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -155,7 +165,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         );
 
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        Usuario usuario = userPrincipal.getUsuario();
+        usuario = userPrincipal.getUsuario();
 
         // Ajusta si tu TokenProvider tiene otra firma distinta
         String token = tokenProvider.createAccessToken(authentication);
