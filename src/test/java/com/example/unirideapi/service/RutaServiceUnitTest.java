@@ -13,14 +13,13 @@ import com.example.unirideapi.service.impl.RutaServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.junit.jupiter.api.Disabled;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -30,11 +29,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class RutaServiceUnitTest {
     @Mock
     private RutaRepository rutaRepository;
