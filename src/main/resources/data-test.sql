@@ -38,9 +38,7 @@ INSERT INTO conductor (
        (SELECT id_usuario FROM usuario WHERE email='conductor3@uniride.test'));
 
 -- ========== VEHICULOS ==========
-INSERT INTO vehiculo (
-    placa, soat, modelo, color, marca, capacidad, descripcion_vehiculo, id_conductor
-) VALUES
+INSERT INTO vehiculo (placa, soat, modelo, color, marca, capacidad, descripcion_vehiculo, id_conductor) VALUES
       ('ABC-123', TRUE, 'Yaris', 'Rojo', 'Toyota', 4, 'Sedán compacto, aire acondicionado y GPS.', (SELECT id_conductor FROM conductor WHERE dni='44444444')),
       ('XYZ-987', TRUE, 'Accent', 'Azul', 'Hyundai', 4, 'Buen maletero, mantenimiento al día y asientos cómodos.', (SELECT id_conductor FROM conductor WHERE dni='55555555'));
 
