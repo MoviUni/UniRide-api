@@ -83,7 +83,7 @@ public class RutaServiceImpl implements RutaService {
     }
     @Override
     public List<RutaResponseDTO> searchBy(String destino, String origen, String hora, String fecha) {
-        return rutaRepository.searchBy(destino, origen, hora, fecha).stream()
+        return rutaRepository.searchBy(destino, origen, LocalTime.parse(hora), LocalDate.parse(fecha)).stream()
                 .map(rutaMapper::toDTO)
                 .collect(Collectors.toList());
     }
