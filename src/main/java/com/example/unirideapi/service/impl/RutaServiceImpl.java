@@ -339,4 +339,6 @@ public class RutaServiceImpl implements RutaService {
         rutaRepository.delete(ruta);
     }
 
+
+
 }
