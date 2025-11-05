@@ -78,13 +78,31 @@ public interface RutaRepository extends JpaRepository<Ruta, Long> {
             "WHERE p.id_usuario = :usuarioId " +
             "ORDER BY r.fecha_salida DESC, r.hora_salida DESC",
             nativeQuery = true)
+
     List<Object[]> findHistorialByPasajero(@Param("usuarioId") Integer usuarioId);
 
     List<Ruta> findByConductor_IdConductor(Integer idConductor);
 
     List<Ruta> findByConductor_IdConductorAndEstadoRuta(Integer idConductor, EstadoRuta estadoRuta);
 
+    // (Opcionales, si estás activando las reglas nuevas)
+    @Query("""
+           SELECT COUNT(r) > 0
+           FROM Ruta r
+           WHERE r.conductor.idConductor = :idConductor
+             AND LOWER(r.origen)  = LOWER(:origen)
+             AND LOWER(r.destino) = LOWER(:destino)
+             AND r.fechaSalida    = :fecha
+             AND r.horaSalida     = :hora
+           """)
+    boolean existsRutaDuplicada(@Param("idConductor") Integer idConductor,
+                                @Param("origen") String origen,
+                                @Param("destino") String destino,
+                                @Param("fecha") LocalDate fecha,
+                                @Param("hora") LocalTime hora);
 
+    @Query(value = "SELECT COUNT(*) FROM pasajero p WHERE p.id_ruta = :idRuta", nativeQuery = true)
+    int countReservas(@Param("idRuta") Long idRuta);
 }
 
 

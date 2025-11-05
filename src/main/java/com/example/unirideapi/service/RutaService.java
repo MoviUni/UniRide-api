@@ -22,6 +22,8 @@ public interface RutaService {
     //Exportar historial de viajes PDF
     byte[] exportarHistorialPdf(Integer conductorId);
 
+
+
     RutaResponseDTO updateEstadoRuta(Integer idRuta, EstadoRuta nuevoEstado);
 
     RutaResponseDTO create(RutaRequestDTO rutaRequestDTO);

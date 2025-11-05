@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.example.unirideapi.model.enums.EstadoRuta;
 
 import java.util.List;
 import java.util.Map;
@@ -169,4 +170,35 @@ public class RutaController {
         return ResponseEntity.ok(rutaService.obtenerHistorialViajes(idUsuario, rol));
     }
 
+    // ⬇️ ADD: NUEVO — listar mis rutas
+    @GetMapping("/mias/{idConductor}")
+    public ResponseEntity<List<RutaResponseDTO>> misRutas(@PathVariable Integer idConductor) {
+        return ResponseEntity.ok(rutaService.listarRutasDelConductor(idConductor));
+    }
+
+    // ⬇️ ADD: NUEVO — listar mis rutas por estado
+    @GetMapping("/mias/{idConductor}/estado/{estado}")
+    public ResponseEntity<List<RutaResponseDTO>> misRutasPorEstado(
+            @PathVariable Integer idConductor,
+            @PathVariable EstadoRuta estado) {
+        return ResponseEntity.ok(rutaService.listarRutasDelConductorPorEstado(idConductor, estado));
+    }
+
+    // ⬇️ ADD: NUEVO — actualizar mi ruta (PUT, reemplazo completo, usando tu RutaRequestDTO)
+    @PutMapping("/{idRuta}/conductor/{idConductor}")
+    public ResponseEntity<RutaResponseDTO> actualizarRuta(
+            @PathVariable Long idRuta,
+            @PathVariable Integer idConductor,
+            @RequestBody @Valid RutaRequestDTO dto) {
+        return ResponseEntity.ok(rutaService.actualizarRutaFull(idRuta, idConductor, dto));
+    }
+
+    // ⬇️ ADD: NUEVO — eliminar mi ruta
+    @DeleteMapping("/{idRuta}/conductor/{idConductor}")
+    public ResponseEntity<Void> eliminarRuta(
+            @PathVariable Long idRuta,
+            @PathVariable Integer idConductor) {
+        rutaService.eliminarRutaDeConductor(idRuta, idConductor);
+        return ResponseEntity.noContent().build();
+    }
 }
