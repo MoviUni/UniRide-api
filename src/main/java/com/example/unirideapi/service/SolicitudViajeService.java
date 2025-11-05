@@ -12,7 +12,7 @@ public interface SolicitudViajeService {
     SolicitudViajeResponseDTO create(SolicitudViajeRequestDTO solicitudViajeRequestDTO);
     SolicitudViajeResponseDTO updateEstadoSolicitud(Integer idSolicitud, EstadoSolicitud nuevoEstado);
     List<SolicitudEstadoResponseDTO> searchByUsuario(Integer idUsuario);
-
+    SolicitudViajeResponseDTO cancelSolicitud(Integer idSolicitud);
     List<SolicitudViajeResponseDTO> findSolicitudesByRutaId(Integer idRuta);
 
 }
