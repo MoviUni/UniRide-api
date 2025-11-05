@@ -4,18 +4,14 @@ import com.example.unirideapi.dto.request.ConductorRequestDTO;
 import com.example.unirideapi.dto.request.LoginRequestDTO;
 import com.example.unirideapi.dto.request.PasajeroRequestDTO;
 import com.example.unirideapi.dto.response.AuthResponseDTO;
-import com.example.unirideapi.dto.response.SolicitudEstadoResponseDTO;
 import com.example.unirideapi.dto.response.UsuarioPerfilResponseDTO;
-import com.example.unirideapi.exception.RoleNotFoundException;
 import com.example.unirideapi.mapper.UsuarioMapper;
 import com.example.unirideapi.model.*;
 import com.example.unirideapi.model.enums.ERol;
-import com.example.unirideapi.model.enums.EstadoSolicitud;
 import com.example.unirideapi.repository.ConductorRepository;
 import com.example.unirideapi.repository.PasajeroRepository;
 import com.example.unirideapi.repository.RolRepository;
 import com.example.unirideapi.repository.UsuarioRepository;
-import com.example.unirideapi.repository.SolicitudViajeRepository;
 import com.example.unirideapi.security.TokenProvider;
 import com.example.unirideapi.security.UserPrincipal;
 import com.example.unirideapi.service.impl.UsuarioServiceImpl;
@@ -30,7 +26,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -39,7 +34,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
-@DisplayName("UsuarioServiceImpl - Pruebas Unitarias")
+@DisplayName("UsuarioServiceImplTest - Pruebas Unitarias")
 class UsuarioServiceImplTest {
 
     @Mock
