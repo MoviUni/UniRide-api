@@ -2,7 +2,7 @@ package com.example.unirideapi.service;
 
 import com.example.unirideapi.dto.request.RutaRequestDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
-
+import com.example.unirideapi.model.enums.EstadoRuta;
 import java.util.List;
 import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import com.example.unirideapi.model.enums.EstadoRuta;
@@ -33,5 +33,12 @@ public interface RutaService {
     List<RutaResponseDTO> searchBy(String destino, String origen, String hora, String fecha);
     List<RutaResponseDTO> findAll();
     List<RutaResponseDTO> obtenerHistorialViajes(Integer idUsuario, String rol);
+    List<RutaResponseDTO> listarRutasDelConductor(Integer idConductor);
+
+    List<RutaResponseDTO> listarRutasDelConductorPorEstado(Integer idConductor, EstadoRuta estado);
+
+    RutaResponseDTO actualizarRutaFull(Long idRuta, Integer idConductor, RutaRequestDTO dto);
+
+    void eliminarRutaDeConductor(Long idRuta, Integer idConductor);
 
 }

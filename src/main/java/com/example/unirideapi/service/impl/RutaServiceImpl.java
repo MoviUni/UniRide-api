@@ -27,6 +27,7 @@ import java.util.Map;
 import com.example.unirideapi.exception.BusinessRuleException;
 import com.example.unirideapi.model.enums.EstadoRuta;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -277,5 +278,65 @@ public class RutaServiceImpl implements RutaService {
                 .collect(Collectors.toList());
     }
 
+    // ⬇️ ADD: NUEVO — listar todas mis rutas (conductor)
+    @Override
+    public List<RutaResponseDTO> listarRutasDelConductor(Integer idConductor) {
+        return rutaRepository.findByConductor_IdConductor(idConductor)
+                .stream()
+                .map(rutaMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    // ⬇️ ADD: NUEVO — listar mis rutas por estado
+    @Override
+    public List<RutaResponseDTO> listarRutasDelConductorPorEstado(Integer idConductor, EstadoRuta estado) {
+        return rutaRepository.findByConductor_IdConductorAndEstadoRuta(idConductor, estado)
+                .stream()
+                .map(rutaMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    // ⬇️ ADD: NUEVO — actualizar (PUT) una ruta propia usando tu RutaRequestDTO
+    @Transactional
+    @Override
+    public RutaResponseDTO actualizarRutaFull(Long idRuta, Integer idConductor, RutaRequestDTO dto) {
+        Ruta ruta = rutaRepository.findById(idRuta)
+                .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrada"));
+
+        // validar propiedad
+        if (ruta.getConductor() == null
+                || ruta.getConductor().getIdConductor() == null
+                || !ruta.getConductor().getIdConductor().equals(idConductor)) {
+            throw new AccessDeniedException("No puedes editar rutas de otro conductor");
+        }
+
+        // Reemplazo completo (PUT) con tu DTO actual
+        ruta.setOrigen(dto.origen());
+        ruta.setDestino(dto.destino());
+        ruta.setFechaSalida(dto.fechaSalida());
+        ruta.setHoraSalida(dto.horaSalida());
+        // ⚠️ Si tu entidad usa otro tipo para tarifa (BigDecimal/Long), ajusta aquí:
+        ruta.setTarifa(dto.tarifa() == null ? null : dto.tarifa().longValue());
+        ruta.setAsientosDisponibles(dto.asientosDisponibles());
+        ruta.setEstadoRuta(dto.estadoRuta());
+
+        return rutaMapper.toDTO(rutaRepository.save(ruta));
+    }
+
+    // ⬇️ ADD: NUEVO — eliminar una ruta propia (sin tocar repo con métodos nuevos)
+    @Transactional
+    @Override
+    public void eliminarRutaDeConductor(Long idRuta, Integer idConductor) {
+        Ruta ruta = rutaRepository.findById(idRuta)
+                .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrada"));
+
+        if (ruta.getConductor() == null
+                || ruta.getConductor().getIdConductor() == null
+                || !ruta.getConductor().getIdConductor().equals(idConductor)) {
+            throw new AccessDeniedException("No puedes eliminar rutas de otro conductor");
+        }
+
+        rutaRepository.delete(ruta);
+    }
 
 }

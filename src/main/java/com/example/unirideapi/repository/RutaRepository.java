@@ -8,12 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.example.unirideapi.model.Ruta;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -86,6 +80,10 @@ public interface RutaRepository extends JpaRepository<Ruta, Long> {
             "ORDER BY r.fecha_salida DESC, r.hora_salida DESC",
             nativeQuery = true)
     List<Object[]> findHistorialByPasajero(@Param("usuarioId") Integer usuarioId);
+
+    List<Ruta> findByConductor_IdConductor(Integer idConductor);
+
+    List<Ruta> findByConductor_IdConductorAndEstadoRuta(Integer idConductor, EstadoRuta estadoRuta);
 
 
 }
