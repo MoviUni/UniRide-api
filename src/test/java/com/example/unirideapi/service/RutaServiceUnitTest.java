@@ -263,8 +263,8 @@ public class RutaServiceUnitTest {
                         "Campus Norte",
                         LocalDate.of(2025, 10, 22),
                         LocalTime.of(8, 30),
-                        15L,
-                        5L
+                        15L, //tarifa
+                        5L //frecuencia
                 }
         );
         RutaFrecuenteResponseDTO dto = new RutaFrecuenteResponseDTO(

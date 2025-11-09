@@ -65,8 +65,7 @@ INSERT INTO ruta (
        (SELECT id_conductor FROM conductor WHERE dni='22222222'));
 
 -- ========== SOLICITUDES ==========
-INSERT INTO solicitud_viaje (
-    fecha, hora, updated_at, estado_solicitud, id_ruta, id_pasajero --estado_solicitud
+INSERT INTO solicitud_viaje (fecha, hora, updated_at, estado_solicitud, id_ruta, id_pasajero --estado_solicitud
 ) VALUES
       ('2025-10-05', '08:00:00', '2025-10-05 08:05:00', 'PENDIENTE',
        (SELECT id_ruta FROM ruta WHERE origen='Barranco' AND destino='Miraflores'),
