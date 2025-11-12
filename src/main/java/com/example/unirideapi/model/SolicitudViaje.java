@@ -18,7 +18,7 @@ import java.time.LocalTime;
 @Builder
 public class SolicitudViaje {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idSolicitudViaje;
 
     @Column(name = "fecha", nullable = false)

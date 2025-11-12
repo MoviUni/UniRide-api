@@ -8,12 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.example.unirideapi.model.Ruta;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -31,7 +25,6 @@ public interface RutaRepository extends JpaRepository<Ruta, Long> {
     @Query("SELECT b FROM Ruta b WHERE LOWER(b.destino) = LOWER(:destino) AND LOWER(b.origen) = LOWER(:origen)" +
             "AND b.horaSalida = :hora AND b.fechaSalida = :fecha")
     List<Ruta> searchBy(@Param("destino") String destino, @Param("origen") String origen, @Param("hora") LocalTime hora, @Param("fecha") LocalDate fecha);
-
     @Query("SELECT b FROM Ruta b WHERE b.horaSalida <= :horaSalida")
     List<Ruta> searchByHora (@Param("horaSalida") LocalTime horaSalida);
 
@@ -85,8 +78,31 @@ public interface RutaRepository extends JpaRepository<Ruta, Long> {
             "WHERE p.id_usuario = :usuarioId " +
             "ORDER BY r.fecha_salida DESC, r.hora_salida DESC",
             nativeQuery = true)
+
     List<Object[]> findHistorialByPasajero(@Param("usuarioId") Integer usuarioId);
 
+    List<Ruta> findByConductor_IdConductor(Integer idConductor);
+
+    List<Ruta> findByConductor_IdConductorAndEstadoRuta(Integer idConductor, EstadoRuta estadoRuta);
+
+    // (Opcionales, si estás activando las reglas nuevas)
+    @Query("""
+           SELECT COUNT(r) > 0
+           FROM Ruta r
+           WHERE r.conductor.idConductor = :idConductor
+             AND LOWER(r.origen)  = LOWER(:origen)
+             AND LOWER(r.destino) = LOWER(:destino)
+             AND r.fechaSalida    = :fecha
+             AND r.horaSalida     = :hora
+           """)
+    boolean existsRutaDuplicada(@Param("idConductor") Integer idConductor,
+                                @Param("origen") String origen,
+                                @Param("destino") String destino,
+                                @Param("fecha") LocalDate fecha,
+                                @Param("hora") LocalTime hora);
+
+    @Query(value = "SELECT COUNT(*) FROM pasajero p WHERE p.id_ruta = :idRuta", nativeQuery = true)
+    int countReservas(@Param("idRuta") Long idRuta);
 
 }
 

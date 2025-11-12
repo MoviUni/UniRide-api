@@ -18,7 +18,7 @@ import java.time.LocalTime;
 @Builder
 public class Pago {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idPago;
 
     @Column(name = "monto", nullable = false)
