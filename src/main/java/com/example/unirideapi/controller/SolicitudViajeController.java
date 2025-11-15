@@ -100,7 +100,7 @@ public class SolicitudViajeController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/usuario/{id}")
-    public ResponseEntity<List<SolicitudEstadoResponseDTO>> searchByUsuario(@RequestParam Integer id) {
+    public ResponseEntity<List<SolicitudViajeResponseDTO>> searchByUsuario(@RequestParam Integer id) {
         return ResponseEntity.ok(solicitudViajeService.searchByUsuario(id));
     }
 

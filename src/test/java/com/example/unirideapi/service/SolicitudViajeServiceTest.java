@@ -314,7 +314,7 @@ public class SolicitudViajeServiceTest {
     void getEstadoSolicitudViaje_SinSolicitudes_Success() {
 
         // Act
-        List<SolicitudEstadoResponseDTO> responses = solicitudViajeService.searchByUsuario(mockPasajero.getIdPasajero());
+        List<SolicitudViajeResponseDTO> responses = solicitudViajeService.searchByUsuario(mockPasajero.getIdPasajero());
 
         // Assert
         assertThat(responses).isNotNull();
@@ -342,7 +342,7 @@ public class SolicitudViajeServiceTest {
 
         when(solicitudViajeRepository.searchByUsuario(mockPasajero.getIdPasajero())).thenReturn(Arrays.asList(savedSolicitud));
         // Act
-        List<SolicitudEstadoResponseDTO> responses = solicitudViajeService.searchByUsuario(savedSolicitud.getPasajero().getIdPasajero());
+        List<SolicitudViajeResponseDTO> responses = solicitudViajeService.searchByUsuario(savedSolicitud.getPasajero().getIdPasajero());
 
         // Assert
         assertThat(responses).isNotNull();
