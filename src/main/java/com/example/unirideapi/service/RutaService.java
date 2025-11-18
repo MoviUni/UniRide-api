@@ -46,6 +46,8 @@ public interface RutaService {
     // Delegador sin confirmación (coincide con tu implementación)
     RutaResponseDTO actualizarRutaFull(Long idRuta, Integer idConductor, RutaRequestDTO dto);
     void eliminarRutaDeConductor(Long idRuta, Integer idConductor);
+    List<RutaResponseDTO> listarRutasActivasDelConductor(Integer idConductor);
+
 
     // Versiones con confirmación (también están en tu implementación)
     RutaResponseDTO actualizarRutaFull(Long idRuta, Integer idConductor, RutaRequestDTO dto, boolean confirmarCambios);

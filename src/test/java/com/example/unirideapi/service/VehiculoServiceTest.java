@@ -51,7 +51,6 @@ public class VehiculoServiceTest {
                 .color("Rojo")
                 .capacidad(4)
                 .descripcionVehiculo("Sedán en buen estado")
-                .idConductor(1)
                 .build();
 
         Vehiculo vehiculo = new Vehiculo();
@@ -108,7 +107,6 @@ public class VehiculoServiceTest {
                 .color("Negro")
                 .capacidad(4)
                 .descripcionVehiculo("Auto deportivo")
-                .idConductor(1)
                 .build();
 
         when(conductorRepository.findById(1)).thenReturn(Optional.of(conductor));
@@ -136,7 +134,6 @@ public class VehiculoServiceTest {
                 .color("Azul")
                 .capacidad(4)
                 .descripcionVehiculo("Auto compacto")
-                .idConductor(2)
                 .build();
 
         when(vehiculoRepository.existsByPlaca("ABC-123")).thenReturn(true);
@@ -165,7 +162,6 @@ public class VehiculoServiceTest {
                 .color("Blanco")
                 .capacidad(0) // Capacidad inválida
                 .descripcionVehiculo("Vehículo eléctrico")
-                .idConductor(3)
                 .build();
 
         // CUANDO/ENTONCES
@@ -192,7 +188,6 @@ public class VehiculoServiceTest {
                 .color("Gris")
                 .capacidad(5)
                 .descripcionVehiculo("Camioneta 4x4")
-                .idConductor(99) // ID inexistente
                 .build();
 
         when(vehiculoRepository.existsByPlaca("GHI-789")).thenReturn(false);

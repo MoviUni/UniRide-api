@@ -16,5 +16,6 @@ public record RutaResponseDTO(
         Long tarifa,
         Integer asientosDisponibles,
         EstadoRuta estadoRuta,
-        Integer idConductor
+        Integer idConductor,
+        Integer capacidadVehiculo
 ) {}

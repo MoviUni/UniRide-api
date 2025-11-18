@@ -34,7 +34,9 @@ public class VehiculoMapper {
                 vehiculo.getMarca(),
                 vehiculo.getColor(),
                 vehiculo.getCapacidad(),
-                vehiculo.getDescripcionVehiculo()
+                vehiculo.getDescripcionVehiculo(),
+                vehiculo.getConductor().getIdConductor(),
+                vehiculo.getIdVehiculo()
         );
     }
 }

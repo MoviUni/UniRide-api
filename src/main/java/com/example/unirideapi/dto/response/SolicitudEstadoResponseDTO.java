@@ -13,5 +13,4 @@ public record SolicitudEstadoResponseDTO(
         Integer pasajeroId,
         Integer rutaId,
         EstadoSolicitud estadoSolicitud
-) {
-}
+) {}
