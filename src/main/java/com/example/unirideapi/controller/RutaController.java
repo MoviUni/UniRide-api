@@ -2,6 +2,7 @@ package com.example.unirideapi.controller;
 
 import com.example.unirideapi.dto.request.RutaEstadoRequestDTO;
 import com.example.unirideapi.dto.request.RutaRequestDTO;
+import com.example.unirideapi.dto.response.RutaCardResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.service.RutaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -132,6 +133,12 @@ public class RutaController {
     public ResponseEntity<List<RutaResponseDTO>> searchByDestino(@RequestParam String destino)
     {
         return ResponseEntity.ok(rutaService.searchByDestino(destino));
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<List<RutaCardResponseDTO>> searchInfo()
+    {
+        return ResponseEntity.ok(rutaService.searchInfo());
     }
 
     @Operation(

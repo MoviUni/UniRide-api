@@ -1,6 +1,7 @@
 package com.example.unirideapi.service;
 
 import com.example.unirideapi.dto.request.SolicitudViajeRequestDTO;
+import com.example.unirideapi.dto.response.SolicitudCardResponseDTO;
 import com.example.unirideapi.dto.response.SolicitudEstadoResponseDTO;
 import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
 import com.example.unirideapi.model.enums.EstadoSolicitud;
@@ -14,5 +15,5 @@ public interface SolicitudViajeService {
     List<SolicitudViajeResponseDTO> searchByUsuario(Integer idUsuario);
     SolicitudViajeResponseDTO cancelSolicitud(Integer idSolicitud);
     List<SolicitudViajeResponseDTO> findSolicitudesByRutaId(Integer idRuta);
-
+    List<SolicitudCardResponseDTO> searchInfo();
 }
