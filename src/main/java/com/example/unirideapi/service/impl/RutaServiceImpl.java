@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Comparator;
+
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -283,6 +286,27 @@ public class RutaServiceImpl implements RutaService {
     public List<RutaResponseDTO> listarRutasDelConductor(Integer idConductor) {
         return rutaRepository.findByConductor_IdConductor(idConductor)
                 .stream()
+                .map(rutaMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List<RutaResponseDTO> listarRutasActivasDelConductor(Integer idConductor) {
+        LocalDateTime ahora = LocalDateTime.now();
+
+        return rutaRepository.findByConductor_IdConductor(idConductor)
+                .stream()
+                // solo estados activos
+                .filter(r -> r.getEstadoRuta() == EstadoRuta.PROGRAMADO
+                        || r.getEstadoRuta() == EstadoRuta.CONFIRMADO)
+                // solo viajes futuros (>= ahora)
+                .filter(r -> {
+                    LocalDateTime salida = LocalDateTime.of(r.getFechaSalida(), r.getHoraSalida());
+                    return !salida.isBefore(ahora); // salida >= ahora
+                })
+                // ordenados por fecha+hora
+                .sorted(Comparator.comparing(
+                        r -> LocalDateTime.of(r.getFechaSalida(), r.getHoraSalida())
+                ))
                 .map(rutaMapper::toDTO)
                 .collect(Collectors.toList());
     }

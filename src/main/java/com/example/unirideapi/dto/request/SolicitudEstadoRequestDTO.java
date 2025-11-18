@@ -5,5 +5,5 @@ import com.example.unirideapi.model.enums.EstadoRuta;
 import com.example.unirideapi.model.enums.EstadoSolicitud;
 
 public record SolicitudEstadoRequestDTO(
-        EstadoSolicitud estado
+        EstadoSolicitud estadoSolicitud
 ) {}

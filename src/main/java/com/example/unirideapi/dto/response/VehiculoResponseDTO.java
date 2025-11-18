@@ -10,6 +10,7 @@ public record VehiculoResponseDTO(
         String marca,
         String color,
         Integer capacidad,
-        String descripcionVehiculo
-) {
-}
+        String descripcionVehiculo,
+        Integer idVehiculo,
+        Integer idConductor
+) {}

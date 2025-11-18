@@ -83,7 +83,7 @@ public class SolicitudViajeController {
             @PathVariable Integer idSolicitud,
             @RequestBody SolicitudEstadoRequestDTO request
     ) {
-        var updated = solicitudViajeService.updateEstadoSolicitud(idSolicitud, request.estado());
+        var updated = solicitudViajeService.updateEstadoSolicitud(idSolicitud, request.estadoSolicitud());
         return ResponseEntity.ok(updated);
     }
 

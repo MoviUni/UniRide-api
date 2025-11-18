@@ -46,18 +46,18 @@ INSERT INTO vehiculo (
 
 -- ========== PASAJEROS ==========
 INSERT INTO pasajero (
-    nombre, apellido, dni, edad, descripcion_pasajero, created_at, updated_at, usuario_id_usuario
+    nombre, apellido, dni, edad, descripcion_pasajero, created_at, updated_at, usuario_id_usuario, carrera
 ) VALUES
     ('Favio', 'Arroyo', '77777777', 24, 'Prefiere asiento delantero y viajes tranquilos.', '2025-09-30 10:00:00', '2025-09-30 10:00:00',
-     (SELECT id_usuario FROM usuario WHERE email = 'pasajero@uniride.test'));
+     (SELECT id_usuario FROM usuario WHERE email = 'pasajero@uniride.test'), 'Ciencias de la computación');
 
 -- ========== RUTAS ==========
 INSERT INTO ruta (
     origen, destino, fecha_salida, hora_salida, tarifa, asientos_disponibles, estado_ruta, id_conductor --estado_ruta
 ) VALUES
-      ('Barranco', 'Miraflores', '2025-10-05', '08:00:00', 8.00, 3, 'PROGRAMADO',
+      ('Barranco', 'Miraflores', '2025-11-30', '08:00:00', 8.00, 4, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='44444444')),
-      ('Surco', 'San Isidro', '2025-10-05', '17:30:00', 10.00, 2, 'PROGRAMADO',
+      ('Surco', 'San Isidro', '2025-11-20', '14:00:00', 10.00, 3, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='44444444')),
       ('La Molina', 'Centro de Lima', '2025-10-06', '07:15:00', 12.00, 4, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='55555555')),
