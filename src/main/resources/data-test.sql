@@ -55,13 +55,15 @@ INSERT INTO pasajero (
 INSERT INTO ruta (
     origen, destino, fecha_salida, hora_salida, tarifa, asientos_disponibles, estado_ruta, id_conductor --estado_ruta
 ) VALUES
-      ('Barranco', 'Miraflores', '2025-10-05', '08:00:00', 8.00, 3, 'PROGRAMADO',
+      ('Barranco', 'UPC San Isidro', '2025-10-05', '08:00:00', 8.00, 3, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='44444444')),
-      ('Surco', 'San Isidro', '2025-10-05', '17:30:00', 10.00, 2, 'PROGRAMADO',
+      ('Surco', 'UPC Villa', '2025-10-05', '17:30:00', 10.00, 2, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='44444444')),
-      ('La Molina', 'Centro de Lima', '2025-10-06', '07:15:00', 12.00, 4, 'PROGRAMADO',
+      ('UPC Monterrico', 'La Molina', '2025-10-06', '07:15:00', 12.00, 4, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='55555555')),
-      ('La Molina', 'UPC-Monterrico', '2025-12-11', '07:15:00', 12.00, 4, 'PROGRAMADO',
+      ('La Molina', 'UPC Monterrico', '2025-12-11', '07:15:00', 12.00, 4, 'PROGRAMADO',
+       (SELECT id_conductor FROM conductor WHERE dni='22222222')),
+      ('UPC Villa', 'Surquillo', '2025-11-17', '09:15:00', 13.00, 3, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='22222222'));
 
 -- ========== SOLICITUDES ==========
