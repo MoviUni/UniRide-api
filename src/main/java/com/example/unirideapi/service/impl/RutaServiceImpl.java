@@ -1,6 +1,7 @@
 package com.example.unirideapi.service.impl;
 
 import com.example.unirideapi.dto.request.RutaRequestDTO;
+import com.example.unirideapi.dto.response.RutaCardResponseDTO;
 import com.example.unirideapi.exception.ResourceNotFoundException;
 import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
@@ -497,6 +498,21 @@ public class RutaServiceImpl implements RutaService {
         eliminarRutaDeConductorConReglas(idRuta, idConductor, confirmar);
     }
 
-
+    @Override
+    public List<RutaCardResponseDTO> searchInfo(){
+        return rutaRepository.getInfo().stream()
+                .map(row -> RutaCardResponseDTO.builder()
+                        .idRuta((Integer)row[0])
+                        .origen(row[1].toString())
+                        .destino(row[2].toString())
+                        .fechaSalida(LocalDate.parse(row[3].toString()))
+                        .horaSalida(LocalTime.parse(row[4].toString()))
+                        .tarifa(((Number) row[5]).longValue())
+                        .asientosDisponibles((Integer) row[6])
+                        .nombreConductor(row[7].toString())
+                        .apellidoConductor(row[8].toString())
+                        .build())
+                .collect(Collectors.toList());
+    }
 
 }
