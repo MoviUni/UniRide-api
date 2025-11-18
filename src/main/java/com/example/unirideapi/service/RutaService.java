@@ -42,5 +42,7 @@ public interface RutaService {
     RutaResponseDTO actualizarRutaFull(Long idRuta, Integer idConductor, RutaRequestDTO dto);
 
     void eliminarRutaDeConductor(Long idRuta, Integer idConductor);
+    List<RutaResponseDTO> listarRutasActivasDelConductor(Integer idConductor);
+
 
 }

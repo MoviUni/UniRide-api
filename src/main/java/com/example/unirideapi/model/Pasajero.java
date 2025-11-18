@@ -27,6 +27,9 @@ public class Pasajero {
     @Column(name = "edad")
     private Integer edad;
 
+    @Column(name = "carrera")
+    private String carrera;
+
     @Column(name = "descripcionPasajero", columnDefinition = "TEXT")
     private String descripcionPasajero;
 

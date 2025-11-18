@@ -9,7 +9,6 @@ public record VehiculoRequestDTO(
         String marca,
         String color,
         Integer capacidad,
-        String descripcionVehiculo,
-        Integer idConductor
+        String descripcionVehiculo
 ) { }
 

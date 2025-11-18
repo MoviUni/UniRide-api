@@ -176,6 +176,12 @@ public class RutaController {
         return ResponseEntity.ok(rutaService.listarRutasDelConductor(idConductor));
     }
 
+    // rutas activas (PROGRAMADO/CONFIRMADO y futuras)
+    @GetMapping("/mias/activas/{idConductor}")
+    public ResponseEntity<List<RutaResponseDTO>> misRutasActivas(@PathVariable Integer idConductor) {
+        return ResponseEntity.ok(rutaService.listarRutasActivasDelConductor(idConductor));
+    }
+
     // ⬇️ ADD: NUEVO — listar mis rutas por estado
     @GetMapping("/mias/{idConductor}/estado/{estado}")
     public ResponseEntity<List<RutaResponseDTO>> misRutasPorEstado(
