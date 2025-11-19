@@ -20,11 +20,11 @@ INSERT INTO rol (name) VALUES
 
 -- ========== USUARIOS ==========
 INSERT INTO usuario (email, password, id_rol) VALUES
-                                                  ('admin@uniride.test',      'admin123',     (SELECT id_rol FROM rol WHERE name = 'ADMIN')),
-                                                  ('conductor@uniride.test',  'driver123',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
-                                                  ('pasajero@uniride.test',   'passenger123', (SELECT id_rol FROM rol WHERE name = 'PASAJERO')),
-                                                  ('conductora@uniride.test', 'driver456',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
-                                                  ('conductor3@uniride.test',   'driver789', (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR'));
+                                                  ('admin@uniride.test',      '$2a$10$hbm4HySP2ud5GO5.ovI0AeB4AOdwqRk1IiZVTCySLa8ptS/8yg1w6',     (SELECT id_rol FROM rol WHERE name = 'ADMIN')),
+                                                  ('conductor@uniride.test',  '$2a$10$9x7ODUgfjAJKLF9YH/h8GetlFMJOqwT0ePItIv7NcrVXAdQimlw4u',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
+                                                  ('pasajero@uniride.test',   '$2a$10$U8Bs3tkWjjzMDHKGdw1b7.JGewFPIiSdVlUzH2dqyHXFMJsEipSsa', (SELECT id_rol FROM rol WHERE name = 'PASAJERO')),
+                                                  ('conductora@uniride.test', '$2a$10$Y17/RLrMuRm582rAW.pRIuepoRyAFskhKpQHKjSKdv8BSDSlmlTj.',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
+                                                  ('conductor3@uniride.test',   '$2a$10$jCS2EW.PaZf0enqFvFSLkOKGhYzBkt7DfFgmQrKFAnMVceey2Vy66', (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR'));
 
 -- ========== CONDUCTORES ==========
 INSERT INTO conductor (
@@ -60,6 +60,10 @@ INSERT INTO ruta (
       ('Surco', 'San Isidro', '2025-10-05', '17:30:00', 10.00, 2, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='44444444')),
       ('La Molina', 'Centro de Lima', '2025-10-06', '07:15:00', 12.00, 4, 'PROGRAMADO',
+       (SELECT id_conductor FROM conductor WHERE dni='55555555')),
+      ('La Molina', 'Centro de Lima', '2025-10-06', '07:15:00', 12.00, 4, 'PROGRAMADO',
+       (SELECT id_conductor FROM conductor WHERE dni='55555555')),
+      ('Miraflores', 'Barranco', '2025-10-06', '09:00:00', 9.50, 3, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='55555555')),
       ('La Molina', 'UPC-Monterrico', '2025-12-11', '07:15:00', 12.00, 4, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='22222222'));
