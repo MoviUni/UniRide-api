@@ -82,7 +82,25 @@ public class UsuarioMapper {
         String apellido = resolveApellido(usuario);
         String rol = resolveRol(usuario);
 
-        return new AuthResponseDTO(token, nombre, apellido, rol);
+        Integer idUsuario = usuario.getIdUsuario();
+        Integer idRol = (usuario.getRol() != null) ? usuario.getRol().getIdRol() : null;
+        Integer idConductor = (usuario.getConductor() != null)
+                ? usuario.getConductor().getIdConductor()
+                : null;
+        Integer idPasajero = (usuario.getPasajero() != null)
+                ? usuario.getPasajero().getIdPasajero()
+                : null;
+
+        return new AuthResponseDTO(
+                token,
+                nombre,
+                apellido,
+                rol,
+                idUsuario,
+                idRol,
+                idConductor,
+                idPasajero
+        );
     }
 
     // --------------------------------------------------

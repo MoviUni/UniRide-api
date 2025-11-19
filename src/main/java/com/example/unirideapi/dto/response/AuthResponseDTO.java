@@ -7,5 +7,9 @@ public record AuthResponseDTO(
         String token,    // JWT
         String nombre,
         String apellido,
-        String rol
+        String rol,
+        Integer idUsuario,
+        Integer idRol,
+        Integer idConductor,
+        Integer idPasajero
 ) {}

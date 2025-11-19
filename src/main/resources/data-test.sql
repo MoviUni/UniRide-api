@@ -20,9 +20,9 @@ INSERT INTO rol (name) VALUES
 
 -- ========== USUARIOS ==========
 INSERT INTO usuario (email, password, id_rol) VALUES
-                                                  ('admin@uniride.test',      'admin123',     (SELECT id_rol FROM rol WHERE name = 'ADMIN')),
-                                                  ('conductor@uniride.test',  'driver123',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
-                                                  ('pasajero@uniride.test',   'passenger123', (SELECT id_rol FROM rol WHERE name = 'PASAJERO')),
+                                                  ('admin@uniride.test',      '$2a$10$QF0HXpfN/PT.E18bFxY8AOzFmfc3WW4.4dcDHDIPuCl0L5xM2b/CO',     (SELECT id_rol FROM rol WHERE name = 'ADMIN')), --contra: admin123
+                                                  ('conductor@uniride.test',  '$2a$10$5yzScqF/9Xi2agkmPj//Lu2IkqqS6A3peLYNBr.u/pIauUV.2dgJO',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')), -- driver123
+                                                  ('pasajero@uniride.test',   '$2a$10$L7OOSfUlkchHzjmB4ry/K.QU4JqkKnl1/9smYP2URLog.NlCXTYiO', (SELECT id_rol FROM rol WHERE name = 'PASAJERO')), --passenger123
                                                   ('conductora@uniride.test', 'driver456',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
                                                   ('conductor3@uniride.test',   'driver789', (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR'));
 
