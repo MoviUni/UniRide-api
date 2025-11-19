@@ -20,11 +20,11 @@ INSERT INTO rol (name) VALUES
 
 -- ========== USUARIOS ==========
 INSERT INTO usuario (email, password, id_rol) VALUES
-                                                  ('admin@uniride.test',      'admin123',     (SELECT id_rol FROM rol WHERE name = 'ADMIN')),
-                                                  ('conductor@uniride.test',  'driver123',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
-                                                  ('pasajero@uniride.test',   'passenger123', (SELECT id_rol FROM rol WHERE name = 'PASAJERO')),
-                                                  ('conductora@uniride.test', 'driver456',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
-                                                  ('conductor3@uniride.test',   'driver789', (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR'));
+                                                  ('admin@uniride.test',      '$2a$10$hbm4HySP2ud5GO5.ovI0AeB4AOdwqRk1IiZVTCySLa8ptS/8yg1w6',     (SELECT id_rol FROM rol WHERE name = 'ADMIN')),
+                                                  ('conductor@uniride.test',  '$2a$10$9x7ODUgfjAJKLF9YH/h8GetlFMJOqwT0ePItIv7NcrVXAdQimlw4u',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
+                                                  ('pasajero@uniride.test',   '$2a$10$U8Bs3tkWjjzMDHKGdw1b7.JGewFPIiSdVlUzH2dqyHXFMJsEipSsa', (SELECT id_rol FROM rol WHERE name = 'PASAJERO')),
+                                                  ('conductora@uniride.test', '$2a$10$Y17/RLrMuRm582rAW.pRIuepoRyAFskhKpQHKjSKdv8BSDSlmlTj.',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
+                                                  ('conductor3@uniride.test',   '$2a$10$jCS2EW.PaZf0enqFvFSLkOKGhYzBkt7DfFgmQrKFAnMVceey2Vy66', (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR'));
 
 -- ========== CONDUCTORES ==========
 INSERT INTO conductor (
@@ -46,25 +46,22 @@ INSERT INTO vehiculo (
 
 -- ========== PASAJEROS ==========
 INSERT INTO pasajero (
-    nombre, apellido, dni, edad, descripcion_pasajero, created_at, updated_at, usuario_id_usuario, carrera
+    nombre, apellido, dni, edad, descripcion_pasajero, created_at, updated_at, usuario_id_usuario
 ) VALUES
     ('Favio', 'Arroyo', '77777777', 24, 'Prefiere asiento delantero y viajes tranquilos.', '2025-09-30 10:00:00', '2025-09-30 10:00:00',
-     (SELECT id_usuario FROM usuario WHERE email = 'pasajero@uniride.test'), 'Ciencias de la computación');
+     (SELECT id_usuario FROM usuario WHERE email = 'pasajero@uniride.test'));
 
 -- ========== RUTAS ==========
 INSERT INTO ruta (
     origen, destino, fecha_salida, hora_salida, tarifa, asientos_disponibles, estado_ruta, id_conductor --estado_ruta
 ) VALUES
-
-      ('Barranco', 'UPC San Isidro', '2025-11-30', '08:00:00', 8.00, 3, 'PROGRAMADO',
+      ('Barranco', 'Miraflores', '2025-10-05', '08:00:00', 8.00, 3, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='44444444')),
-      ('Surco', 'UPC Villa', '2025-10-05', '17:30:00', 10.00, 2, 'PROGRAMADO',
+      ('Surco', 'San Isidro', '2025-10-05', '17:30:00', 10.00, 2, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='44444444')),
-      ('UPC Monterrico', 'La Molina', '2025-10-06', '07:15:00', 12.00, 4, 'PROGRAMADO',
+      ('La Molina', 'Centro de Lima', '2025-10-06', '07:15:00', 12.00, 4, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='55555555')),
-      ('La Molina', 'UPC Monterrico', '2025-12-11', '07:15:00', 12.00, 4, 'PROGRAMADO',
-       (SELECT id_conductor FROM conductor WHERE dni='22222222')),
-      ('UPC Villa', 'Surquillo', '2025-11-17', '09:15:00', 13.00, 3, 'PROGRAMADO',
+      ('La Molina', 'UPC-Monterrico', '2025-12-11', '07:15:00', 12.00, 4, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='22222222'));
 
 -- ========== SOLICITUDES ==========
