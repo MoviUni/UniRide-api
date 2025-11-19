@@ -53,7 +53,7 @@ INSERT INTO pasajero (
 
 -- ========== RUTAS ==========
 INSERT INTO ruta (
-    origen, destino, fecha_salida, hora_salida, tarifa, asientos_disponibles, estado_ruta, id_conductor --estado_ruta
+    origen, destino, fecha_salida, hora_salida, tarifa, asientos_disponibles, estado_ruta, id_conductor
 ) VALUES
       ('Barranco', 'Miraflores', '2025-10-05', '08:00:00', 8.00, 3, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='44444444')),
@@ -62,17 +62,36 @@ INSERT INTO ruta (
       ('La Molina', 'Centro de Lima', '2025-10-06', '07:15:00', 12.00, 4, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='55555555')),
       ('La Molina', 'UPC-Monterrico', '2025-12-11', '07:15:00', 12.00, 4, 'PROGRAMADO',
-       (SELECT id_conductor FROM conductor WHERE dni='22222222'));
+       (SELECT id_conductor FROM conductor WHERE dni='22222222')),
+      ('Barranco', 'Miraflores', '2025-10-06', '08:15:00', 8.00, 4, 'PROGRAMADO',
+       (SELECT id_conductor FROM conductor WHERE dni='44444444')),
+      ('San Borja', 'Miraflores', '2025-10-06', '18:00:00', 9.00, 3, 'PROGRAMADO',
+       (SELECT id_conductor FROM conductor WHERE dni='55555555')),
+      ('La Molina', 'San Miguel', '2025-10-07', '06:40:00', 11.00, 4, 'PROGRAMADO',
+       (SELECT id_conductor FROM conductor WHERE dni='55555555'))
+;
 
 -- ========== SOLICITUDES ==========
-INSERT INTO solicitud_viaje (fecha, hora, updated_at, estado_solicitud, id_ruta, id_pasajero --estado_solicitud
+INSERT INTO solicitud_viaje (
+    fecha, hora, updated_at, estado_solicitud, id_ruta, id_pasajero
 ) VALUES
-      ('2025-10-05', '08:00:00', '2025-10-05 08:05:00', 'PENDIENTE',
-       (SELECT id_ruta FROM ruta WHERE origen='Barranco' AND destino='Miraflores'),
-       (SELECT id_pasajero FROM pasajero WHERE dni='77777777')),
-      ('2025-10-05', '17:40:00', '2025-10-05 17:45:00', 'ACEPTADO',
-       (SELECT id_ruta FROM ruta WHERE origen='Surco' AND destino='San Isidro'),
-       (SELECT id_pasajero FROM pasajero WHERE dni='77777777'));
+      (
+          '2025-10-05', '08:00:00', '2025-10-05 08:05:00', 'PENDIENTE',
+          (SELECT id_ruta FROM ruta
+           WHERE origen='Barranco'
+             AND destino='Miraflores'
+           ORDER BY id_ruta LIMIT 1),
+          (SELECT id_pasajero FROM pasajero WHERE dni='77777777')
+      ),
+      (
+          '2025-10-05', '17:40:00', '2025-10-05 17:45:00', 'ACEPTADO',
+          (SELECT id_ruta FROM ruta
+           WHERE origen='Surco'
+             AND destino='San Isidro'
+           ORDER BY id_ruta LIMIT 1),
+          (SELECT id_pasajero FROM pasajero WHERE dni='77777777')
+      );
+
 
 -- ========== PAGOS ==========
 INSERT INTO pago (
