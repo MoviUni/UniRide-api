@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Builder
-public record RutaResponseDTO(
+public record RutaCardResponseDTO(
         Integer idRuta,
         String origen,
         String destino,
@@ -15,7 +15,6 @@ public record RutaResponseDTO(
         LocalTime horaSalida,
         Long tarifa,
         Integer asientosDisponibles,
-        EstadoRuta estadoRuta,
-        Integer idConductor,
-        Integer capacidadVehiculo
+        String nombreConductor,
+        String apellidoConductor
 ) {}

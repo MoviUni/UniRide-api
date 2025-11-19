@@ -279,7 +279,10 @@ public class SolicitudViajeServiceTest {
                             null,
                             s.getEstadoSolicitud(),
                             s.getRuta().getIdRuta(),
-                            100
+                            100, "Carlos",
+                            "Castro",
+                            null,
+                            null
                     );
                 });
 
@@ -314,7 +317,7 @@ public class SolicitudViajeServiceTest {
     void getEstadoSolicitudViaje_SinSolicitudes_Success() {
 
         // Act
-        List<SolicitudEstadoResponseDTO> responses = solicitudViajeService.searchByUsuario(mockPasajero.getIdPasajero());
+        List<SolicitudViajeResponseDTO> responses = solicitudViajeService.searchByUsuario(mockPasajero.getIdPasajero());
 
         // Assert
         assertThat(responses).isNotNull();
@@ -342,7 +345,7 @@ public class SolicitudViajeServiceTest {
 
         when(solicitudViajeRepository.searchByUsuario(mockPasajero.getIdPasajero())).thenReturn(Arrays.asList(savedSolicitud));
         // Act
-        List<SolicitudEstadoResponseDTO> responses = solicitudViajeService.searchByUsuario(savedSolicitud.getPasajero().getIdPasajero());
+        List<SolicitudViajeResponseDTO> responses = solicitudViajeService.searchByUsuario(savedSolicitud.getPasajero().getIdPasajero());
 
         // Assert
         assertThat(responses).isNotNull();
@@ -379,12 +382,18 @@ public class SolicitudViajeServiceTest {
 
         SolicitudViajeResponseDTO dtoPendiente = new SolicitudViajeResponseDTO(
                 1, solicitudPendiente.getFecha(), solicitudPendiente.getHora(), null,
-                EstadoSolicitud.PENDIENTE, idRuta, 5
+                EstadoSolicitud.PENDIENTE, idRuta, 5, "Carlos",
+                "Castro",
+                null,
+                null
         );
 
         SolicitudViajeResponseDTO dtoAceptada = new SolicitudViajeResponseDTO(
                 2, solicitudAceptada.getFecha(), solicitudAceptada.getHora(), null,
-                EstadoSolicitud.ACEPTADO, idRuta, 6
+                EstadoSolicitud.ACEPTADO, idRuta, 6, "Maria",
+                "Sanchez",
+                null,
+                null
         );
 
         when(rutaRepository.findById(10L)).thenReturn(Optional.of(ruta));
@@ -445,7 +454,11 @@ public class SolicitudViajeServiceTest {
                 null,
                 EstadoSolicitud.ACEPTADO,
                 mockRuta.getIdRuta(),
-                100
+                100,
+                "Carlos",
+                "Castro",
+                null,
+                null
         );
 
         when(solicitudViajeRepository.findById(1L)).thenReturn(Optional.of(solicitud));
@@ -488,7 +501,11 @@ public class SolicitudViajeServiceTest {
                 null,
                 EstadoSolicitud.RECHAZADO,
                 mockRuta.getIdRuta(),
-                200
+                200,
+                "Carlos",
+                "Castro",
+                null,
+                null
         );
 
         when(solicitudViajeRepository.findById(2L)).thenReturn(Optional.of(solicitud));

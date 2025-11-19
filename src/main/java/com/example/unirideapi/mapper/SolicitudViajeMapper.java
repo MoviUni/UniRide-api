@@ -22,7 +22,11 @@ public class SolicitudViajeMapper {
                 entity.getUpdatedAt(),
                 entity.getEstadoSolicitud(),
                 entity.getRuta().getIdRuta(),
-                entity.getPasajero().getIdPasajero()
+                entity.getPasajero().getIdPasajero(),
+                entity.getPasajero().getNombre(),
+                entity.getPasajero().getApellido(),
+                entity.getPasajero().getCarrera(),
+                entity.getPasajero().getDescripcionPasajero()
         );
     }
 

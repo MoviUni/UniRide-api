@@ -1,6 +1,7 @@
 package com.example.unirideapi.service;
 
 import com.example.unirideapi.dto.request.RutaRequestDTO;
+import com.example.unirideapi.dto.response.RutaCardResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import com.example.unirideapi.model.enums.EstadoRuta;
@@ -28,6 +29,7 @@ public interface RutaService {
     // ====== CREAR / BUSCAR ======
     RutaResponseDTO create(RutaRequestDTO rutaRequestDTO);
     RutaResponseDTO searchById(Long id);
+    List<RutaCardResponseDTO> searchInfo();
     List<RutaResponseDTO> searchByOrigen(String origen);
     List<RutaResponseDTO> searchByDestino(String destino);
     List<RutaResponseDTO> searchByHora(String hora);
@@ -44,6 +46,8 @@ public interface RutaService {
     // Delegador sin confirmación (coincide con tu implementación)
     RutaResponseDTO actualizarRutaFull(Long idRuta, Integer idConductor, RutaRequestDTO dto);
     void eliminarRutaDeConductor(Long idRuta, Integer idConductor);
+    List<RutaResponseDTO> listarRutasActivasDelConductor(Integer idConductor);
+
 
     // Versiones con confirmación (también están en tu implementación)
     RutaResponseDTO actualizarRutaFull(Long idRuta, Integer idConductor, RutaRequestDTO dto, boolean confirmarCambios);

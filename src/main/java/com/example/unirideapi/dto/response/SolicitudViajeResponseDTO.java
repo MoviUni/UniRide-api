@@ -15,5 +15,11 @@ public record SolicitudViajeResponseDTO(
         LocalDateTime updatedAt,
         EstadoSolicitud estadoSolicitud,
         Integer rutaId,
-        Integer pasajeroId
+        Integer pasajeroId,
+
+        // 👇 resumen de pasajero
+        String pasajeroNombre,
+        String pasajeroApellido,
+        String pasajeroCarrera,
+        String pasajeroDescripcion
 ) { }

@@ -1,6 +1,7 @@
 package com.example.unirideapi.service.impl;
 
 import com.example.unirideapi.dto.request.RutaRequestDTO;
+import com.example.unirideapi.dto.response.RutaCardResponseDTO;
 import com.example.unirideapi.exception.ResourceNotFoundException;
 import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
@@ -12,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Comparator;
+
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -286,6 +290,27 @@ public class RutaServiceImpl implements RutaService {
                 .map(rutaMapper::toDTO)
                 .collect(Collectors.toList());
     }
+    @Override
+    public List<RutaResponseDTO> listarRutasActivasDelConductor(Integer idConductor) {
+        LocalDateTime ahora = LocalDateTime.now();
+
+        return rutaRepository.findByConductor_IdConductor(idConductor)
+                .stream()
+                // solo estados activos
+                .filter(r -> r.getEstadoRuta() == EstadoRuta.PROGRAMADO
+                        || r.getEstadoRuta() == EstadoRuta.CONFIRMADO)
+                // solo viajes futuros (>= ahora)
+                .filter(r -> {
+                    LocalDateTime salida = LocalDateTime.of(r.getFechaSalida(), r.getHoraSalida());
+                    return !salida.isBefore(ahora); // salida >= ahora
+                })
+                // ordenados por fecha+hora
+                .sorted(Comparator.comparing(
+                        r -> LocalDateTime.of(r.getFechaSalida(), r.getHoraSalida())
+                ))
+                .map(rutaMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 
     // ⬇️ ADD: NUEVO — listar mis rutas por estado
     @Override
@@ -473,6 +498,21 @@ public class RutaServiceImpl implements RutaService {
         eliminarRutaDeConductorConReglas(idRuta, idConductor, confirmar);
     }
 
-
+    @Override
+    public List<RutaCardResponseDTO> searchInfo(){
+        return rutaRepository.getInfo().stream()
+                .map(row -> RutaCardResponseDTO.builder()
+                        .idRuta((Integer)row[0])
+                        .origen(row[1].toString())
+                        .destino(row[2].toString())
+                        .fechaSalida(LocalDate.parse(row[3].toString()))
+                        .horaSalida(LocalTime.parse(row[4].toString()))
+                        .tarifa(((Number) row[5]).longValue())
+                        .asientosDisponibles((Integer) row[6])
+                        .nombreConductor(row[7].toString())
+                        .apellidoConductor(row[8].toString())
+                        .build())
+                .collect(Collectors.toList());
+    }
 
 }

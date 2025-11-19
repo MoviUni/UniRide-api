@@ -2,6 +2,7 @@ package com.example.unirideapi.controller;
 
 import com.example.unirideapi.dto.request.RutaEstadoRequestDTO;
 import com.example.unirideapi.dto.request.RutaRequestDTO;
+import com.example.unirideapi.dto.response.RutaCardResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.service.RutaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -132,6 +133,12 @@ public class RutaController {
     public ResponseEntity<List<RutaResponseDTO>> searchByDestino(@RequestParam String destino)
     {
         return ResponseEntity.ok(rutaService.searchByDestino(destino));
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<List<RutaCardResponseDTO>> searchInfo()
+    {
+        return ResponseEntity.ok(rutaService.searchInfo());
     }
 
     @Operation(
@@ -309,6 +316,12 @@ public class RutaController {
     @GetMapping("/mias/{idConductor}")
     public ResponseEntity<List<RutaResponseDTO>> misRutas(@PathVariable Integer idConductor) {
         return ResponseEntity.ok(rutaService.listarRutasDelConductor(idConductor));
+    }
+
+    // rutas activas (PROGRAMADO/CONFIRMADO y futuras)
+    @GetMapping("/mias/activas/{idConductor}")
+    public ResponseEntity<List<RutaResponseDTO>> misRutasActivas(@PathVariable Integer idConductor) {
+        return ResponseEntity.ok(rutaService.listarRutasActivasDelConductor(idConductor));
     }
 
     // ⬇️ ADD: NUEVO — listar mis rutas por estado
