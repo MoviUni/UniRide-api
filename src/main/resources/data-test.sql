@@ -64,6 +64,7 @@ INSERT INTO ruta (
       ('La Molina', 'UPC-Monterrico', '2025-12-11', '07:15:00', 12.00, 4, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='22222222'));
 
+
 -- ========== SOLICITUDES ==========
 INSERT INTO solicitud_viaje (
     fecha, hora, updated_at, estado_solicitud, id_ruta, id_pasajero
