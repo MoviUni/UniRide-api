@@ -8,5 +8,8 @@ public record AuthResponseDTO(
         String nombre,
         String apellido,
         String rol,
-        Integer idRol
+        Integer idUsuario,
+        Integer idRol,
+        Integer idConductor,
+        Integer idPasajero
 ) {}

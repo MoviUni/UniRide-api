@@ -10,7 +10,7 @@ TRUNCATE TABLE
     vehiculo,
     usuario,
     rol
-    RESTART IDENTITY CASCADE;
+RESTART IDENTITY CASCADE;
 
 -- ========== ROLES ==========
 INSERT INTO rol (name) VALUES
@@ -20,11 +20,11 @@ INSERT INTO rol (name) VALUES
 
 -- ========== USUARIOS ==========
 INSERT INTO usuario (email, password, id_rol) VALUES
-                                                  ('admin@uniride.test',      '$2a$10$hbm4HySP2ud5GO5.ovI0AeB4AOdwqRk1IiZVTCySLa8ptS/8yg1w6',     (SELECT id_rol FROM rol WHERE name = 'ADMIN')),
-                                                  ('conductor@uniride.test',  '$2a$10$9x7ODUgfjAJKLF9YH/h8GetlFMJOqwT0ePItIv7NcrVXAdQimlw4u',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
-                                                  ('pasajero@uniride.test',   '$2a$10$U8Bs3tkWjjzMDHKGdw1b7.JGewFPIiSdVlUzH2dqyHXFMJsEipSsa', (SELECT id_rol FROM rol WHERE name = 'PASAJERO')),
-                                                  ('conductora@uniride.test', '$2a$10$Y17/RLrMuRm582rAW.pRIuepoRyAFskhKpQHKjSKdv8BSDSlmlTj.',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
-                                                  ('conductor3@uniride.test',   '$2a$10$jCS2EW.PaZf0enqFvFSLkOKGhYzBkt7DfFgmQrKFAnMVceey2Vy66', (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR'));
+                                                  ('admin@uniride.test',      '$2a$10$QF0HXpfN/PT.E18bFxY8AOzFmfc3WW4.4dcDHDIPuCl0L5xM2b/CO',     (SELECT id_rol FROM rol WHERE name = 'ADMIN')), --contra: admin123
+                                                  ('conductor@uniride.test',  '$2a$10$5yzScqF/9Xi2agkmPj//Lu2IkqqS6A3peLYNBr.u/pIauUV.2dgJO',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')), -- driver123
+                                                  ('pasajero@uniride.test',   '$2a$10$L7OOSfUlkchHzjmB4ry/K.QU4JqkKnl1/9smYP2URLog.NlCXTYiO', (SELECT id_rol FROM rol WHERE name = 'PASAJERO')), --passenger123
+                                                  ('conductora@uniride.test', 'driver456',    (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR')),
+                                                  ('conductor3@uniride.test',   'driver789', (SELECT id_rol FROM rol WHERE name = 'CONDUCTOR'));
 
 -- ========== CONDUCTORES ==========
 INSERT INTO conductor (
@@ -39,63 +39,45 @@ INSERT INTO conductor (
 
 -- ========== VEHICULOS ==========
 INSERT INTO vehiculo (
-    placa, soat, modelo, color, marca, capacidad, descripcion_vehiculo, id_vehiculo
+    placa, soat, modelo, color, marca, capacidad, descripcion_vehiculo, id_conductor
 ) VALUES
       ('ABC-123', TRUE, 'Yaris', 'Rojo', 'Toyota', 4, 'Sedán compacto, aire acondicionado y GPS.', (SELECT id_conductor FROM conductor WHERE dni='44444444')),
       ('XYZ-987', TRUE, 'Accent', 'Azul', 'Hyundai', 4, 'Buen maletero, mantenimiento al día y asientos cómodos.', (SELECT id_conductor FROM conductor WHERE dni='55555555'));
 
 -- ========== PASAJEROS ==========
 INSERT INTO pasajero (
-    nombre, apellido, dni, edad, descripcion_pasajero, created_at, updated_at, usuario_id_usuario
+    nombre, apellido, dni, edad, descripcion_pasajero, created_at, updated_at, usuario_id_usuario, carrera
 ) VALUES
     ('Favio', 'Arroyo', '77777777', 24, 'Prefiere asiento delantero y viajes tranquilos.', '2025-09-30 10:00:00', '2025-09-30 10:00:00',
-     (SELECT id_usuario FROM usuario WHERE email = 'pasajero@uniride.test'));
+     (SELECT id_usuario FROM usuario WHERE email = 'pasajero@uniride.test'), 'Ciencias de la computación');
 
 -- ========== RUTAS ==========
 INSERT INTO ruta (
     origen, destino, fecha_salida, hora_salida, tarifa, asientos_disponibles, estado_ruta, id_conductor
 ) VALUES
-      ('Barranco', 'Miraflores', '2025-10-05', '08:00:00', 8.00, 3, 'PROGRAMADO',
+      ('Barranco', 'Miraflores', '2025-11-30', '08:00:00', 8.00, 4, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='44444444')),
-      ('Surco', 'San Isidro', '2025-10-05', '17:30:00', 10.00, 2, 'PROGRAMADO',
+      ('Surco', 'San Isidro', '2025-11-20', '14:00:00', 10.00, 3, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='44444444')),
       ('La Molina', 'Centro de Lima', '2025-10-06', '07:15:00', 12.00, 4, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='55555555')),
       ('La Molina', 'UPC-Monterrico', '2025-12-11', '07:15:00', 12.00, 4, 'PROGRAMADO',
-       (SELECT id_conductor FROM conductor WHERE dni='22222222')),
-      ('Barranco', 'Miraflores', '2025-10-06', '08:15:00', 8.00, 4, 'PROGRAMADO',
-       (SELECT id_conductor FROM conductor WHERE dni='44444444')),
-      ('San Borja', 'Miraflores', '2025-10-06', '18:00:00', 9.00, 3, 'PROGRAMADO',
-       (SELECT id_conductor FROM conductor WHERE dni='55555555')),
-      ('La Molina', 'San Miguel', '2025-10-07', '06:40:00', 11.00, 4, 'PROGRAMADO',
-       (SELECT id_conductor FROM conductor WHERE dni='55555555'))
-;
+       (SELECT id_conductor FROM conductor WHERE dni='22222222'));
 
 -- ========== SOLICITUDES ==========
 INSERT INTO solicitud_viaje (
     fecha, hora, updated_at, estado_solicitud, id_ruta, id_pasajero
 ) VALUES
-      (
-          '2025-10-05', '08:00:00', '2025-10-05 08:05:00', 'PENDIENTE',
-          (SELECT id_ruta FROM ruta
-           WHERE origen='Barranco'
-             AND destino='Miraflores'
-           ORDER BY id_ruta LIMIT 1),
-          (SELECT id_pasajero FROM pasajero WHERE dni='77777777')
-      ),
-      (
-          '2025-10-05', '17:40:00', '2025-10-05 17:45:00', 'ACEPTADO',
-          (SELECT id_ruta FROM ruta
-           WHERE origen='Surco'
-             AND destino='San Isidro'
-           ORDER BY id_ruta LIMIT 1),
-          (SELECT id_pasajero FROM pasajero WHERE dni='77777777')
-      );
-
+      ('2025-10-05', '08:00:00', '2025-10-05 08:05:00', 'PENDIENTE',
+       (SELECT id_ruta FROM ruta WHERE origen='Barranco' AND destino='Miraflores'),
+       (SELECT id_pasajero FROM pasajero WHERE dni='77777777')),
+      ('2025-10-05', '17:40:00', '2025-10-05 17:45:00', 'ACEPTADO',
+       (SELECT id_ruta FROM ruta WHERE origen='Surco' AND destino='San Isidro'),
+       (SELECT id_pasajero FROM pasajero WHERE dni='77777777'));
 
 -- ========== PAGOS ==========
 INSERT INTO pago (
-    monto, fecha, hora, comision, medio_pago, estado_pago, id_solicitud_viaje --estado_pago
+    monto, fecha, hora, comision, medio_pago, estado_pago, id_solicitud_viaje
 ) VALUES
       (8.00, '2025-10-05', '08:10:00', 0.50, 'YAPE', 'COMPLETADO',
        (SELECT id_solicitud_viaje FROM solicitud_viaje WHERE estado_solicitud='PENDIENTE')),
