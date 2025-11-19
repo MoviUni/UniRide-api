@@ -42,8 +42,6 @@ public class OpenAPIConfig {
                 .contact(contact)
                 .description("UniRide API description");
 
-        //return new OpenAPI().info(info).servers(List.of(devServer, prodServer));
-
         // OpenAPI con JWT
         return new OpenAPI()
                 .info(info)

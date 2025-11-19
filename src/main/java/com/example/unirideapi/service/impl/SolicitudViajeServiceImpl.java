@@ -1,6 +1,8 @@
 package com.example.unirideapi.service.impl;
 
 import com.example.unirideapi.dto.request.SolicitudViajeRequestDTO;
+import com.example.unirideapi.dto.response.RutaCardResponseDTO;
+import com.example.unirideapi.dto.response.SolicitudCardResponseDTO;
 import com.example.unirideapi.dto.response.SolicitudEstadoResponseDTO;
 import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
 import com.example.unirideapi.exception.BusinessRuleException;
@@ -19,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -60,9 +64,9 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
 
 
     @Override
-    public List<SolicitudEstadoResponseDTO> searchByUsuario(Integer idUsuario) {
+    public List<SolicitudViajeResponseDTO> searchByUsuario(Integer idUsuario) {
         return solicitudViajeRepository.searchByUsuario(idUsuario).stream()
-                .map(this::toEstadoResponse)
+                .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
@@ -138,6 +142,24 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
         solicitudViajeRepository.save(solicitud);
 
         return solicitudViajeMapper.toDTO(solicitud);
+    }
+
+    @Override
+    public List<SolicitudCardResponseDTO> searchInfo(){
+        return solicitudViajeRepository.getInfo().stream()
+                .map(row -> SolicitudCardResponseDTO.builder()
+                        .idSolicitudViaje((Integer)row[0])
+                        .estadoSolicitud(EstadoSolicitud.valueOf(row[1].toString()))
+                        .origen(row[2].toString())
+                        .destino(row[3].toString())
+                        .fechaSalida(LocalDate.parse(row[4].toString()))
+                        .horaSalida(LocalTime.parse(row[5].toString()))
+                        .tarifa(((Number) row[6]).longValue())
+                        .asientosDisponibles((Integer) row[7])
+                        .nombreConductor(row[8].toString())
+                        .apellidoConductor(row[9].toString())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     private SolicitudEstadoResponseDTO toEstadoResponse(SolicitudViaje solicitudViaje) {

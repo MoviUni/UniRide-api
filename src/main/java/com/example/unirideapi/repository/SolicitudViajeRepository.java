@@ -27,5 +27,23 @@ public interface SolicitudViajeRepository extends JpaRepository<SolicitudViaje, 
     @Query("SELECT b FROM SolicitudViaje b WHERE b.pasajero.idPasajero = :idUsuario")
     List<SolicitudViaje> searchByUsuario(@Param("idUsuario") Integer idUsuario);
 
+    @Query(value="SELECT r.origen, r.destino, r.fecha_salida, r.hora_salida, r.tarifa " +
+            "FROM ruta r " +
+            "JOIN pasajero p ON p.id_ruta = r.id_ruta " +
+            "WHERE p.id_usuario = :usuarioId ",
+            nativeQuery = true)
+    List<Object[]> searchByPasaero(@Param("idUsuario") Integer idUsuario);
+
+    @Query("SELECT b FROM SolicitudViaje b WHERE b.pasajero.idPasajero = :idPasajero AND b.ruta.idRuta = :idRuta")
+    Boolean existDuplicate(@Param("idRuta") Integer idRuta, @Param("idPasajero") Integer idPasajero);
+
+    @Query("""
+            SELECT s.idSolicitudViaje, s.estadoSolicitud, r.origen, r.destino, r.fechaSalida, r.horaSalida, r.tarifa, r.asientosDisponibles, c.nombre, c.apellido
+            FROM SolicitudViaje s
+            JOIN Ruta r ON r.idRuta = s.ruta.idRuta
+            JOIN Conductor c ON c.idConductor = r.conductor.idConductor
+            WHERE r.estadoRuta != 'EN_PROGRESO'""")
+    List<Object[]>getInfo();
+
 }
 

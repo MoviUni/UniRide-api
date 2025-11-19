@@ -2,8 +2,10 @@ package com.example.unirideapi.controller;
 
 import com.example.unirideapi.dto.request.SolicitudEstadoRequestDTO;
 import com.example.unirideapi.dto.request.SolicitudViajeRequestDTO;
+import com.example.unirideapi.dto.response.SolicitudCardResponseDTO;
 import com.example.unirideapi.dto.response.SolicitudEstadoResponseDTO;
 import com.example.unirideapi.dto.response.SolicitudViajeResponseDTO;
+import com.example.unirideapi.model.enums.EstadoSolicitud;
 import com.example.unirideapi.service.SolicitudViajeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -87,6 +89,14 @@ public class SolicitudViajeController {
         return ResponseEntity.ok(updated);
     }
 
+    @PatchMapping("/{idSolicitud}/cancelar")
+    public ResponseEntity<SolicitudViajeResponseDTO> cancelarSolicitud(
+            @PathVariable Integer idSolicitud
+    ) {
+        var updated = solicitudViajeService.cancelSolicitud(idSolicitud);
+        return ResponseEntity.ok(updated);
+    }
+
     @Operation(
             summary = "Obtener los estados de la solicitudes de viaje",
             description = "Obtener los estados de las solicitudes de viaje relacionadas a un id de pasajero"
@@ -100,8 +110,13 @@ public class SolicitudViajeController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/usuario/{id}")
-    public ResponseEntity<List<SolicitudEstadoResponseDTO>> searchByUsuario(@RequestParam Integer id) {
+    public ResponseEntity<List<SolicitudViajeResponseDTO>> searchByUsuario(@RequestParam Integer id) {
         return ResponseEntity.ok(solicitudViajeService.searchByUsuario(id));
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<List<SolicitudCardResponseDTO>> searchInfo() {
+        return ResponseEntity.ok(solicitudViajeService.searchInfo());
     }
 
 }
