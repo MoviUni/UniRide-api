@@ -145,8 +145,8 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
     }
 
     @Override
-    public List<SolicitudCardResponseDTO> searchInfo(){
-        return solicitudViajeRepository.getInfo().stream()
+    public List<SolicitudCardResponseDTO> searchInfo(Integer pasajeroId){
+        return solicitudViajeRepository.getInfo(pasajeroId).stream()
                 .map(row -> SolicitudCardResponseDTO.builder()
                         .idSolicitudViaje((Integer)row[0])
                         .estadoSolicitud(EstadoSolicitud.valueOf(row[1].toString()))

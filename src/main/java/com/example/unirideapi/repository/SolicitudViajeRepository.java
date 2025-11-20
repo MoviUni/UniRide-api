@@ -42,8 +42,8 @@ public interface SolicitudViajeRepository extends JpaRepository<SolicitudViaje, 
             FROM SolicitudViaje s
             JOIN Ruta r ON r.idRuta = s.ruta.idRuta
             JOIN Conductor c ON c.idConductor = r.conductor.idConductor
-            WHERE r.estadoRuta != 'EN_PROGRESO'""")
-    List<Object[]>getInfo();
+            WHERE r.estadoRuta != 'EN_PROGRESO' AND s.pasajero.idPasajero = :idPasajero""")
+    List<Object[]>getInfo(@Param("idPasajero") Integer idPasajero);
 
 }
 

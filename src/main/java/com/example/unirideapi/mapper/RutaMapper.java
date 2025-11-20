@@ -41,8 +41,28 @@ public class RutaMapper {
     }
 
     public Ruta toEntity(RutaRequestDTO dto) {
-        return modelMapper.map(dto, Ruta.class);
+        if (dto == null) return null;
+
+        Ruta r = new Ruta();
+        r.setOrigen(dto.origen());
+        r.setDestino(dto.destino());
+        r.setFechaSalida(dto.fechaSalida());      // LocalDate
+        r.setHoraSalida(dto.horaSalida());        // LocalTime
+
+        // Si en la entidad 'tarifa' es Long, conviértela
+        r.setTarifa(dto.tarifa() == null ? null : dto.tarifa().longValue());
+
+        r.setAsientosDisponibles(dto.asientosDisponibles());
+        r.setEstadoRuta(dto.estadoRuta());
+
+        if (dto.conductorId() != null) {
+            var c = new com.example.unirideapi.model.Conductor();
+            c.setIdConductor(dto.conductorId());
+            r.setConductor(c);
+        }
+        return r;
     }
+
 
     public RutaFrecuenteResponseDTO toRutaFrecuenteDTO(Object[] obj) {
         return RutaFrecuenteResponseDTO.builder()
