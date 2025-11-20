@@ -114,9 +114,9 @@ public class SolicitudViajeController {
         return ResponseEntity.ok(solicitudViajeService.searchByUsuario(id));
     }
 
-    @GetMapping("/info")
-    public ResponseEntity<List<SolicitudCardResponseDTO>> searchInfo() {
-        return ResponseEntity.ok(solicitudViajeService.searchInfo());
+    @GetMapping("/info/{id}")
+    public ResponseEntity<List<SolicitudCardResponseDTO>> searchInfo(@RequestParam Integer id) {
+        return ResponseEntity.ok(solicitudViajeService.searchInfo(id));
     }
 
 }
