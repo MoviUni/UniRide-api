@@ -35,7 +35,7 @@ import java.util.Map;
 )
 @RestController
 @RequestMapping("/rutas")
-@PreAuthorize("hasAnyRole('CONDUCTOR', 'ADMIN')")
+@PreAuthorize("hasAnyRole('CONDUCTOR', 'ADMIN', 'PASAJERO')")
 @RequiredArgsConstructor
 public class RutaController {
     private final RutaService rutaService;
