@@ -29,7 +29,7 @@ public interface RutaService {
     // ====== CREAR / BUSCAR ======
     RutaResponseDTO create(RutaRequestDTO rutaRequestDTO);
     RutaResponseDTO searchById(Long id);
-    List<RutaCardResponseDTO> searchInfo();
+    List<RutaCardResponseDTO> searchInfo(Integer pasajeroId);
     List<RutaResponseDTO> searchByOrigen(String origen);
     List<RutaResponseDTO> searchByDestino(String destino);
     List<RutaResponseDTO> searchByHora(String hora);
