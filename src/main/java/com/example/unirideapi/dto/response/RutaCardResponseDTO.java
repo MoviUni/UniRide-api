@@ -16,5 +16,9 @@ public record RutaCardResponseDTO(
         Long tarifa,
         Integer asientosDisponibles,
         String nombreConductor,
-        String apellidoConductor
+        String apellidoConductor,
+        String vehiculoColor,
+        String vehiculoPlaca,
+        String vehiculoModelo,
+        String vehiculoDesc
 ) {}

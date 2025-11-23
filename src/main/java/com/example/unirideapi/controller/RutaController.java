@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -135,10 +136,10 @@ public class RutaController {
         return ResponseEntity.ok(rutaService.searchByDestino(destino));
     }
 
-    @GetMapping("/info")
-    public ResponseEntity<List<RutaCardResponseDTO>> searchInfo()
+    @GetMapping("/info/{pasajeroId}")
+    public ResponseEntity<List<RutaCardResponseDTO>> searchInfo(@PathVariable Integer pasajeroId)
     {
-        return ResponseEntity.ok(rutaService.searchInfo());
+        return ResponseEntity.ok(rutaService.searchInfo(pasajeroId));
     }
 
     @Operation(

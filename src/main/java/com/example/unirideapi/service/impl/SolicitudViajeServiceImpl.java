@@ -48,7 +48,7 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
         Pasajero pasajero = pasajeroRepository.findById(solicitudViajeRequestDTO.pasajeroId())
                 .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado"));
         Ruta ruta = rutaRepository.findById((long)solicitudViajeRequestDTO.rutaId())
-                .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrado"));
 
         var solicitudViaje = SolicitudViaje.builder()
                 .estadoSolicitud(solicitudViajeRequestDTO.estadoSolicitud())
@@ -158,6 +158,7 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
                         .asientosDisponibles((Integer) row[7])
                         .nombreConductor(row[8].toString())
                         .apellidoConductor(row[9].toString())
+                        .idRuta((Integer)row[10])
                         .build())
                 .collect(Collectors.toList());
     }

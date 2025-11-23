@@ -2,22 +2,24 @@ package com.example.unirideapi.service.impl;
 
 import com.example.unirideapi.dto.request.RutaRequestDTO;
 import com.example.unirideapi.dto.response.RutaCardResponseDTO;
+import com.example.unirideapi.dto.response.SolicitudCardResponseDTO;
 import com.example.unirideapi.exception.ResourceNotFoundException;
 import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.mapper.RutaMapper;
 import com.example.unirideapi.model.Ruta;
+import com.example.unirideapi.model.enums.EstadoSolicitud;
 import com.example.unirideapi.repository.RutaRepository;
+import com.example.unirideapi.repository.SolicitudViajeRepository;
 import com.example.unirideapi.service.RutaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Comparator;
+import java.util.*;
 
 import java.time.LocalTime;
-import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -26,8 +28,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import java.io.ByteArrayOutputStream;
-import java.util.LinkedHashMap;
-import java.util.Map;
+
 import com.example.unirideapi.exception.BusinessRuleException;
 import com.example.unirideapi.model.enums.EstadoRuta;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class RutaServiceImpl implements RutaService {
     private final RutaRepository rutaRepository;
+    private final SolicitudViajeRepository solicitudViajeRepository;
     private  final RutaMapper rutaMapper;
 
     @Override
@@ -554,8 +556,12 @@ public class RutaServiceImpl implements RutaService {
     }
 
     @Override
-    public List<RutaCardResponseDTO> searchInfo(){
-        return rutaRepository.getInfo().stream()
+    public List<RutaCardResponseDTO> searchInfo(Integer pasajeroId){
+
+
+        List<RutaCardResponseDTO> newRutas =  new ArrayList<>();
+
+        List<RutaCardResponseDTO> allRutas = rutaRepository.getInfo().stream()
                 .map(row -> RutaCardResponseDTO.builder()
                         .idRuta((Integer)row[0])
                         .origen(row[1].toString())
@@ -566,8 +572,45 @@ public class RutaServiceImpl implements RutaService {
                         .asientosDisponibles((Integer) row[6])
                         .nombreConductor(row[7].toString())
                         .apellidoConductor(row[8].toString())
+                        .vehiculoColor(row[9].toString())
+                        .vehiculoPlaca(row[10].toString())
+                        .vehiculoModelo(row[11].toString())
+                        .vehiculoDesc(row[12].toString())
                         .build())
                 .collect(Collectors.toList());
+
+        List<SolicitudCardResponseDTO>  allSolicitudes = solicitudViajeRepository.getInfo(pasajeroId).stream()
+                .map(row -> SolicitudCardResponseDTO.builder()
+                        .idSolicitudViaje((Integer)row[0])
+                        .estadoSolicitud(EstadoSolicitud.valueOf(row[1].toString()))
+                        .origen(row[2].toString())
+                        .destino(row[3].toString())
+                        .fechaSalida(LocalDate.parse(row[4].toString()))
+                        .horaSalida(LocalTime.parse(row[5].toString()))
+                        .tarifa(((Number) row[6]).longValue())
+                        .asientosDisponibles((Integer) row[7])
+                        .nombreConductor(row[8].toString())
+                        .apellidoConductor(row[9].toString())
+                        .idRuta((Integer)row[10])
+
+
+                        .build())
+                .collect(Collectors.toList());
+
+        if(allSolicitudes.isEmpty()) return allRutas;
+
+        for (int i = 0; i < allRutas.size(); i++) {
+            for (int j = 0; j < allSolicitudes.size(); j++) {
+                if(Objects.equals(allSolicitudes.get(j).idRuta(), allRutas.get(i).idRuta())){
+                    break;
+                }
+                if(j == allSolicitudes.size() - 1) newRutas.add(allRutas.get(i));
+
+            }
+        }
+
+        return newRutas;
     }
+
 
 }

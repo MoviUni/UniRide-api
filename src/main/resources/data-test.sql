@@ -42,7 +42,8 @@ INSERT INTO vehiculo (
     placa, soat, modelo, color, marca, capacidad, descripcion_vehiculo, id_conductor
 ) VALUES
       ('ABC-123', TRUE, 'Yaris', 'Rojo', 'Toyota', 4, 'Sedán compacto, aire acondicionado y GPS.', (SELECT id_conductor FROM conductor WHERE dni='44444444')),
-      ('XYZ-987', TRUE, 'Accent', 'Azul', 'Hyundai', 4, 'Buen maletero, mantenimiento al día y asientos cómodos.', (SELECT id_conductor FROM conductor WHERE dni='55555555'));
+      ('XYZ-987', TRUE, 'Accent', 'Azul', 'Hyundai', 4, 'Buen maletero, mantenimiento al día y asientos cómodos.', (SELECT id_conductor FROM conductor WHERE dni='55555555')),
+      ('XAB-933', TRUE, 'Accent', 'Gris', 'Hyundai', 3, 'Moderno y con asientos cómodos.', (SELECT id_conductor FROM conductor WHERE dni='22222222'));
 
 -- ========== PASAJEROS ==========
 INSERT INTO pasajero (

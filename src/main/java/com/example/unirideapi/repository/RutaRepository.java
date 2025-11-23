@@ -106,7 +106,7 @@ public interface RutaRepository extends JpaRepository<Ruta, Long> {
 
 
     @Query("""
-            SELECT r.idRuta, r.origen, r.destino, r.fechaSalida, r.horaSalida, r.tarifa, r.asientosDisponibles, c.nombre, c.apellido
+            SELECT r.idRuta, r.origen, r.destino, r.fechaSalida, r.horaSalida, r.tarifa, r.asientosDisponibles, c.nombre, c.apellido, c.vehiculo.color, c.vehiculo.placa, c.vehiculo.modelo, c.vehiculo.descripcionVehiculo
             FROM Ruta r
             JOIN Conductor c ON c.idConductor = r.conductor.idConductor
             WHERE r.estadoRuta != 'EN_PROGRESO'""")
