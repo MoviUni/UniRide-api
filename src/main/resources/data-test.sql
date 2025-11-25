@@ -28,22 +28,22 @@ INSERT INTO usuario (email, password, id_rol) VALUES
 
 -- ========== CONDUCTORES ==========
 INSERT INTO conductor (
-    nombre, apellido, dni, edad, descripcion_conductor, created_at, updated_at, id_usuario
+    nombre, apellido, dni, edad, codigo_uni, created_at, updated_at, id_usuario
 ) VALUES
-      ('Carlos', 'Soto', '44444444', 30, '5 años de experiencia conduciendo autos de servicio.', '2025-09-30 09:00:00', '2025-09-30 09:00:00',
+      ('Carlos', 'Soto', '44444444', 30, 'U202218883','2025-09-30 09:00:00', '2025-09-30 09:00:00',
        (SELECT id_usuario FROM usuario WHERE email='conductor@uniride.test')),
-      ('Marta', 'Quispe', '55555555', 28, 'Conduce con prudencia y respeto por las normas de tránsito.', '2025-09-30 10:30:00', '2025-09-30 10:30:00',
+      ('Marta', 'Quispe', '55555555', 28,  'U202119884','2025-09-30 10:30:00', '2025-09-30 10:30:00',
        (SELECT id_usuario FROM usuario WHERE email='conductora@uniride.test')),
-      ('David', 'Atencio', '22222222', 21, '3 años de experiencia conduciendo.', '2025-09-30 09:00:00', '2025-09-30 09:00:00',
+      ('David', 'Atencio', '22222222', 21,'U202215552', '2025-09-30 09:00:00', '2025-09-30 09:00:00',
        (SELECT id_usuario FROM usuario WHERE email='conductor3@uniride.test'));
 
 -- ========== VEHICULOS ==========
 INSERT INTO vehiculo (
-    placa, soat, modelo, color, marca, capacidad, descripcion_vehiculo, id_conductor
+    placa, soat, modelo, color, marca, capacidad, id_conductor
 ) VALUES
-      ('ABC-123', TRUE, 'Yaris', 'Rojo', 'Toyota', 4, 'Sedán compacto, aire acondicionado y GPS.', (SELECT id_conductor FROM conductor WHERE dni='44444444')),
-      ('XYZ-987', TRUE, 'Accent', 'Azul', 'Hyundai', 4, 'Buen maletero, mantenimiento al día y asientos cómodos.', (SELECT id_conductor FROM conductor WHERE dni='55555555')),
-      ('XAB-933', TRUE, 'Accent', 'Gris', 'Hyundai', 3, 'Moderno y con asientos cómodos.', (SELECT id_conductor FROM conductor WHERE dni='22222222'));
+      ('ABC-123', TRUE, 'Yaris', 'Rojo', 'Toyota', 4, (SELECT id_conductor FROM conductor WHERE dni='44444444')),
+      ('XYZ-987', TRUE, 'Accent', 'Azul', 'Hyundai', 4, (SELECT id_conductor FROM conductor WHERE dni='55555555'));
+
 
 -- ========== PASAJEROS ==========
 INSERT INTO pasajero (
@@ -56,9 +56,9 @@ INSERT INTO pasajero (
 INSERT INTO ruta (
     origen, destino, fecha_salida, hora_salida, tarifa, asientos_disponibles, estado_ruta, id_conductor
 ) VALUES
-      ('Barranco', 'Miraflores', '2025-11-30', '08:00:00', 8.00, 4, 'PROGRAMADO',
+      ('Barranco', 'Miraflores', '2025-12-10', '08:00:00', 8.00, 4, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='44444444')),
-      ('Surco', 'San Isidro', '2025-11-20', '14:00:00', 10.00, 3, 'PROGRAMADO',
+      ('Surco', 'San Isidro', '2025-12-09', '14:00:00', 10.00, 3, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='44444444')),
       ('La Molina', 'Centro de Lima', '2025-10-06', '07:15:00', 12.00, 4, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='55555555')),

@@ -1,23 +1,14 @@
 package com.example.unirideapi.service.impl;
 
-import com.example.unirideapi.dto.request.ConductorRequestDTO;
-import com.example.unirideapi.dto.request.LoginRequestDTO;
-import com.example.unirideapi.dto.request.PasajeroRequestDTO;
-import com.example.unirideapi.dto.request.UsuarioRegistroRequestDTO;
+import com.example.unirideapi.dto.request.*;
 import com.example.unirideapi.dto.response.AuthResponseDTO;
 import com.example.unirideapi.dto.response.UsuarioPerfilResponseDTO;
 import com.example.unirideapi.exception.BusinessRuleException;
 import com.example.unirideapi.exception.RoleNotFoundException;
 import com.example.unirideapi.mapper.UsuarioMapper;
-import com.example.unirideapi.model.Conductor;
-import com.example.unirideapi.model.Pasajero;
-import com.example.unirideapi.model.Rol;
-import com.example.unirideapi.model.Usuario;
+import com.example.unirideapi.model.*;
 import com.example.unirideapi.model.enums.ERol;
-import com.example.unirideapi.repository.ConductorRepository;
-import com.example.unirideapi.repository.PasajeroRepository;
-import com.example.unirideapi.repository.RolRepository;
-import com.example.unirideapi.repository.UsuarioRepository;
+import com.example.unirideapi.repository.*;
 import com.example.unirideapi.security.TokenProvider;
 import com.example.unirideapi.security.UserPrincipal;
 import com.example.unirideapi.service.UsuarioService;
@@ -27,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -36,6 +28,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final ConductorRepository conductorRepository;
     private final PasajeroRepository pasajeroRepository;
+    private final VehiculoRepository vehiculoRepository;
     private final RolRepository rolRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -99,43 +92,55 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 
     @Override
-    public UsuarioPerfilResponseDTO registroConductor(ConductorRequestDTO dto) {
-        Rol rol = rolRepository.findByName(ERol.CONDUCTOR)
-                .orElseThrow(() -> new RoleNotFoundException("Rol no encontrado"));
+    @Transactional
+    public AuthResponseDTO registrarConductor(RegistroConductorRequestDTO req) {
 
-        // 🔍 Validar duplicados
-        if (conductorRepository.existsByDni(dto.dni())) {
-            throw new IllegalArgumentException("Ya existe un conductor con el DNI: " + dto.dni());
-        }
-
-        if (usuarioRepository.existsByEmail(dto.email())) {
-            throw new IllegalArgumentException("Ya existe un usuario con el email: " + dto.email());
-        }
-
+        // 1) Crear usuario
         Usuario usuario = new Usuario();
-        usuario.setEmail(dto.email());
-        usuario.setPassword(passwordEncoder.encode(dto.password()));
-        usuario.setRol(rol);
+        usuario.setEmail(req.email());
+        usuario.setPassword(passwordEncoder.encode(req.password()));
 
-        Conductor conductor = new Conductor();
-        conductor.setNombre(dto.nombre());
-        conductor.setApellido(dto.apellido());
-        conductor.setDni(dto.dni());
-        conductor.setEdad(dto.edad());
-        conductor.setDescripcionConductor(dto.descripcionConductor());
-        conductor.setUsuario(usuario);
+        Rol rolConductor = rolRepository.findByName(ERol.CONDUCTOR)
+                .orElseThrow(() -> new BusinessRuleException("Rol CONDUCTOR no existe"));
+        usuario.setRol(rolConductor);
+        usuario = usuarioRepository.save(usuario);
 
-        LocalDateTime now = LocalDateTime.now();
-        conductor.setCreatedAt(now);
-        conductor.setUpdatedAt(now);
+        // 2) Crear conductor asociado al usuario
+        ConductorRequestDTO c = req.conductor();
+        Conductor conductor = Conductor.builder()
+                .nombre(c.nombre())
+                .apellido(c.apellido())
+                .dni(c.dni())
+                .edad(c.edad())
+                .codigoUni(c.codigoUni())
+                .carrera(c.carrera())
+                .usuario(usuario)
+                .build();
+        conductor = conductorRepository.save(conductor);
 
+        // 3) Crear vehículo del conductor
+        VehiculoRequestDTO v = req.vehiculo();
+        Vehiculo vehiculo = Vehiculo.builder()
+                .placa(v.placa())
+                .soat(v.soat())
+                .modelo(v.modelo())
+                .marca(v.marca())
+                .color(v.color())
+                .capacidad(v.capacidad())
+                .conductor(conductor)
+                .build();
+        vehiculoRepository.save(vehiculo);
 
-        // Relación bidireccional
-        usuario.setConductor(conductor);
+        // 4) Generar token como en login normal
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(req.email(), req.password())
+        );
+        String token = tokenProvider.createAccessToken(auth);
 
-        Usuario saved = usuarioRepository.save(usuario);
-        return usuarioMapper.toUsuarioPerfilResponseDTO(saved);
+        // 5) Mapear a AuthResponseDTO (incluye idConductor, etc.)
+        return usuarioMapper.toAuthResponseDTO(usuario, token);
     }
+
 
 
 
@@ -202,7 +207,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         return usuarioMapper.toUsuarioPerfilResponseDTO(usuario);
     }
-
+    /*
     // --------------------------------------------------
     // Lógica privada de registro con rol
     // --------------------------------------------------
@@ -268,4 +273,6 @@ public class UsuarioServiceImpl implements UsuarioService {
         // Devolver perfil del nuevo usuario
         return usuarioMapper.toUsuarioPerfilResponseDTO(savedUsuario);
     }
+
+     */
 }

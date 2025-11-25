@@ -4,6 +4,7 @@ import com.example.unirideapi.dto.request.RutaRequestDTO;
 import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.model.Ruta;
+import com.example.unirideapi.model.enums.EstadoRuta;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -41,26 +42,36 @@ public class RutaMapper {
     }
 
     public Ruta toEntity(RutaRequestDTO dto) {
-        if (dto == null) return null;
+        Ruta ruta = new Ruta();
 
-        Ruta r = new Ruta();
-        r.setOrigen(dto.origen());
-        r.setDestino(dto.destino());
-        r.setFechaSalida(dto.fechaSalida());      // LocalDate
-        r.setHoraSalida(dto.horaSalida());        // LocalTime
+        ruta.setOrigen(dto.origen());
+        ruta.setDestino(dto.destino());
+        ruta.setFechaSalida(dto.fechaSalida());   // LocalDate
+        ruta.setHoraSalida(dto.horaSalida());     // LocalTime
 
-        // Si en la entidad 'tarifa' es Long, conviértela
-        r.setTarifa(dto.tarifa() == null ? null : dto.tarifa().longValue());
+        // tarifa en DTO es Float, en entidad es Long
+        if (dto.tarifa() != null) {
+            ruta.setTarifa(dto.tarifa().longValue());
+        } else {
+            // Opción A: permitir null si cambias la entidad
+            // ruta.setTarifa(null);
 
-        r.setAsientosDisponibles(dto.asientosDisponibles());
-        r.setEstadoRuta(dto.estadoRuta());
-
-        if (dto.conductorId() != null) {
-            var c = new com.example.unirideapi.model.Conductor();
-            c.setIdConductor(dto.conductorId());
-            r.setConductor(c);
+            // Opción B (rápida): poner 0 por defecto para evitar NOT NULL
+            ruta.setTarifa(0L);
         }
-        return r;
+
+        ruta.setAsientosDisponibles(dto.asientosDisponibles());
+
+        // estadoRuta: si viene null, lo ponemos PROGRAMADO por defecto
+        if (dto.estadoRuta() != null) {
+            ruta.setEstadoRuta(dto.estadoRuta());
+        } else {
+            ruta.setEstadoRuta(EstadoRuta.PROGRAMADO);
+        }
+
+        // OJO: el conductor lo seteas en el service usando conductorId
+        return ruta;
+
     }
 
 

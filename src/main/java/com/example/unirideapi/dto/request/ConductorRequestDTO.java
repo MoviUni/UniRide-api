@@ -6,11 +6,8 @@ import lombok.Data;
 public record ConductorRequestDTO(
         String nombre,
         String apellido,
-        String email,  //NEW
-        String password, //NEW
         String dni,
         Integer edad,
-        String descripcionConductor,
-        Integer userId,
-        Integer vehiculoId
-) { }
+        String codigoUni,
+        String carrera
+) {}

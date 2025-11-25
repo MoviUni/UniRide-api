@@ -32,9 +32,6 @@ public class Vehiculo {
     @Column(nullable = false)
     private Integer capacidad;
 
-    @Column(columnDefinition = "TEXT")
-    private String descripcionVehiculo;
-
     // FK hacia Conductor
     @OneToOne
     @JoinColumn(name = "idConductor", referencedColumnName = "idConductor")

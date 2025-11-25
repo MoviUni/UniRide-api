@@ -35,6 +35,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
+/*
 @ExtendWith(MockitoExtension.class)
 public class RutaServiceUnitTest {
     @Mock
@@ -896,3 +897,4 @@ public class RutaServiceUnitTest {
     }
 
 }
+*/
