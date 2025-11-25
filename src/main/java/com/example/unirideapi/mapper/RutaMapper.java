@@ -4,6 +4,7 @@ import com.example.unirideapi.dto.request.RutaRequestDTO;
 import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.model.Ruta;
+import com.example.unirideapi.model.enums.EstadoRuta;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -41,8 +42,37 @@ public class RutaMapper {
     }
 
     public Ruta toEntity(RutaRequestDTO dto) {
-        return modelMapper.map(dto, Ruta.class);
+        Ruta ruta = new Ruta();
+
+        ruta.setOrigen(dto.origen());
+        ruta.setDestino(dto.destino());
+        ruta.setFechaSalida(dto.fechaSalida());   // LocalDate
+        ruta.setHoraSalida(dto.horaSalida());     // LocalTime
+
+        // tarifa en DTO es Float, en entidad es Long
+        if (dto.tarifa() != null) {
+            ruta.setTarifa(dto.tarifa().longValue());
+        } else {
+            // Opción A: permitir null si cambias la entidad
+            // ruta.setTarifa(null);
+
+            // Opción B (rápida): poner 0 por defecto para evitar NOT NULL
+            ruta.setTarifa(0L);
+        }
+
+        ruta.setAsientosDisponibles(dto.asientosDisponibles());
+
+        // estadoRuta: si viene null, lo ponemos PROGRAMADO por defecto
+        if (dto.estadoRuta() != null) {
+            ruta.setEstadoRuta(dto.estadoRuta());
+        } else {
+            ruta.setEstadoRuta(EstadoRuta.PROGRAMADO);
+        }
+
+        // OJO: el conductor lo seteas en el service usando conductorId
+        return ruta;
     }
+
 
     public RutaFrecuenteResponseDTO toRutaFrecuenteDTO(Object[] obj) {
         return RutaFrecuenteResponseDTO.builder()

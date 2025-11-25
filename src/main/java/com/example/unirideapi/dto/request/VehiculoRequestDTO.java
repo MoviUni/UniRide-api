@@ -8,7 +8,6 @@ public record VehiculoRequestDTO(
         String modelo,
         String marca,
         String color,
-        Integer capacidad,
-        String descripcionVehiculo
+        Integer capacidad
 ) { }
 

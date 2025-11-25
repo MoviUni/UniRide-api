@@ -6,7 +6,9 @@ import com.example.unirideapi.exception.ResourceNotFoundException;
 import com.example.unirideapi.dto.response.RutaFrecuenteResponseDTO;
 import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.mapper.RutaMapper;
+import com.example.unirideapi.model.Conductor;
 import com.example.unirideapi.model.Ruta;
+import com.example.unirideapi.repository.ConductorRepository;
 import com.example.unirideapi.repository.RutaRepository;
 import com.example.unirideapi.service.RutaService;
 import lombok.RequiredArgsConstructor;
@@ -41,12 +43,21 @@ import java.time.LocalDateTime;
 public class RutaServiceImpl implements RutaService {
     private final RutaRepository rutaRepository;
     private  final RutaMapper rutaMapper;
-
+    private final ConductorRepository conductorRepository;
     @Override
-    public RutaResponseDTO create(RutaRequestDTO rutaRequestDTO) {
-        Ruta ruta = rutaMapper.toEntity(rutaRequestDTO);
-        return rutaMapper.toDTO( rutaRepository.save(ruta));
+    public RutaResponseDTO create(RutaRequestDTO dto) {
+        Ruta ruta = rutaMapper.toEntity(dto);
+
+        // Buscar el conductor por id y asignarlo
+        Conductor conductor = conductorRepository.findById(dto.conductorId())
+                .orElseThrow(() -> new BusinessRuleException("Conductor no encontrado"));
+
+        ruta.setConductor(conductor);
+
+        Ruta guardada = rutaRepository.save(ruta);
+        return rutaMapper.toDTO(guardada);
     }
+
     @Override
     public List<RutaResponseDTO> searchByDisponible(){
         return rutaRepository.searchByDisponible().stream()

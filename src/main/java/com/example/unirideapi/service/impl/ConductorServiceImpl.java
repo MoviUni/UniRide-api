@@ -60,44 +60,40 @@ public class ConductorServiceImpl implements ConductorService {
 
     @Transactional
     @Override
-    public ConductorResponseDTO update(Integer id, ConductorRequestDTO updateConductorRequestDTO) {
-        Conductor conductorFromDb = conductorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("El conductor con ID " + id + " no fue encontrado"));
+    public ConductorResponseDTO update(Integer id, ConductorRequestDTO req) {
 
-        // Validar número de colegiatura duplicado
-        List<Conductor> existentes = conductorRepository.findByDni(updateConductorRequestDTO.dni());
-        boolean existeOtro = existentes.stream()
-                .anyMatch(existingConductor -> !existingConductor.getIdConductor().equals(id));
-        if (existeOtro) {
-            throw new BadRequestException("Ya existe un conductor con el mismo DNI");
-        }
-        if (updateConductorRequestDTO.dni() != null &&
-                conductorRepository.existsByDniAndIdConductorNot(updateConductorRequestDTO.dni(), id)) {
-            throw new BadRequestException("Ya existe un conductor con el mismo DNI");
-        }
+        // 1. Buscar conductor
+        Conductor conductor = conductorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "El conductor con ID " + id + " no fue encontrado"));
 
-        if (updateConductorRequestDTO.userId() != null &&
-                conductorRepository.existsByUsuario_IdUsuarioAndIdConductorNot(updateConductorRequestDTO.userId(), id)) {
-            throw new BadRequestException("Ese usuario ya está asignado a otro conductor");
+        // 2. Validaciones de DNI duplicado
+        if (req.dni() != null) {
+            boolean existeOtroConductor = conductorRepository
+                    .existsByDniAndIdConductorNot(req.dni(), id);
+
+            if (existeOtroConductor) {
+                throw new BadRequestException("Ya existe un conductor registrado con ese DNI");
+            }
         }
 
-        if (updateConductorRequestDTO.vehiculoId() != null &&
-                conductorRepository.existsByVehiculo_IdVehiculoAndIdConductorNot(updateConductorRequestDTO.vehiculoId(), id)) {
-            throw new BadRequestException("Ese vehículo ya está asignado a otro conductor");
-        }
+        // 3. Actualizar campos simples (solo si no son null)
+        if (req.nombre() != null) conductor.setNombre(req.nombre());
+        if (req.apellido() != null) conductor.setApellido(req.apellido());
+        if (req.dni() != null) conductor.setDni(req.dni());
+        if (req.edad() != null) conductor.setEdad(req.edad());
 
-        // Actualizar campos básicos
-        conductorFromDb.setNombre(updateConductorRequestDTO.nombre());
-        conductorFromDb.setApellido(updateConductorRequestDTO.apellido());
-        conductorFromDb.setDni(updateConductorRequestDTO.dni());
-        conductorFromDb.setEdad(updateConductorRequestDTO.edad());
-        conductorFromDb.setDescripcionConductor(updateConductorRequestDTO.descripcionConductor());
-        conductorFromDb.setUpdatedAt(LocalDateTime.now());
+        // Marca fecha actualización
+        conductor.setUpdatedAt(LocalDateTime.now());
 
-        // Guardar cambios
-        conductorFromDb = conductorRepository.save(conductorFromDb);
-        return conductorMapper.toDTO(conductorFromDb);
+        // 4. Guardar cambios
+        conductor = conductorRepository.save(conductor);
+
+        // 5. Convertir a DTO
+        return conductorMapper.toDTO(conductor);
     }
+
+
 
     @Override
     public ConductorResponseDTO findById(Integer id) {
