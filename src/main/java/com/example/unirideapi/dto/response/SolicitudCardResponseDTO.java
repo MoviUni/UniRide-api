@@ -18,5 +18,10 @@ public record SolicitudCardResponseDTO(
     Integer asientosDisponibles,
     EstadoSolicitud estadoSolicitud,
     String nombreConductor,
-    String apellidoConductor
+    String apellidoConductor,
+    Integer idRuta,
+    String vehiculoColor,
+    String vehiculoPlaca,
+    String vehiculoModelo,
+    String vehiculoDesc
 ){}

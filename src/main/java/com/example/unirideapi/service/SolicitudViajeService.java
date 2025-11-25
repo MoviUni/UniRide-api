@@ -15,5 +15,5 @@ public interface SolicitudViajeService {
     List<SolicitudViajeResponseDTO> searchByUsuario(Integer idUsuario);
     SolicitudViajeResponseDTO cancelSolicitud(Integer idSolicitud);
     List<SolicitudViajeResponseDTO> findSolicitudesByRutaId(Integer idRuta);
-    List<SolicitudCardResponseDTO> searchInfo();
+    List<SolicitudCardResponseDTO> searchInfo(Integer pasajeroId);
 }

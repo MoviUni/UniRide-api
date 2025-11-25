@@ -9,6 +9,7 @@ import com.example.unirideapi.model.*;
 import com.example.unirideapi.model.enums.ERol;
 import com.example.unirideapi.model.enums.EstadoRuta;
 import com.example.unirideapi.repository.RutaRepository;
+import com.example.unirideapi.repository.SolicitudViajeRepository;
 import com.example.unirideapi.service.impl.RutaServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,6 +40,8 @@ import static org.mockito.Mockito.*;
 public class RutaServiceUnitTest {
     @Mock
     private RutaRepository rutaRepository;
+    @Mock
+    private SolicitudViajeRepository solicitudRepository;
     @Mock
     private RutaMapper rutaMapper;
     @InjectMocks
@@ -854,7 +857,7 @@ public class RutaServiceUnitTest {
         when(rutaRepository.findById(idRuta)).thenReturn(java.util.Optional.of(existente));
 
         // Subclase que fuerza "hay 3 reservas"
-        RutaServiceImpl service = new RutaServiceImpl(rutaRepository, rutaMapper) {
+        RutaServiceImpl service = new RutaServiceImpl(rutaRepository, solicitudRepository,  rutaMapper) {
             @Override protected int obtenerReservas(Long ignored) { return 3; }
         };
 

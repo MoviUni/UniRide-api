@@ -48,7 +48,7 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
         Pasajero pasajero = pasajeroRepository.findById(solicitudViajeRequestDTO.pasajeroId())
                 .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado"));
         Ruta ruta = rutaRepository.findById((long)solicitudViajeRequestDTO.rutaId())
-                .orElseThrow(() -> new ResourceNotFoundException("Pasajero no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrado"));
 
         var solicitudViaje = SolicitudViaje.builder()
                 .estadoSolicitud(solicitudViajeRequestDTO.estadoSolicitud())
@@ -145,8 +145,8 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
     }
 
     @Override
-    public List<SolicitudCardResponseDTO> searchInfo(){
-        return solicitudViajeRepository.getInfo().stream()
+    public List<SolicitudCardResponseDTO> searchInfo(Integer pasajeroId){
+        return solicitudViajeRepository.getInfo(pasajeroId).stream()
                 .map(row -> SolicitudCardResponseDTO.builder()
                         .idSolicitudViaje((Integer)row[0])
                         .estadoSolicitud(EstadoSolicitud.valueOf(row[1].toString()))
@@ -158,6 +158,11 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
                         .asientosDisponibles((Integer) row[7])
                         .nombreConductor(row[8].toString())
                         .apellidoConductor(row[9].toString())
+                        .idRuta((Integer)row[10])
+                        .vehiculoColor(row[11].toString())
+                        .vehiculoPlaca(row[12].toString())
+                        .vehiculoModelo(row[13].toString())
+                        .vehiculoDesc(row[14].toString())
                         .build())
                 .collect(Collectors.toList());
     }

@@ -44,6 +44,7 @@ INSERT INTO vehiculo (
       ('ABC-123', TRUE, 'Yaris', 'Rojo', 'Toyota', 4, (SELECT id_conductor FROM conductor WHERE dni='44444444')),
       ('XYZ-987', TRUE, 'Accent', 'Azul', 'Hyundai', 4, (SELECT id_conductor FROM conductor WHERE dni='55555555'));
 
+
 -- ========== PASAJEROS ==========
 INSERT INTO pasajero (
     nombre, apellido, dni, edad, descripcion_pasajero, created_at, updated_at, usuario_id_usuario, carrera
