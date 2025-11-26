@@ -21,7 +21,6 @@ public class VehiculoMapper {
         vehiculo.setMarca(dto.marca());
         vehiculo.setColor(dto.color());
         vehiculo.setCapacidad(dto.capacidad());
-        vehiculo.setDescripcionVehiculo(dto.descripcionVehiculo());
         return vehiculo;
     }
 
@@ -34,7 +33,6 @@ public class VehiculoMapper {
                 vehiculo.getMarca(),
                 vehiculo.getColor(),
                 vehiculo.getCapacidad(),
-                vehiculo.getDescripcionVehiculo(),
                 vehiculo.getConductor().getIdConductor(),
                 vehiculo.getIdVehiculo()
         );

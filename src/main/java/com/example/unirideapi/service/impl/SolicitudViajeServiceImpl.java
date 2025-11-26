@@ -159,6 +159,10 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
                         .nombreConductor(row[8].toString())
                         .apellidoConductor(row[9].toString())
                         .idRuta((Integer)row[10])
+                        .vehiculoColor(row[11].toString())
+                        .vehiculoPlaca(row[12].toString())
+                        .vehiculoModelo(row[13].toString())
+                        .vehiculoDesc(row[14].toString())
                         .build())
                 .collect(Collectors.toList());
     }

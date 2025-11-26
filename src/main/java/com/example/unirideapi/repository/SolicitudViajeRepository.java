@@ -38,7 +38,7 @@ public interface SolicitudViajeRepository extends JpaRepository<SolicitudViaje, 
     Boolean existDuplicate(@Param("idRuta") Integer idRuta, @Param("idPasajero") Integer idPasajero);
 
     @Query("""
-            SELECT s.idSolicitudViaje, s.estadoSolicitud, r.origen, r.destino, r.fechaSalida, r.horaSalida, r.tarifa, r.asientosDisponibles, c.nombre, c.apellido, s.ruta.idRuta
+            SELECT s.idSolicitudViaje, s.estadoSolicitud, r.origen, r.destino, r.fechaSalida, r.horaSalida, r.tarifa, r.asientosDisponibles, c.nombre, c.apellido, s.ruta.idRuta, c.vehiculo.color, c.vehiculo.placa, c.vehiculo.modelo, c.vehiculo.descripcionVehiculo
             FROM SolicitudViaje s
             JOIN Ruta r ON r.idRuta = s.ruta.idRuta
             JOIN Conductor c ON c.idConductor = r.conductor.idConductor

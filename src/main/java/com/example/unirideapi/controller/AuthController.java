@@ -3,6 +3,7 @@ package com.example.unirideapi.controller;
 import com.example.unirideapi.dto.request.ConductorRequestDTO;
 import com.example.unirideapi.dto.request.LoginRequestDTO;
 import com.example.unirideapi.dto.request.PasajeroRequestDTO;
+import com.example.unirideapi.dto.request.RegistroConductorRequestDTO;
 import com.example.unirideapi.dto.response.AuthResponseDTO;
 import com.example.unirideapi.dto.response.UsuarioPerfilResponseDTO;
 import com.example.unirideapi.service.UsuarioService;
@@ -69,11 +70,11 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PostMapping("/registro/conductor")
-    public ResponseEntity<UsuarioPerfilResponseDTO> registroConductor(
-            @Valid @RequestBody ConductorRequestDTO dto) {
-
-        UsuarioPerfilResponseDTO perfil = usuarioService.registroConductor(dto);
-        return new ResponseEntity<>(perfil, HttpStatus.CREATED);
+    public ResponseEntity<AuthResponseDTO> registrarConductor(
+            @RequestBody RegistroConductorRequestDTO request
+    ) {
+        AuthResponseDTO resp = usuarioService.registrarConductor(request);
+        return ResponseEntity.ok(resp);
     }
 
     /** Login con email/password */

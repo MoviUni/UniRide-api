@@ -26,11 +26,14 @@ public class Conductor {
     @Column(nullable = false, unique = true)
     private String dni;
 
+    @Column(nullable = false, unique = true)
+    private String codigoUni;
+
     private Integer edad;
 
-    @Column(name = "descripcion_conductor", columnDefinition = "TEXT")
+    @Column(name = "carrera")
 
-    private String descripcionConductor;
+    private String carrera;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
