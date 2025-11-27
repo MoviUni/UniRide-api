@@ -3,6 +3,7 @@ package com.example.unirideapi.dto.response;
 import com.example.unirideapi.model.enums.EstadoRuta;
 import lombok.Builder;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -13,7 +14,7 @@ public record RutaResponseDTO(
         String destino,
         LocalDate fechaSalida,
         LocalTime horaSalida,
-        Long tarifa,
+        BigDecimal tarifa,
         Integer asientosDisponibles,
         EstadoRuta estadoRuta,
         Integer idConductor,

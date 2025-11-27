@@ -24,6 +24,9 @@ public class Pasajero {
     @Column(name = "dni", nullable = false, unique = true)
     private String dni;
 
+    @Column(name = "codigoUni", nullable = false, unique = true)
+    private String codigoUni;
+
     @Column(name = "edad")
     private Integer edad;
 

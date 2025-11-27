@@ -10,6 +10,7 @@ public interface PasajeroRepository extends JpaRepository<Pasajero, Integer> {
     List<Pasajero> findByDni(String dni);
     List<Pasajero> findByIdPasajero(Integer idPasajero);
     boolean existsByDni(String dni);
+    boolean existsByCodigoUni(String codigoUni);
 
     boolean existsByNombreAndApellido(String nombre, String apellido);
 

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -34,7 +35,7 @@ public class Ruta {
     private LocalTime horaSalida;
 
     @Column(nullable = false)
-    private Long tarifa;
+    private BigDecimal tarifa;
 
     @Column(nullable = false)
     private Integer asientosDisponibles;

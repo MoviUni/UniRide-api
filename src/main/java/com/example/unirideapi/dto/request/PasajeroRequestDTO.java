@@ -10,7 +10,5 @@ public record PasajeroRequestDTO(
         String password, //NEW
         String dni,
         Integer edad,
-        String descripcionPasajero
-        //Long userId
-) {
-}
+        String codigoUni
+) {}

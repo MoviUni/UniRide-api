@@ -9,6 +9,8 @@ import com.example.unirideapi.dto.response.RutaResponseDTO;
 import com.example.unirideapi.mapper.RutaMapper;
 import com.example.unirideapi.model.Conductor;
 import com.example.unirideapi.model.Ruta;
+import com.example.unirideapi.model.SolicitudViaje;
+import com.example.unirideapi.model.enums.EstadoSolicitud;
 import com.example.unirideapi.repository.ConductorRepository;
 import com.example.unirideapi.model.enums.EstadoSolicitud;
 import com.example.unirideapi.repository.RutaRepository;
@@ -17,6 +19,7 @@ import com.example.unirideapi.service.RutaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -46,6 +49,7 @@ public class RutaServiceImpl implements RutaService {
     private final SolicitudViajeRepository solicitudViajeRepository;
     private  final RutaMapper rutaMapper;
     private final ConductorRepository conductorRepository;
+    private final SolicitudViajeRepository solicitudRepository;
     @Override
     public RutaResponseDTO create(RutaRequestDTO dto) {
         Ruta ruta = rutaMapper.toEntity(dto);
@@ -243,58 +247,186 @@ public class RutaServiceImpl implements RutaService {
             throw new BusinessRuleException("Hubo un error al exportar tu reporte");
         }
     }
+    private long contarSolicitudesAceptadas(Ruta ruta) {
+        List<SolicitudViaje> solicitudes =
+                solicitudRepository.findByRutaId(ruta.getIdRuta());
 
-
+        return solicitudes.stream()
+                .filter(s -> s.getEstadoSolicitud() == EstadoSolicitud.ACEPTADO)
+                .count();
+    }
 
     @Transactional
     @Override
     public RutaResponseDTO updateEstadoRuta(Integer idRuta, EstadoRuta nuevoEstado) {
-        var ruta = rutaRepository.findById(idRuta.longValue())
+        Ruta ruta = rutaRepository.findById(idRuta.longValue())
                 .orElseThrow(() -> new ResourceNotFoundException("Ruta no encontrada"));
 
-        // Solo se trabaja sobre PROGRAMADO; si ya no lo está, no tiene sentido
-        if (ruta.getEstadoRuta() != EstadoRuta.PROGRAMADO) {
-            throw new BusinessRuleException(
-                    "Solo se pueden confirmar o cancelar rutas en estado PROGRAMADO"
-            );
+        EstadoRuta estadoActual = ruta.getEstadoRuta();
+
+        switch (nuevoEstado) {
+            case CONFIRMADO -> confirmarRuta(ruta, estadoActual);
+            case EN_PROGRESO -> iniciarViaje(ruta, estadoActual);
+            case FINALIZADO -> finalizarViaje(ruta, estadoActual);
+            case CANCELADO -> cancelarRuta(ruta, estadoActual);
+            default -> throw new BusinessRuleException("Estado de ruta no soportado: " + nuevoEstado);
         }
 
-        // Fecha/hora de salida
+        rutaRepository.save(ruta);
+        return rutaMapper.toDTO(ruta);
+    }
+
+    /** CONFIRMAR: desde PROGRAMADO, con al menos 1 solicitud aceptada y faltando > 1h */
+    private void confirmarRuta(Ruta ruta, EstadoRuta estadoActual) {
+        if (estadoActual != EstadoRuta.PROGRAMADO) {
+            throw new BusinessRuleException("Solo se pueden confirmar rutas en estado PROGRAMADO");
+        }
+
+        // Regla de tiempo: debe faltar más de 1 hora
         LocalDateTime fechaHoraSalida = LocalDateTime.of(
                 ruta.getFechaSalida(),
                 ruta.getHoraSalida()
         );
-
-        // Límite = 1 hora antes de la salida
         LocalDateTime limite = fechaHoraSalida.minusHours(1);
         LocalDateTime ahora = LocalDateTime.now();
 
-        // 1) Si el viaje ya empezó o terminó → cancelar y no permitir cambios
         if (ahora.isAfter(fechaHoraSalida)) {
             ruta.setEstadoRuta(EstadoRuta.CANCELADO);
             rutaRepository.save(ruta);
+            throw new BusinessRuleException(
+                    "El viaje ya inició o ha finalizado; se canceló automáticamente y no se puede confirmar."
+            );
+        }
 
+        if (!ahora.isBefore(limite)) { // ahora >= límite
+            ruta.setEstadoRuta(EstadoRuta.CANCELADO);
+            rutaRepository.save(ruta);
+            throw new BusinessRuleException(
+                    "Se venció el plazo para confirmar el viaje (1 hora antes de la salida). La ruta ha sido cancelada automáticamente."
+            );
+        }
+
+        // Debe haber al menos 1 solicitud aceptada
+        long aceptadas = contarSolicitudesAceptadas(ruta);
+        if (aceptadas < 1) {
+            throw new BusinessRuleException("No se puede confirmar una ruta sin pasajeros aceptados.");
+        }
+
+        ruta.setEstadoRuta(EstadoRuta.CONFIRMADO);
+    }
+
+    /** INICIAR: desde CONFIRMADO, con ≥1 aceptado, entre horaSalida y horaSalida + 10min */
+    private void iniciarViaje(Ruta ruta, EstadoRuta estadoActual) {
+        if (estadoActual != EstadoRuta.CONFIRMADO) {
+            throw new BusinessRuleException("Solo se puede iniciar un viaje confirmado.");
+        }
+
+        long aceptadas = contarSolicitudesAceptadas(ruta);
+        if (aceptadas < 1) {
+            throw new BusinessRuleException("No se puede iniciar un viaje sin pasajeros aceptados.");
+        }
+
+        LocalDateTime fechaHoraSalida = LocalDateTime.of(
+                ruta.getFechaSalida(),
+                ruta.getHoraSalida()
+        );
+        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime limiteInicio = fechaHoraSalida.plusMinutes(10);
+
+        if (ahora.isBefore(fechaHoraSalida)) {
+            throw new BusinessRuleException(
+                    "Aún no puedes iniciar el viaje. Solo se puede iniciar desde la hora de salida programada."
+            );
+        }
+
+        if (ahora.isAfter(limiteInicio)) {
+            ruta.setEstadoRuta(EstadoRuta.CANCELADO);
+            rutaRepository.save(ruta);
+            throw new BusinessRuleException(
+                    "Se venció el plazo de 10 minutos para iniciar el viaje. La ruta ha sido cancelada."
+            );
+        }
+
+        ruta.setEstadoRuta(EstadoRuta.EN_PROGRESO);
+    }
+
+    /** FINALIZAR: solo EN_PROGRESO. Se recomienda hacerlo antes de 3h después de la salida */
+    private void finalizarViaje(Ruta ruta, EstadoRuta estadoActual) {
+        if (estadoActual != EstadoRuta.EN_PROGRESO) {
+            throw new BusinessRuleException("Solo se puede finalizar un viaje en progreso.");
+        }
+
+        LocalDateTime fechaHoraSalida = LocalDateTime.of(
+                ruta.getFechaSalida(),
+                ruta.getHoraSalida()
+        );
+        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime limiteFinalizacion = fechaHoraSalida.plusHours(3);
+
+        // Si ya pasó el límite, igual lo dejamos finalizar, pero podrías loguear o registrar métrica
+        if (ahora.isAfter(limiteFinalizacion)) {
+            // Aquí podrías guardar un flag de “fuera de tiempo” si quisieras
+        }
+
+        ruta.setEstadoRuta(EstadoRuta.FINALIZADO);
+    }
+
+    // Helper común para cancelar las solicitudes cuando la ruta se cancela
+    private void cancelarSolicitudesPorCancelacion(Ruta ruta) {
+        List<SolicitudViaje> solicitudes = solicitudRepository.findByRutaId(ruta.getIdRuta());
+
+        solicitudes.stream()
+                .filter(s -> s.getEstadoSolicitud() == EstadoSolicitud.PENDIENTE
+                        || s.getEstadoSolicitud() == EstadoSolicitud.ACEPTADO)
+                .forEach(s -> s.setEstadoSolicitud(EstadoSolicitud.CANCELADO_CONDUCTOR));
+
+        solicitudRepository.saveAll(solicitudes);
+    }
+
+    /** CANCELAR: SOLO desde PROGRAMADO (acción del conductor) */
+    private void cancelarRuta(Ruta ruta, EstadoRuta estadoActual) {
+
+        // 1) Solo se puede cancelar si está PROGRAMADO
+        if (estadoActual != EstadoRuta.PROGRAMADO) {
+            throw new BusinessRuleException(
+                    "Solo se pueden cancelar rutas en estado PROGRAMADO."
+            );
+        }
+
+        // 2) Regla de tiempo: debe faltar más de 1 hora
+        LocalDateTime fechaHoraSalida = LocalDateTime.of(
+                ruta.getFechaSalida(),
+                ruta.getHoraSalida()
+        );
+        LocalDateTime limite = fechaHoraSalida.minusHours(1);
+        LocalDateTime ahora = LocalDateTime.now();
+
+        if (ahora.isAfter(fechaHoraSalida)) {
+            // si ya pasó la hora, la marcamos cancelada y no dejamos operar
+            ruta.setEstadoRuta(EstadoRuta.CANCELADO);
+            cancelarSolicitudesPorCancelacion(ruta);
+            rutaRepository.save(ruta);
             throw new BusinessRuleException(
                     "El viaje ya inició o ha finalizado; se canceló automáticamente y no se puede cambiar su estado."
             );
         }
 
-        // 2) Si ya estamos dentro de la última hora antes de la salida → cancelar y no permitir cambios
-        if (!ahora.isBefore(limite)) { // equivale a: ahora >= límite
+        if (!ahora.isBefore(limite)) { // ahora >= límite (menos de 1h)
             ruta.setEstadoRuta(EstadoRuta.CANCELADO);
+            cancelarSolicitudesPorCancelacion(ruta);
             rutaRepository.save(ruta);
-
             throw new BusinessRuleException(
-                    "Se venció el plazo para confirmar o cancelar el viaje (1 hora antes de la salida). La ruta ha sido cancelada automáticamente."
+                    "Se venció el plazo para cancelar el viaje (1 hora antes de la salida). " +
+                            "La ruta ha sido cancelada automáticamente."
             );
         }
 
-        // 3) Caso OK: falta más de 1 hora → permitir CONFIRMADO o CANCELADO
-        ruta.setEstadoRuta(nuevoEstado);
+        // 3) Cancelar normalmente cuando sí se cumple la regla
+        ruta.setEstadoRuta(EstadoRuta.CANCELADO);
+        cancelarSolicitudesPorCancelacion(ruta);
         rutaRepository.save(ruta);
-
-        return rutaMapper.toDTO(ruta);
     }
+
 
 
     @Override // ERROR : Method does not override method from its superclas
@@ -316,7 +448,7 @@ public class RutaServiceImpl implements RutaService {
                         .destino(row[1].toString())
                         .fechaSalida(LocalDate.parse(row[2].toString()))
                         .horaSalida(LocalTime.parse(row[3].toString()))
-                        .tarifa(((Number) row[4]).longValue())
+                        .tarifa((BigDecimal) row[4])
                         .build())
                 .collect(Collectors.toList());
     }
@@ -330,45 +462,106 @@ public class RutaServiceImpl implements RutaService {
                 .collect(Collectors.toList());
     }
     private void cancelarSiExpirada(Ruta ruta) {
-        // Solo nos interesa auto-cancelar rutas que aún están PROGRAMADAS
-        if (ruta.getEstadoRuta() != EstadoRuta.PROGRAMADO) {
-            return;
-        }
-
+        LocalDateTime ahora = LocalDateTime.now();
         LocalDateTime salida = LocalDateTime.of(
                 ruta.getFechaSalida(),
                 ruta.getHoraSalida()
         );
-        // límite = 1 hora antes
-        LocalDateTime limite = salida.minusHours(1);
 
-        if (LocalDateTime.now().isAfter(limite)) {
-            ruta.setEstadoRuta(EstadoRuta.CANCELADO);
+        boolean seCancelo = false;
+
+        // PROGRAMADO: se cancela si ya pasó el límite de confirmación (1h antes)
+        if (ruta.getEstadoRuta() == EstadoRuta.PROGRAMADO) {
+            LocalDateTime limiteConfirmacion = salida.minusHours(1);
+            if (!ahora.isBefore(limiteConfirmacion)) { // ahora >= límite
+                ruta.setEstadoRuta(EstadoRuta.CANCELADO);
+                seCancelo = true;
+            }
+        }
+
+        // CONFIRMADO: si nunca se inició y ya pasaron los 10 min de tolerancia, se cancela
+        if (ruta.getEstadoRuta() == EstadoRuta.CONFIRMADO) {
+            LocalDateTime limiteInicio = salida.plusMinutes(10);
+            if (ahora.isAfter(limiteInicio)) {
+                ruta.setEstadoRuta(EstadoRuta.CANCELADO);
+                seCancelo = true;
+            }
+        }
+
+        if (seCancelo) {
+            cancelarSolicitudesPorCancelacion(ruta);
             rutaRepository.save(ruta);
         }
     }
+
+
+
+    /**
+     * Auto-finaliza una ruta EN_PROGRESO si ya pasaron más de 3 horas
+     * desde la hora de salida.
+     */
+    private void finalizarSiSuperoLimite(Ruta ruta) {
+        if (ruta.getEstadoRuta() != EstadoRuta.EN_PROGRESO) {
+            return;
+        }
+
+        LocalDateTime fechaHoraSalida = LocalDateTime.of(
+                ruta.getFechaSalida(),
+                ruta.getHoraSalida()
+        );
+
+        LocalDateTime limiteFin = fechaHoraSalida.plusHours(3);
+        LocalDateTime ahora = LocalDateTime.now();
+
+        if (ahora.isAfter(limiteFin)) {
+            ruta.setEstadoRuta(EstadoRuta.FINALIZADO);
+            rutaRepository.save(ruta);
+        }
+    }
+
     @Transactional
     @Override
     public List<RutaResponseDTO> listarRutasActivasDelConductor(Integer idConductor) {
         LocalDateTime ahora = LocalDateTime.now();
 
-        // Traemos TODAS las rutas del conductor
-        var rutas = rutaRepository.findByConductor_IdConductor(idConductor);
+        // 1) Traemos TODAS las rutas del conductor
+        List<Ruta> rutas = rutaRepository.findByConductor_IdConductor(idConductor);
 
-        // 1) Auto-cancelar las que ya vencieron (si estaban PROGRAMADAS)
-        rutas.forEach(this::cancelarSiExpirada);
+        // 2) Aplicamos reglas automáticas:
+        //    - cancelar PROGRAMADO/CONFIRMADO cuando venza su ventana
+        //    - finalizar EN_PROGRESO después de 3 horas
+        rutas.forEach(ruta -> {
+            cancelarSiExpirada(ruta);
+            finalizarSiSuperoLimite(ruta);
+        });
 
-        // 2) Devolver solo las activas (PROGRAMADO o CONFIRMADO) y futuras
+        // 3) Devolver solo las "activas" para el conductor:
+        //    PROGRAMADO, CONFIRMADO o EN_PROGRESO
         return rutas.stream()
-                // solo estados activos
                 .filter(r -> r.getEstadoRuta() == EstadoRuta.PROGRAMADO
-                        || r.getEstadoRuta() == EstadoRuta.CONFIRMADO)
-                // solo viajes futuros (>= ahora)
+                        || r.getEstadoRuta() == EstadoRuta.CONFIRMADO
+                        || r.getEstadoRuta() == EstadoRuta.EN_PROGRESO)
                 .filter(r -> {
                     LocalDateTime salida = LocalDateTime.of(
                             r.getFechaSalida(),
                             r.getHoraSalida()
                     );
+
+                    // EN_PROGRESO: siempre se considera activo aquí.
+                    if (r.getEstadoRuta() == EstadoRuta.EN_PROGRESO) {
+                        return true;
+                    }
+
+                    // CONFIRMADO: lo consideramos "activo" desde antes de la salida
+                    // y hasta 10 minutos después para poder iniciar el viaje.
+                    if (r.getEstadoRuta() == EstadoRuta.CONFIRMADO) {
+                        LocalDateTime limiteInferior = salida.minusHours(30); // o lo que quieras
+                        LocalDateTime limiteSuperior = salida.plusMinutes(10); // ventana de tolerancia
+                        return !ahora.isBefore(limiteInferior) && !ahora.isAfter(limiteSuperior);
+                        // en la práctica, con no estar después de +10 min ya basta
+                        // return !ahora.isAfter(limiteSuperior);
+                    }
+
                     return !salida.isBefore(ahora); // salida >= ahora
                 })
                 // ordenados por fecha+hora
@@ -378,6 +571,8 @@ public class RutaServiceImpl implements RutaService {
                 .map(rutaMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
+
 
 
     // ⬇️ ADD: NUEVO — listar mis rutas por estado
@@ -409,7 +604,7 @@ public class RutaServiceImpl implements RutaService {
         ruta.setFechaSalida(dto.fechaSalida());
         ruta.setHoraSalida(dto.horaSalida());
         // ⚠️ Si tu entidad usa otro tipo para tarifa (BigDecimal/Long), ajusta aquí:
-        ruta.setTarifa(dto.tarifa() == null ? null : dto.tarifa().longValue());
+        ruta.setTarifa(dto.tarifa());
         ruta.setAsientosDisponibles(dto.asientosDisponibles());
         ruta.setEstadoRuta(dto.estadoRuta());
 
@@ -517,7 +712,7 @@ public class RutaServiceImpl implements RutaService {
         ruta.setDestino(dto.destino());
         ruta.setFechaSalida(dto.fechaSalida());
         ruta.setHoraSalida(dto.horaSalida());
-        ruta.setTarifa(dto.tarifa() == null ? null : dto.tarifa().longValue());
+        ruta.setTarifa(dto.tarifa());
         ruta.setAsientosDisponibles(dto.asientosDisponibles());
         ruta.setEstadoRuta(dto.estadoRuta());
 
