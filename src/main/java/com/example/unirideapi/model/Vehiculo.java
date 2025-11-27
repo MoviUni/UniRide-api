@@ -25,6 +25,7 @@ public class Vehiculo {
     private String color;
     private String modelo;
     private String marca;
+    private String descripcionVehiculo;
     @NotNull(message = "El campo SOAT no puede ser nulo")
     private Boolean soat;
 
