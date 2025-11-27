@@ -2,6 +2,7 @@ package com.example.unirideapi.dto.response;
 
 import lombok.Builder;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -11,7 +12,7 @@ public record RutaFrecuenteResponseDTO(
         String destino,
         LocalDate fechaSalida,
         LocalTime horaSalida,
-        Long tarifa,
+        BigDecimal tarifa,
         Long frecuencia
 ) {
 }

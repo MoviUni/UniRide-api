@@ -4,5 +4,6 @@ public enum EstadoSolicitud {
     PENDIENTE,
     ACEPTADO,
     RECHAZADO,
-    CANCELADO
+    CANCELADO,
+    CANCELADO_CONDUCTOR
 }

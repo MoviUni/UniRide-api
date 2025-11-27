@@ -4,5 +4,6 @@ public enum EstadoRuta {
     PROGRAMADO,
     EN_PROGRESO,
     CONFIRMADO,
-    CANCELADO
+    CANCELADO,
+    FINALIZADO
 }
