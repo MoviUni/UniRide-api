@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 @Component
 @RequiredArgsConstructor
 public class RutaMapper {
@@ -17,14 +19,12 @@ public class RutaMapper {
 
     public RutaResponseDTO toDTO(Ruta entity) {
 
-        // 👇 Calculamos la capacidad del vehículo (si existe)
         Integer capacidadVehiculo = null;
         if (entity.getConductor() != null &&
                 entity.getConductor().getVehiculo() != null) {
 
             capacidadVehiculo =
                     entity.getConductor().getVehiculo().getCapacidad();
-            // ajusta getCapacidadAsientos() al nombre real del getter en Vehiculo
         }
 
         return new RutaResponseDTO(
@@ -33,11 +33,13 @@ public class RutaMapper {
                 entity.getDestino(),
                 entity.getFechaSalida(),
                 entity.getHoraSalida(),
-                entity.getTarifa(),
+                entity.getTarifa(),                // BigDecimal
                 entity.getAsientosDisponibles(),
                 entity.getEstadoRuta(),
-                entity.getConductor() != null ? entity.getConductor().getIdConductor() : null,
-                capacidadVehiculo   // 👈 ahora sí existe
+                entity.getConductor() != null
+                        ? entity.getConductor().getIdConductor()
+                        : null,
+                capacidadVehiculo
         );
     }
 
@@ -49,38 +51,42 @@ public class RutaMapper {
         ruta.setFechaSalida(dto.fechaSalida());   // LocalDate
         ruta.setHoraSalida(dto.horaSalida());     // LocalTime
 
-        // tarifa en DTO es Float, en entidad es Long
+        // tarifa en DTO y en entidad: BigDecimal (nullable)
         if (dto.tarifa() != null) {
-            ruta.setTarifa(dto.tarifa().longValue());
+            ruta.setTarifa(dto.tarifa());         // ya es BigDecimal
         } else {
-            // Opción A: permitir null si cambias la entidad
-            // ruta.setTarifa(null);
-
-            // Opción B (rápida): poner 0 por defecto para evitar NOT NULL
-            ruta.setTarifa(0L);
+            ruta.setTarifa(null);                 // permite null en BD
         }
 
         ruta.setAsientosDisponibles(dto.asientosDisponibles());
 
-        // estadoRuta: si viene null, lo ponemos PROGRAMADO por defecto
         if (dto.estadoRuta() != null) {
             ruta.setEstadoRuta(dto.estadoRuta());
         } else {
             ruta.setEstadoRuta(EstadoRuta.PROGRAMADO);
         }
 
-        // OJO: el conductor lo seteas en el service usando conductorId
+        // El conductor se setea en el service usando conductorId
         return ruta;
 
     }
 
-
     public RutaFrecuenteResponseDTO toRutaFrecuenteDTO(Object[] obj) {
+
+        BigDecimal tarifa = null;
+        if (obj[3] != null) {
+            if (obj[3] instanceof BigDecimal bd) {
+                tarifa = bd;
+            } else if (obj[3] instanceof Number n) {
+                tarifa = BigDecimal.valueOf(n.doubleValue());
+            }
+        }
+
         return RutaFrecuenteResponseDTO.builder()
                 .origen((String) obj[0])
                 .destino((String) obj[1])
                 .horaSalida(((java.sql.Time) obj[2]).toLocalTime())
-                .tarifa(((Number) obj[3]).longValue())
+                .tarifa(tarifa)   // ahora también BigDecimal en el DTO
                 .frecuencia(((Number) obj[4]).longValue())
                 .build();
     }

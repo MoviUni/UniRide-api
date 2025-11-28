@@ -30,7 +30,7 @@ public class PasajeroMapper {
         c.setApellido(d.apellido());
         c.setDni(d.dni());
         c.setEdad(d.edad());
-        c.setDescripcionPasajero(d.descripcionPasajero());
+        c.setCodigoUni(d.codigoUni());
         // userId / vehiculoId se resuelven en el service (ver helper abajo)
         return c;
     }
@@ -42,7 +42,6 @@ public class PasajeroMapper {
         if (d.apellido() != null) c.setApellido(d.apellido());
         if (d.dni() != null) c.setDni(d.dni());
         if (d.edad() != null) c.setEdad(d.edad());
-        if (d.descripcionPasajero() != null) c.setDescripcionPasajero(d.descripcionPasajero());
         // Las relaciones (userId / vehiculoId) también se aplican en el service
     }
 
@@ -60,8 +59,8 @@ public class PasajeroMapper {
                 e.getNombre(),
                 e.getApellido(),
                 e.getDni(),
-                e.getDescripcionPasajero(),
-                e.getEdad()
+                e.getEdad(),
+                e.getCodigoUni()
         );
     }
 }

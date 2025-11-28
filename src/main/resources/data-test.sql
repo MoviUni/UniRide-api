@@ -47,18 +47,18 @@ INSERT INTO vehiculo (
 
 -- ========== PASAJEROS ==========
 INSERT INTO pasajero (
-    nombre, apellido, dni, edad, descripcion_pasajero, created_at, updated_at, usuario_id_usuario, carrera
+    nombre, apellido, dni, edad, descripcion_pasajero, created_at, updated_at, usuario_id_usuario, carrera, codigo_uni
 ) VALUES
     ('Favio', 'Arroyo', '77777777', 24, 'Prefiere asiento delantero y viajes tranquilos.', '2025-09-30 10:00:00', '2025-09-30 10:00:00',
-     (SELECT id_usuario FROM usuario WHERE email = 'pasajero@uniride.test'), 'Ciencias de la computación');
+     (SELECT id_usuario FROM usuario WHERE email = 'pasajero@uniride.test'), 'Ciencias de la computación','U202216669');
 
 -- ========== RUTAS ==========
 INSERT INTO ruta (
     origen, destino, fecha_salida, hora_salida, tarifa, asientos_disponibles, estado_ruta, id_conductor
 ) VALUES
-      ('Barranco', 'Miraflores', '2025-12-10', '08:00:00', 8.00, 4, 'PROGRAMADO',
+      ('Barranco', 'Miraflores', '2025-12-05', '12:55:00', 8.00, 3, 'CONFIRMADO',
        (SELECT id_conductor FROM conductor WHERE dni='44444444')),
-      ('Surco', 'San Isidro', '2025-12-09', '14:00:00', 10.00, 3, 'PROGRAMADO',
+      ('Surco', 'San Isidro', '2025-12-10', '14:00:00', 10.00, 4, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='44444444')),
       ('La Molina', 'Centro de Lima', '2025-10-06', '07:15:00', 12.00, 4, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='55555555')),
@@ -70,10 +70,10 @@ INSERT INTO ruta (
 INSERT INTO solicitud_viaje (
     fecha, hora, updated_at, estado_solicitud, id_ruta, id_pasajero
 ) VALUES
-      ('2025-10-05', '08:00:00', '2025-10-05 08:05:00', 'PENDIENTE',
+      ('2025-10-05', '08:00:00', '2025-10-05 08:05:00', 'ACEPTADO',
        (SELECT id_ruta FROM ruta WHERE origen='Barranco' AND destino='Miraflores'),
        (SELECT id_pasajero FROM pasajero WHERE dni='77777777')),
-      ('2025-10-05', '17:40:00', '2025-10-05 17:45:00', 'ACEPTADO',
+      ('2025-10-05', '17:40:00', '2025-10-05 17:45:00', 'PENDIENTE',
        (SELECT id_ruta FROM ruta WHERE origen='Surco' AND destino='San Isidro'),
        (SELECT id_pasajero FROM pasajero WHERE dni='77777777'));
 
@@ -81,9 +81,9 @@ INSERT INTO solicitud_viaje (
 INSERT INTO pago (
     monto, fecha, hora, comision, medio_pago, estado_pago, id_solicitud_viaje
 ) VALUES
-      (8.00, '2025-10-05', '08:10:00', 0.50, 'YAPE', 'COMPLETADO',
+      (10.00, '2025-10-05', '08:10:00', 0.50, 'YAPE', 'COMPLETADO',
        (SELECT id_solicitud_viaje FROM solicitud_viaje WHERE estado_solicitud='PENDIENTE')),
-      (10.00, '2025-10-05', '17:50:00', 0.60, 'TARJETA_DEBITO', 'EN_PROGRESO',
+      (8.00, '2025-10-05', '17:50:00', 0.60, 'TARJETA_DEBITO', 'EN_PROGRESO',
        (SELECT id_solicitud_viaje FROM solicitud_viaje WHERE estado_solicitud='ACEPTADO'));
 
 -- ========== CALIFICACIONES ==========

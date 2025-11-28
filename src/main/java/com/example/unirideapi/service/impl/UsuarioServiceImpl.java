@@ -56,6 +56,11 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new IllegalArgumentException("Ya existe un usuario con el email: " + dto.email());
         }
 
+        if (pasajeroRepository.existsByCodigoUni(dto.codigoUni())) {
+            throw new IllegalArgumentException("Ya existe un pasajero con el código: " + dto.codigoUni());
+        }
+
+
         Usuario usuario = new Usuario();
         usuario.setEmail(dto.email());
         usuario.setPassword(passwordEncoder.encode(dto.password()));
@@ -65,8 +70,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         pasajero.setNombre(dto.nombre());
         pasajero.setApellido(dto.apellido());
         pasajero.setDni(dto.dni());
+        pasajero.setCodigoUni(dto.codigoUni());
         pasajero.setEdad(dto.edad());
-        pasajero.setDescripcionPasajero(dto.descripcionPasajero());
         pasajero.setUsuario(usuario);
 
         LocalDateTime now = LocalDateTime.now();

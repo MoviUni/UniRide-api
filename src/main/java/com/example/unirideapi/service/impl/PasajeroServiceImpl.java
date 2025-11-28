@@ -89,7 +89,6 @@ public class PasajeroServiceImpl implements PasajeroService {
         pasajeroFromDb.setApellido(updatePasajeroRequestDTO.apellido());
         pasajeroFromDb.setDni(updatePasajeroRequestDTO.dni());
         pasajeroFromDb.setEdad(updatePasajeroRequestDTO.edad());
-        pasajeroFromDb.setDescripcionPasajero(updatePasajeroRequestDTO.descripcionPasajero());
         pasajeroFromDb.setUpdatedAt(LocalDateTime.now());
 
         // Guardar cambios

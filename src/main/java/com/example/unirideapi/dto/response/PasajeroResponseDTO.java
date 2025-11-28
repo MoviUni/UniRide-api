@@ -8,7 +8,6 @@ public record PasajeroResponseDTO(
         String nombre,
         String apellido,
         String dni,
-        String descripcionPasajero,
-        Integer edad
-) {
-}
+        Integer edad,
+        String codigoUni
+) {}
