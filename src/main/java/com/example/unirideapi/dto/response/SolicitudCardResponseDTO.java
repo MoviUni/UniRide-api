@@ -22,6 +22,5 @@ public record SolicitudCardResponseDTO(
     Integer idRuta,
     String vehiculoColor,
     String vehiculoPlaca,
-    String vehiculoModelo,
-    String vehiculoDesc
+    String vehiculoModelo
 ){}

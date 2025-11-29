@@ -781,7 +781,6 @@ public class RutaServiceImpl implements RutaService {
                         .vehiculoColor(row[9].toString())
                         .vehiculoPlaca(row[10].toString())
                         .vehiculoModelo(row[11].toString())
-                        .vehiculoDesc(row[12].toString())
                         .build())
                 .collect(Collectors.toList());
 
@@ -801,7 +800,6 @@ public class RutaServiceImpl implements RutaService {
                         .vehiculoColor(row[11].toString())
                         .vehiculoPlaca(row[12].toString())
                         .vehiculoModelo(row[13].toString())
-                        .vehiculoDesc(row[14].toString())
                         .build())
                 .collect(Collectors.toList());
 
