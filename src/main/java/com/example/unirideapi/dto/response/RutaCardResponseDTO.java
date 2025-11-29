@@ -19,6 +19,6 @@ public record RutaCardResponseDTO(
         String apellidoConductor,
         String vehiculoColor,
         String vehiculoPlaca,
-        String vehiculoModelo,
-        String vehiculoDesc
+        String vehiculoModelo
+
 ) {}

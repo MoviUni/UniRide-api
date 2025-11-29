@@ -42,6 +42,7 @@ INSERT INTO vehiculo (
     placa, soat, modelo, color, marca, capacidad, id_conductor
 ) VALUES
       ('ABC-123', TRUE, 'Yaris', 'Rojo', 'Toyota', 4, (SELECT id_conductor FROM conductor WHERE dni='44444444')),
+      ('AYC-123', TRUE, 'Yaris', 'Rojo', 'Toyota', 4, (SELECT id_conductor FROM conductor WHERE dni='22222222')),
       ('XYZ-987', TRUE, 'Accent', 'Azul', 'Hyundai', 4, (SELECT id_conductor FROM conductor WHERE dni='55555555'));
 
 

@@ -162,7 +162,6 @@ public class SolicitudViajeServiceImpl implements SolicitudViajeService {
                         .vehiculoColor(row[11].toString())
                         .vehiculoPlaca(row[12].toString())
                         .vehiculoModelo(row[13].toString())
-                        .vehiculoDesc(row[14].toString())
                         .build())
                 .collect(Collectors.toList());
     }
