@@ -38,7 +38,7 @@ import com.example.unirideapi.exception.BusinessRuleException;
 import com.example.unirideapi.model.enums.EstadoRuta;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.access.AccessDeniedException;
-
+import java.time.temporal.ChronoUnit;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -801,6 +801,8 @@ public class RutaServiceImpl implements RutaService {
                         .vehiculoModelo(row[11].toString())
                         .build())
                 .collect(Collectors.toList());
+
+        allRutas = allRutas.stream().filter(ruta -> ruta.fechaSalida().isAfter(LocalDate.now())).toList();
 
         List<SolicitudCardResponseDTO>  allSolicitudes = solicitudViajeRepository.getInfo(pasajeroId).stream()
                 .map(row -> SolicitudCardResponseDTO.builder()
