@@ -52,14 +52,32 @@ public class RutaServiceImpl implements RutaService {
     private final SolicitudViajeRepository solicitudRepository;
     @Override
     public RutaResponseDTO create(RutaRequestDTO dto) {
+
+        // Validar anticipación mínima (1h 30min)
+        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime salida = LocalDateTime.of(
+                dto.fechaSalida(),   // LocalDate
+                dto.horaSalida()     // LocalTime
+        );
+
+        long diffMin = Duration.between(ahora, salida).toMinutes();
+
+        if (diffMin < 90) {
+            throw new BusinessRuleException(
+                    "Debes publicar la ruta con al menos 1 hora y 30 minutos de anticipación."
+            );
+        }
+
+        // Mapear DTO → entidad
         Ruta ruta = rutaMapper.toEntity(dto);
 
-        // Buscar el conductor por id y asignarlo
+        // Buscar y asignar conductor
         Conductor conductor = conductorRepository.findById(dto.conductorId())
                 .orElseThrow(() -> new BusinessRuleException("Conductor no encontrado"));
 
         ruta.setConductor(conductor);
 
+        // 🔹 4. Guardar y devolver DTO
         Ruta guardada = rutaRepository.save(ruta);
         return rutaMapper.toDTO(guardada);
     }
