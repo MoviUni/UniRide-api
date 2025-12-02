@@ -38,7 +38,7 @@ import com.example.unirideapi.exception.BusinessRuleException;
 import com.example.unirideapi.model.enums.EstadoRuta;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.access.AccessDeniedException;
-
+import java.time.temporal.ChronoUnit;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -52,14 +52,32 @@ public class RutaServiceImpl implements RutaService {
     private final SolicitudViajeRepository solicitudRepository;
     @Override
     public RutaResponseDTO create(RutaRequestDTO dto) {
+
+        // Validar anticipación mínima (1h 30min)
+        LocalDateTime ahora = LocalDateTime.now();
+        LocalDateTime salida = LocalDateTime.of(
+                dto.fechaSalida(),   // LocalDate
+                dto.horaSalida()     // LocalTime
+        );
+
+        long diffMin = Duration.between(ahora, salida).toMinutes();
+
+        if (diffMin < 90) {
+            throw new BusinessRuleException(
+                    "Debes publicar la ruta con al menos 1 hora y 30 minutos de anticipación."
+            );
+        }
+
+        // Mapear DTO → entidad
         Ruta ruta = rutaMapper.toEntity(dto);
 
-        // Buscar el conductor por id y asignarlo
+        // Buscar y asignar conductor
         Conductor conductor = conductorRepository.findById(dto.conductorId())
                 .orElseThrow(() -> new BusinessRuleException("Conductor no encontrado"));
 
         ruta.setConductor(conductor);
 
+        // 🔹 4. Guardar y devolver DTO
         Ruta guardada = rutaRepository.save(ruta);
         return rutaMapper.toDTO(guardada);
     }
@@ -783,6 +801,8 @@ public class RutaServiceImpl implements RutaService {
                         .vehiculoModelo(row[11].toString())
                         .build())
                 .collect(Collectors.toList());
+
+        allRutas = allRutas.stream().filter(ruta -> ruta.fechaSalida().isAfter(LocalDate.now())).toList();
 
         List<SolicitudCardResponseDTO>  allSolicitudes = solicitudViajeRepository.getInfo(pasajeroId).stream()
                 .map(row -> SolicitudCardResponseDTO.builder()
