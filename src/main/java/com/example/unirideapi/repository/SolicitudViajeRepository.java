@@ -45,5 +45,7 @@ public interface SolicitudViajeRepository extends JpaRepository<SolicitudViaje, 
             WHERE r.estadoRuta != 'EN_PROGRESO' AND s.pasajero.idPasajero = :idPasajero""")
     List<Object[]>getInfo(@Param("idPasajero") Integer idPasajero);
 
+
+
 }
 

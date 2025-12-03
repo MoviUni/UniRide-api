@@ -75,19 +75,26 @@ INSERT INTO solicitud_viaje (
 ) VALUES
       ('2025-10-05', '08:00:00', '2025-10-05 08:05:00', 'ACEPTADO',
        (SELECT id_ruta FROM ruta WHERE origen='Barranco' AND destino='Miraflores'),
-       (SELECT id_pasajero FROM pasajero WHERE dni='77777777')),
+       (SELECT id_pasajero FROM pasajero WHERE dni='77777777' LIMIT 1)),
       ('2025-10-05', '17:40:00', '2025-10-05 17:45:00', 'PENDIENTE',
        (SELECT id_ruta FROM ruta WHERE origen='Surco' AND destino='San Isidro'),
-       (SELECT id_pasajero FROM pasajero WHERE dni='77777777'));
+       (SELECT id_pasajero FROM pasajero WHERE dni='77777777' LIMIT 1));
+
+INSERT INTO solicitud_viaje (fecha, hora, updated_at, estado_solicitud, id_ruta, id_pasajero)
+VALUES
+    ('2025-11-11', '07:15:00', '2025-11-11 07:15:00', 'FINALIZADO',
+     (SELECT id_ruta FROM ruta WHERE origen='San Miguel' AND destino='UPC-Monterrico' LIMIT 1),
+     (SELECT id_pasajero FROM pasajero WHERE dni='77777777' LIMIT 1));
+
 
 -- ========== PAGOS ==========
 INSERT INTO pago (
     monto, fecha, hora, comision, medio_pago, estado_pago, id_solicitud_viaje
 ) VALUES
       (10.00, '2025-10-05', '08:10:00', 0.50, 'YAPE', 'COMPLETADO',
-       (SELECT id_solicitud_viaje FROM solicitud_viaje WHERE estado_solicitud='PENDIENTE')),
+       (SELECT id_solicitud_viaje FROM solicitud_viaje WHERE estado_solicitud='PENDIENTE' LIMIT 1)),
       (8.00, '2025-10-05', '17:50:00', 0.60, 'TARJETA_DEBITO', 'EN_PROGRESO',
-       (SELECT id_solicitud_viaje FROM solicitud_viaje WHERE estado_solicitud='ACEPTADO'));
+       (SELECT id_solicitud_viaje FROM solicitud_viaje WHERE estado_solicitud='ACEPTADO' LIMIT 1));
 
 -- ========== CALIFICACIONES ==========
 INSERT INTO calificacion (puntaje, comentario, updated_at, id_conductor, id_pasajero)
