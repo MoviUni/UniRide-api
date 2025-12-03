@@ -129,7 +129,7 @@ public class RutaServiceImpl implements RutaService {
 
     @Override
     public int obtenerTotalViajes(Integer idConductor) {
-        return rutaRepository.countRutaByConductor_IdConductor(idConductor);
+        return rutaRepository.countRutaByConductor_IdConductorAndEstadoRuta(idConductor, EstadoRuta.FINALIZADO);
     }
 
     private static final String[] DIAS = {

@@ -9,5 +9,6 @@ public record PasajeroResponseDTO(
         String apellido,
         String dni,
         Integer edad,
-        String codigoUni
+        String codigoUni,
+        String carrera
 ) {}

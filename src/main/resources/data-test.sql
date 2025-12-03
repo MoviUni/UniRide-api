@@ -64,7 +64,9 @@ INSERT INTO ruta (
       ('La Molina', 'Centro de Lima', '2025-10-06', '07:15:00', 12.00, 4, 'PROGRAMADO',
        (SELECT id_conductor FROM conductor WHERE dni='55555555')),
       ('La Molina', 'UPC-Monterrico', '2025-12-11', '07:15:00', 12.00, 4, 'PROGRAMADO',
-       (SELECT id_conductor FROM conductor WHERE dni='22222222'));
+       (SELECT id_conductor FROM conductor WHERE dni='22222222')),
+      ('San Miguel', 'UPC-Monterrico', '2025-11-11', '07:15:00', 12.00, 4, 'FINALIZADO',
+       (SELECT id_conductor FROM conductor WHERE dni='44444444'));
 
 
 -- ========== SOLICITUDES ==========

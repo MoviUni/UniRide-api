@@ -82,6 +82,9 @@ public class ConductorServiceImpl implements ConductorService {
         if (req.apellido() != null) conductor.setApellido(req.apellido());
         if (req.dni() != null) conductor.setDni(req.dni());
         if (req.edad() != null) conductor.setEdad(req.edad());
+        if (req.carrera() != null) conductor.setCarrera(req.carrera());
+        if (req.codigoUni() != null) conductor.setCodigoUni(req.codigoUni());
+
 
         // Marca fecha actualización
         conductor.setUpdatedAt(LocalDateTime.now());

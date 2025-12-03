@@ -31,11 +31,12 @@ public interface RutaRepository extends JpaRepository<Ruta, Long> {
     @Query("SELECT b FROM Ruta b WHERE DATE(b.fechaSalida) = (DATE(:fechaHoy) + :filtroDias)")
     List<Ruta> searchByDia (@Param("fechaSalida") LocalDate fechaSalida, LocalDate fechaHoy, Long filtroDias);
 
-    int countRutaByConductor_IdConductor(Integer id);
+    int countRutaByConductor_IdConductorAndEstadoRuta(Integer id, EstadoRuta estado);
 
     @Query(value = "SELECT EXTRACT(DOW FROM r.fecha_salida) as dia_num, COUNT(*) " +
             "FROM ruta r " +
             "WHERE r.id_conductor = :conductorId " +
+            "AND r.estado_ruta = 'FINALIZADO' " +
             "GROUP BY dia_num",
             nativeQuery = true)
     List<Object[]> contarViajesPorDiaSemana(@Param("conductorId") Integer conductorId);
@@ -43,6 +44,7 @@ public interface RutaRepository extends JpaRepository<Ruta, Long> {
     @Query(value = "SELECT origen, destino, hora_salida, tarifa, COUNT(*) AS frecuencia " +
     "FROM ruta " +
     "WHERE id_conductor = :conductorId " +
+            "AND estado_ruta = 'FINALIZADO' " +
     "GROUP BY origen, destino, hora_salida, tarifa " +
     "ORDER BY frecuencia DESC", nativeQuery = true)
     List<Object[]> findRutasMasFrecuentes(@Param("conductorId") Integer conductorId);
@@ -52,6 +54,7 @@ public interface RutaRepository extends JpaRepository<Ruta, Long> {
     @Query(value = "SELECT r.origen, r.destino, r.fecha_salida, r.hora_salida, r.tarifa " +
             "FROM ruta r " +
             "WHERE r.id_conductor = :conductorId " +
+            "AND r.estado_ruta = 'FINALIZADO' " +
             "ORDER BY r.fecha_salida DESC, r.hora_salida DESC",
             nativeQuery = true)
     List<Object[]> exportarPDF(@Param("conductorId") Integer conductorId);
@@ -106,7 +109,7 @@ public interface RutaRepository extends JpaRepository<Ruta, Long> {
 
 
     @Query("""
-            SELECT r.idRuta, r.origen, r.destino, r.fechaSalida, r.horaSalida, r.tarifa, r.asientosDisponibles, c.nombre, c.apellido, c.vehiculo.color, c.vehiculo.placa, c.vehiculo.modelo
+            SELECT r.idRuta, r.origen, r.destino, r.fechaSalida, r.horaSalida, r.tarifa, r.asientosDisponibles, c.nombre, c.apellido, c.vehiculo.color, c.vehiculo.placa, c.vehiculo.modelo, c.vehiculo.descripcionVehiculo
             FROM Ruta r
             JOIN Conductor c ON c.idConductor = r.conductor.idConductor
             WHERE r.estadoRuta != 'EN_PROGRESO'""")
